@@ -4,10 +4,7 @@
 \alias{load_inspq_manual_data}
 \title{Importer le dernier fichier manual_data de inspq et le nettoyer}
 \usage{
-load_inspq_manual_data(path = "~/cronjob/inspq-manual-data/")
-}
-\arguments{
-\item{path}{string}
+load_inspq_manual_data()
 }
 \value{
 data frame
