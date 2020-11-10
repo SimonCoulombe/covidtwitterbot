@@ -24,7 +24,7 @@ graph_deces_hospit_tests <- function(){
     ggplot2::geom_col(width=1) +
     ggplot2::geom_line(data = rr, ggplot2::aes(x= date, y= moyenne7), color = palette_OkabeIto[6], size =1, alpha=0.8) +
     ggplot2::facet_wrap(~type, ncol =1, scales ="free_y" )+
-    cowplot::theme_cowplot() +
+    cowplot::theme_half_open() +
     cowplot::background_grid()  +
     theme(axis.line = element_line(color = "gray90"),
           axis.ticks =  element_line(colour  = "gray90", size = 0.5)
