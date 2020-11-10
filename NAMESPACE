@@ -2,4 +2,6 @@
 
 export("%>%")
 export(load_inspq_manual_data)
+export(quebec_lambert)
+export(statistics_canada_lambert)
 importFrom(magrittr,"%>%")
