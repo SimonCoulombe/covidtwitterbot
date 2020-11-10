@@ -22,34 +22,16 @@ graph_deces_hospit_tests <- function(){
   p1 <-rr %>%
     ggplot2::ggplot(ggplot2::aes(x= date, y = nombre )) +
     ggplot2::geom_col(width=1) +
-    ggplot2::geom_line(data = rr, ggplot2::aes(x= date, y= moyenne7), color = palette_OkabeIto[6], size =1, alpha=0.8) +
+    ggplot2::geom_line(data = rr, ggplot2::aes(x= date, y= moyenne7), color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
     ggplot2::facet_wrap(~type, ncol =1, scales ="free_y" )+
-    cowplot::theme_half_open() +
-    cowplot::background_grid()  +
-    theme(axis.line = element_line(color = "gray90"),
-          axis.ticks =  element_line(colour  = "gray90", size = 0.5)
-          )+ # lignes et ticks des axes gris
-    ggplot2::theme(strip.background = element_blank()) + # enlever le gris des facettes
-    ggplot2::theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1, color="gray50"),
-          axis.text.y = element_text(color="gray50"),
-          axis.title.x = element_text(color="gray50"),
-          axis.title.y = element_text(color="gray50"),text = element_text(size=10), # tous les textes... sauf geom_text
-          strip.text.x = element_text(size = 10, angle = 0, hjust = 0), # change la  taille et angle du texte facet
-          plot.title = element_text(size=10,  margin=margin(5,0,0,0)),
-          plot.subtitle = element_text(size=10,  margin=margin(0,0,0,0)),
-          plot.caption = element_text(size=10),
-          axis.title =  element_text(size=10),
-          axis.text =element_text(size=10),
-          legend.text = element_text(size=10)
-    ) +
+    theme_simon(font_size = 12) +
+    ggplot2::theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1, color="gray50")) +
     ggplot2::labs(
       title = "Décès quotidiens, hospitalisations, soins intensifs, tests",
       x = "date",
       y = "Nombre") +
     xlim(lubridate::ymd("20200315"), NA)+
     scale_y_continuous(expand = c(0,0))
-
-
 
   p1
 
