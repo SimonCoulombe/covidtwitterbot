@@ -5,12 +5,9 @@
 #' @return data frame
 #' @export
 #'
-#' @examples
+#' @examples load_inspq_manual_data()
 load_inspq_manual_data <- function(){
-
-  temp <- tempfile()
-  download.file("https://inspq.qc.ca/sites/default/files/covid/donnees/manual-data.csv",temp)
-  latest_combine <- readr::read_csv(temp, skip =23) %>%
+  latest_combine <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/manual-data.csv", skip =23) %>%
     janitor::clean_names() %>%
     dplyr::mutate(date = lubridate::dmy(date)) %>%
     dplyr::select(date, hospits, hospits_ancien, si, volumetrie)

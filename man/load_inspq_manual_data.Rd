@@ -12,3 +12,6 @@ data frame
 \description{
 Importer le dernier fichier manual_data de inspq et le nettoyer
 }
+\examples{
+load_inspq_manual_data()
+}

@@ -20,6 +20,8 @@ Imports:
     purrr,
     readr,
     magrittr,
-    dplyr
+    dplyr,
+    ggplot2,
+    cowplot
 URL: https://github.com/SimonCoulombe/covidtwitterbot
 BugReports: https://github.com/SimonCoulombe/covidtwitterbot/issues
