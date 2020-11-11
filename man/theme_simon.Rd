@@ -7,11 +7,16 @@
 theme_simon(font_size = 14, font_family = "")
 }
 \arguments{
-\item{font_family}{}
+\item{font_size}{font size}
+
+\item{font_family}{font type}
 }
 \value{
 
 }
 \description{
 Appliquer mon theme..
+}
+\examples{
++theme_simon
 }

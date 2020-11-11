@@ -2,8 +2,13 @@
 #' @return
 #' @export
 #' @examples graph_deces_hospit_tests()
+#' @importFrom dplyr filter select mutate bind_rows coalesce group_by ungroup arrange lead lag case_when summarise
+#' @importFrom tidyr gather spread
 #' @importFrom ggplot2 '%+replace%'
-#' @importFrom ggplot2 theme margin element_text element_line element_blank xlim ylim scale_y_continuous scale_x_continuous
+#' @importFrom ggplot2 theme margin element_text element_line element_blank xlim ylim scale_y_continuous scale_x_continuous ggplot aes geom_col geom_line facet_wrap facet_grid labs xlim ylim scale_x_discrete
+#' @importFrom readr read_csv
+#' @importFrom tibble tribble
+#'
 graph_deces_hospit_tests <- function(){
   rr <- load_inspq_manual_data() %>%
     dplyr::filter(date >= lubridate::ymd("20200315")) %>%
@@ -25,7 +30,7 @@ graph_deces_hospit_tests <- function(){
     ggplot2::geom_line(data = rr, ggplot2::aes(x= date, y= moyenne7), color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
     ggplot2::facet_wrap(~type, ncol =1, scales ="free_y" )+
     theme_simon(font_size = 12) +
-    ggplot2::theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1, color="gray50")) +
+    ggplot2::theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1)) +  # rotate axis text 30 degrees
     ggplot2::labs(
       title = "Décès quotidiens, hospitalisations, soins intensifs, tests",
       x = "date",

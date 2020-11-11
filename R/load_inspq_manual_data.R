@@ -11,6 +11,8 @@ load_inspq_manual_data <- function(){
     janitor::clean_names() %>%
     dplyr::mutate(date = lubridate::dmy(date)) %>%
     dplyr::select(date, hospits, hospits_ancien, si, volumetrie)
+
+  latest_combine
 }
 
 
