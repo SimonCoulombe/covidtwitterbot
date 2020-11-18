@@ -22,6 +22,7 @@ rls_shp_simple <- read_sf("~/git/adhoc_prive/data/downloads/Territoires_RLS_2020
 rls_no_water <- st_difference(rls_shp_simple, shp_water) #shp_water est fourni avec le package..
 
 shp_rls <- rls_no_water %>%
+  rmapshaper::ms_simplify(keep = 0.7) %>%
   sf::st_make_valid() %>%
   st_collection_extract(type="POLYGON")
 
