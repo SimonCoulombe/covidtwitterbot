@@ -27,3 +27,8 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 16
 
 # shapefile des rls sans l'eau
 plot(shp_rls[,1])
+
+# créer la carte des cas par RLS de la semaine passée
+carte <- carte_rls()
+
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/commissions_scolaires_rls_cases.png" , width = 12, height =10)

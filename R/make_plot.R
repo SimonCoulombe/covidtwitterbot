@@ -21,8 +21,8 @@ make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label,
 
 
 
-  myColors <- c(palette_OkabeIto["bluishgreen"], palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"])
-  names(myColors) <- c("moins de 20 cas par million","entre 20 et 60 cas par million", "entre 60 et 100 cas par million", "plus de 100 cas par million")
+
+
 
 
   format_francais <- "%d %B %Y"
@@ -98,8 +98,8 @@ make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label,
     #sec.axis = sec_axis(trans = ~ . / pop * 1e6, name = right_name)) + #cas par million
     #sec.axis = sec_axis(trans = ~ . /1e6 * pop, name = right_name)) + ## cas
     scale_colour_manual(drop = TRUE,
-                        limits = levels(d$color_per_pop), ## les limits (+myColors?) c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
-                        values = myColors)+
+                        limits = names(mes4couleurs), ## les limits (+myColors?) c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
+                        values = mes4couleurs)+
     #facet_wrap(~ health_region,  scales = "free") +
     ggrepel::geom_text_repel(
       data = last_value_label_data,
