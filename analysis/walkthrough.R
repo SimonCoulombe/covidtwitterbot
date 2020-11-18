@@ -23,3 +23,7 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 14
 # heatmap_cas(rls_cases, RLS_petit_nom, "RLS")
 graph_quebec_cas_par_rls_heatmap()
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 16, height =22)
+
+
+# shapefile des rls sans l'eau
+plot(shp_rls[,1])
