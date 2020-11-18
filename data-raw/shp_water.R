@@ -33,3 +33,6 @@ shp_water <- water_single_collection2 %>%
 #st_write(inondable5, here::here("data/water_union_valid_simple.shp"))
 
 #water_union_valid_simple <- read_sf(here::here("data/water_union_valid_simple.shp"))
+
+
+usethis::use_data(shp_water)
