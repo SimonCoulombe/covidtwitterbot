@@ -1,3 +1,4 @@
+
 load_inspq_covid19_hist()
 load_inspq_manual_data()
 
@@ -21,3 +22,4 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 14
 # rls_cases <- prep_data(rls, shortname_rls, type = cases)
 # heatmap_cas(rls_cases, RLS_petit_nom, "RLS")
 graph_quebec_cas_par_rls_heatmap()
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 16, height =22)
