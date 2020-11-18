@@ -73,7 +73,7 @@ g <- ggplot()+
                            nudge_y = c(-1e5, -1e5 , -0.5e5 ,-1e5,-0.25e5 , 0e5 , -0.8e5,-0.5e5)
   ) +
   theme(legend.position= c(0.7,0.9))  +
-  theme(plot.caption = element_text(margin = margin(t = -60)))+
+  #theme(plot.caption = element_text(margin = margin(t = -60)))+ ## on dirait que je perds le bas de la carte quand je fais ça.. fuckit
   coord_sf(crs = quebec_lambert)
 
 

@@ -183,11 +183,35 @@ graph_quebec_cas_par_rls_heatmap()
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
-carte\_rls() crée une carte montrant le nombre moyen de cas par jour par
-million d’habitant durant les 7 derniers jours
+`carte_rls()` crée une carte montrant le nombre moyen de cas par jour
+par million d’habitant durant les 7 derniers jours
 
 ``` r
 carte_rls()
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+
+### Shapefile
+
+The shapefile `shp_rls` shows all the RLS in Quebec after removing
+water.
+
+``` r
+plot(shp_rls[,1])
+```
+
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+
+### Palettes
+
+palette\_OkabeIto is a color palette that was built by higher beings to
+be visible to color-blind people
+
+``` r
+palette_OkabeIto
+#>        orange       skyblue   bluishgreen        yellow          blue 
+#>     "#E69F00"     "#56B4E9"     "#009E73"     "#F0E442"     "#0072B2" 
+#>    vermillion reddishpurple          gray 
+#>     "#D55E00"     "#CC79A7"     "#999999"
+```

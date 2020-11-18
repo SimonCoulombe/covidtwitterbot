@@ -65,34 +65,51 @@ get_clean_rls_data() %>% tail(20)
 ### Figures and maps
 
 
-```{r}
+```{r,fig.height = 9, fig.width = 12}
 graph_deces_hospit_tests()
 ```
 
 
-```{r}
+```{r,fig.height = 9, fig.width = 12}
 graph_quebec_cas_par_region()
 ```
 
 
 
-```{r}
+```{r,fig.height = 9, fig.width = 12}
 graph_quebec_cas_par_age()
 ```
 
 
 
 
-```{r}
+```{r,fig.height = 6, fig.width = 16}
 graph_quebec_cas_par_age_heatmap()
 ```
 
 
-```{r}
+```{r,fig.height = 22, fig.width = 16}
 graph_quebec_cas_par_rls_heatmap()
 ```
-carte_rls() crée une carte montrant le nombre moyen de cas par jour par million d'habitant durant les 7 derniers jours
-```{r}
+`carte_rls()` crée une carte montrant le nombre moyen de cas par jour par million d'habitant durant les 7 derniers jours
+```{r,fig.height = 10, fig.width = 12}
 carte_rls()
+```
+
+  
+  
+### Shapefile  
+
+The shapefile `shp_rls`  shows all the RLS in Quebec after removing water.  
+
+```{r}
+plot(shp_rls[,1])
+```
+
+### Palettes  
+
+palette_OkabeIto is a color palette that was built by higher beings to be visible to color-blind people
+```{r}
+palette_OkabeIto
 ```
 
