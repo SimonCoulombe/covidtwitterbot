@@ -37,6 +37,12 @@ cases_par_pop_age_quebec <- function(){
 }
 
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 graph_quebec_cas_par_age <- function(){
 
   cases2 <- cases_par_pop_age_quebec()

@@ -9,7 +9,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  warning = FALSE,
+  error = FALSE,
+  message = FALSE
 )
 ```
 
@@ -18,7 +21,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of covidtwitterbot is to ...
+The goal of covidtwitterbot is to generate the figures and maps that are posted on my twitter bot, @covid_coulsim.  
 
 ## Installation
 
@@ -28,27 +31,68 @@ You can install the development version from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("SimonCoulombe/covidtwitterbot")
 ```
-## Example
+## Example  
 
-This is a basic example which shows you how to solve a common problem:
+
+### Tables   
+Here are the tables you can fetch and the graphics you can generate..  They are generated from the most up-to-date data.
 
 ```{r example}
 library(covidtwitterbot)
-## basic example code
+
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+The `load_inspq_covid19_hist()` function fetches historical data for Quebec by age, health region and gender.   This includes the numbers of cases ("cas_*"), of deaths ("dec_*") of hospitalizations ("hos_*") and .. something else ("psi_*").
 
-```{r cars}
-summary(cars)
+
+```{r load_inspq_covid19_hist}
+load_inspq_covid19_hist() %>% tail(20)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
+The load_inspq_manual_data() function returns the historical number of hospitalisation (hospits_ancien and hospits), intensive care (si) and number of tests (volumetrie) for the province
 
-You can also embed plots, for example:
+```{r load_inspq_manual_data}
+load_inspq_manual_data() %>% tail(20)
+```
+The get_clean_rls_data() function returns the historical number of cases at the RLS (région locale de service).  There are no historical files at the RLS level on the INSPQ website. This function depends on a bunch of historical data that I collected, plus a daily archive repository maintained by Jean-Paul R Soucy.
 
-```{r pressure, echo = FALSE}
-plot(pressure)
+This function takes a while because it has to download a few hundred of CSVs before aggregating them.  
+```{r}
+get_clean_rls_data() %>% tail(20)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+
+### Figures and maps
+
+
+```{r}
+graph_deces_hospit_tests()
+```
+
+
+```{r}
+graph_quebec_cas_par_region()
+```
+
+
+
+```{r}
+graph_quebec_cas_par_age()
+```
+
+
+
+
+```{r}
+graph_quebec_cas_par_age_heatmap()
+```
+
+
+```{r}
+graph_quebec_cas_par_rls_heatmap()
+```
+carte_rls() crée une carte montrant le nombre moyen de cas par jour par million d'habitant durant les 7 derniers jours
+```{r}
+carte_rls()
+```
+
