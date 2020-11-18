@@ -119,12 +119,47 @@ graph_quebec_cas_par_age <- function(){
 graph_quebec_cas_par_age_heatmap <- function(){
 
 
-  cases2 <- cases_par_pop_age_quebec() %>%
+  heatmap_cas(cases_par_pop_age_quebec(), groupe_age, "groupe d'âge")
+}
+
+
+#' graph_quebec_cas_par_rls_heatmap
+#'
+#' @return
+#' @export
+#' @importFrom stringr str_pad
+#' @importFrom lubridate year month day hms isoweek
+#' @importFrom ggplot2 geom_tile scale_fill_gradientn geom_text
+#' @examples
+graph_quebec_cas_par_rls_heatmap <- function(){
+
+
+  rls <- get_clean_rls_data()
+  rls_cases <- prep_data(rls, shortname_rls, type = cases)
+  heatmap_cas(rls_cases, RLS_petit_nom, "RLS")
+}
+
+
+
+
+
+
+#' heatmap_cas
+#'
+#' @return
+#' @export
+#' @importFrom stringr str_pad
+#' @importFrom lubridate year month day hms isoweek
+#' @importFrom ggplot2 geom_tile scale_fill_gradientn geom_text
+#' @examples
+heatmap_cas <- function(prepped_data, variable, variable_title){
+
+  cases2 <- prepped_data %>%
     filter(date_report >= lubridate::ymd("20200302"))
 
 
   zz <- cases2 %>% mutate(week = lubridate::isoweek(date_report)) %>%
-    group_by(groupe_age, week) %>%
+    group_by({{ variable }}, week) %>%
     mutate(pouet = paste0(str_pad(month(min(date_report)), 2, pad ="0"), "-", str_pad(day(min(date_report)), 2, pad = "0"),
                           "\n"  ,
                           str_pad(month(max(date_report)), 2, pad ="0"), "-", str_pad(day(max(date_report)), 2, pad = "0")
@@ -140,40 +175,34 @@ graph_quebec_cas_par_age_heatmap <- function(){
   Sys.setlocale("LC_TIME", "fr_CA.UTF8")
 
   mygraph <- zz %>%
-    ggplot(aes(x= as.factor(pouet), y = groupe_age, )) +
+    ggplot(aes(x= as.factor(pouet), y = {{variable}}, )) +
     geom_tile(aes(fill = pmin(cases_per_1M_week, 200)), color = "white", size = 1 )+
     scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
                          values = c(0, 20, 60, 100, 200) / 200, limits = c(0,200),
                          name = "Cas par million") +
     geom_text(aes(label= round(cases_per_1M_week)), color = "white", size =3) +
 
-    #cowplot::theme_cowplot() +
     theme_simon(font_size=10) +
-    #cowplot::background_grid(major ="x") +
-    #colorblindr::scale_color_OkabeIto( ) +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + # remove grids
+
     labs(
-      title = "Nombre quotidien de nouveaux cas de covid par million d'habitants par groupe d'âge et semaine",
+      title = paste0("Nombre quotidien de nouveaux cas de covid par million d'habitants par ", variable_title, " et semaine"),
       subtitle = paste0("Dernière mise à jour le ", format(last_date, format=format_francais) ),
-      caption = "(la dernière semaine peut être incomplète et appelée à changer) \n
+      caption = "(la dernière semaine peut compter moins de 7 jours) \n
     gossé par @coulsim",
       x = "Semaine ",
       y= "Groupe d'âge"
     ) +
     theme(
-      #text = element_text(size=10),
       axis.line.y = element_blank(), # enelever ligne axes y
       axis.line.x = element_blank(), # enelever ligne axes y
       axis.ticks.y = element_blank(), # enlever ticks axes y
       axis.title.y = element_text(angle = 0, vjust= 1),
       axis.text.x = element_text(size=7),
-      #axis.text.y = element_text(size=10),
-      #axis.title = element_text(size=10),
       legend.key.height = unit(3, "line"), # legende toute la hauteur
       legend.key.width = unit(4, "line")
     )
 
-  #Sys.setlocale(mylocale)
   mygraph
-
-
 }
+
