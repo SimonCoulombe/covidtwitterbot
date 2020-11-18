@@ -119,7 +119,8 @@ graph_quebec_cas_par_age <- function(){
 graph_quebec_cas_par_age_heatmap <- function(){
 
 
-  cases2 <- cases_par_pop_age_quebec()
+  cases2 <- cases_par_pop_age_quebec() %>%
+    filter(date_report >= lubridate::ymd("20200302"))
 
 
   zz <- cases2 %>% mutate(week = lubridate::isoweek(date_report)) %>%

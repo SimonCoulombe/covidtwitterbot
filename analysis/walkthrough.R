@@ -15,3 +15,4 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_age.png" )
 graph_quebec_cas_par_age_heatmap()
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 14, height =6)
 
+
