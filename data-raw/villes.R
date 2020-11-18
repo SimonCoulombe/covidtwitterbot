@@ -9,5 +9,7 @@ villes <- tibble(cities, lon = latlongs$lon, lat = latlongs$lat)
 
 
 readr::write_csv(villes, "data-raw/villes.csv")
+
+
 villes <- st_as_sf(villes, coords = c("lon", "lat"), remove = FALSE, crs = 4326, agr = "constant")
 usethis::use_data(villes)
