@@ -106,11 +106,12 @@ mesregions <- purrr::pmap(
          FALSE, FALSE, TRUE, FALSE
        ),
        bigaxis = c(
-         TRUE, TRUE, TRUE, TRUE, TRUE,
+         FALSE, FALSE, FALSE, FALSE, FALSE,
          FALSE, FALSE, FALSE, FALSE, FALSE,
          FALSE, FALSE, FALSE, FALSE,FALSE,
          FALSE, FALSE, FALSE, FALSE
-       )
+       ),
+       bigaxis_value = 500, smallaxis_value = 500
   ),
   make_plot)
 

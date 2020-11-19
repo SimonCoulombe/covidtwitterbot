@@ -89,10 +89,8 @@ graph_quebec_cas_par_age <- function(){
            FALSE, FALSE, FALSE, FALSE,
            TRUE, TRUE, FALSE
          ),
-         bigaxis_value = c(
-           500, 500, 500 , 500 ,
-           500, 500, 500 , 500 ,
-           1500, 1500, 1500       )
+         bigaxis_value = c(1500  ),
+         smallaxis_value = 250
     ),
     make_plot)
 

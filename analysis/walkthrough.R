@@ -1,6 +1,9 @@
+#This script creates all the figures used by the bot.
 
-load_inspq_covid19_hist()
-load_inspq_manual_data()
+## demo some data functions, not necessary here
+#load_inspq_covid19_hist()
+#load_inspq_manual_data()
+
 
 
 
@@ -16,24 +19,18 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_age.png" )
 graph_quebec_cas_par_age_heatmap()
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 14, height =6)
 
-## get the latest RLS data heatmap
-
-# rls <- get_clean_rls_data()
-# rls_cases <- prep_data(rls, shortname_rls, type = cases)
-# heatmap_cas(rls_cases, RLS_petit_nom, "RLS")
-graph_quebec_cas_par_rls_heatmap()
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png" , width = 16, height =22)
 
 
-# shapefile des rls sans l'eau
-plot(shp_rls[,1])
+# shapefiles
+#plot(shp_rls[,1])
+#plot(shp_css[,1])
+#plot(shp_water[,1])
 
 # créer la carte des cas par RLS de la semaine passée
 rls_data <- get_clean_rls_data()
 
 graph_quebec_cas_par_rls_heatmap(rls_data = rls_data)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png" , width = 16, height =22)
-
 
 carte <- carte_rls(rls_data = rls_data)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/carte_rls_cases.png" , width = 12, height =10)
