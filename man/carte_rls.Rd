@@ -4,7 +4,7 @@
 \alias{carte_rls}
 \title{carte_rls}
 \usage{
-carte_rls()
+carte_rls(rls_data = NULL)
 }
 \value{
 

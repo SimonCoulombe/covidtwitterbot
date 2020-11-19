@@ -22,13 +22,34 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 14
 # rls_cases <- prep_data(rls, shortname_rls, type = cases)
 # heatmap_cas(rls_cases, RLS_petit_nom, "RLS")
 graph_quebec_cas_par_rls_heatmap()
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 16, height =22)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png" , width = 16, height =22)
 
 
 # shapefile des rls sans l'eau
 plot(shp_rls[,1])
 
 # créer la carte des cas par RLS de la semaine passée
-carte <- carte_rls()
+rls_data <- get_clean_rls_data()
 
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/commissions_scolaires_rls_cases.png" , width = 12, height =10)
+graph_quebec_cas_par_rls_heatmap(rls_data = rls_data)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png" , width = 16, height =22)
+
+
+carte <- carte_rls(rls_data = rls_data)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/carte_rls_cases.png" , width = 12, height =10)
+
+carte <- carte_rls_zoom_montreal(rls_data = rls_data)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/carte_rls_cases_zoom_montreal.png" , width = 12, height =10)
+
+
+css_last_week <- get_css_last_week(rls_data)
+
+carte_css(css_last_week)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/carte_css_cases.png" , width = 14, height =14)
+
+graph_css_bars(css_last_week)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png" , width = 14, height =14)
+
+
+
+

@@ -58,7 +58,17 @@ The get_clean_rls_data() function returns the historical number of cases at the 
 
 This function takes a while because it has to download a few hundred of CSVs before aggregating them.  
 ```{r}
-get_clean_rls_data() %>% tail(20)
+rls_data <- get_clean_rls_data() 
+
+rls_data %>% tail(20)
+```
+
+We estimate number of cases at the school board (centre de service scolaire) level based on the more fine-grained RLS data. It is not perfect (sometime a RLS stradles 2 CSS so we have to split the cases proportionally to the population in the intersections), but it's a good start.  The get_css_last_week() functions runs faster if you provide it with the `rls_data` object we created when we downloaded the RLS data. If this is not provided then the RLS data has to be downloaded again.
+
+
+
+```{r}
+css_last_week  <- get_css_last_week(rls_data)
 ```
 
 
@@ -86,24 +96,51 @@ graph_quebec_cas_par_age()
 ```{r,fig.height = 6, fig.width = 16}
 graph_quebec_cas_par_age_heatmap()
 ```
-
+graph_quebec_cas_par_rls_heatmap() generates the heatmap showing the history of cases per capita.  It runs faster if you provide it with an already-downloaded "rls_data"  dataframe provided by  get_clean_rls_data() 
 
 ```{r,fig.height = 22, fig.width = 16}
-graph_quebec_cas_par_rls_heatmap()
+graph_quebec_cas_par_rls_heatmap(rls_data)
 ```
 `carte_rls()` crée une carte montrant le nombre moyen de cas par jour par million d'habitant durant les 7 derniers jours
 ```{r,fig.height = 10, fig.width = 12}
-carte_rls()
+carte_rls(rls_data)
 ```
 
-  
-  
-### Shapefile  
 
-The shapefile `shp_rls`  shows all the RLS in Quebec after removing water.  
+
+```{r,fig.height = 10, fig.width = 12}
+carte_rls_zoom_montreal(rls_data)
+```
+
+We can also generate some charts from the estimated cases by CSS for the previous week: 
+```{r,fig.height = 14, fig.width = 14}
+carte_css(css_last_week)
+```
+  
+```{r,fig.height = 14, fig.width = 14}
+graph_css_bars(css_last_week)
+```
+  
+  
+### Shapefiles  
+
+Some shapefiles are included with this package.  They are created using script located in the `data-raw` folder in the repo.  
+
+
+`shp_water` is a (simplified) shapefile showing all coastal water in a single multipolygon.  It is used when I want to remove water from other shapefiles (such as RLS or CSS).  It is derived from statistics canada's "Coastal waters (polygons)"  for Census 2011 at https://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/bound-limit-2011-eng.cfm . I tried the 2016 version, but some polygons are broken.
+```{r}
+plot(shp_water[,1])
+```
+
+
+The shapefile `shp_rls`  shows all the RLS in Quebec after removing water.  It is derived from "Limites territoriales des réseaux locaux de santé (RLS) en 2020"  (https://www.donneesquebec.ca/recherche/fr/dataset/limites-territoriales/resource/a73c9996-010d-41ac-a4ba-4def322d55bf),from which I removed the coastal waters.
 
 ```{r}
 plot(shp_rls[,1])
+```
+The shapefile `shp_css`  shows all the CSS (centres de services scolaires) in Quebec after removing water.  It is derived from "Centres de services scolaires francophones (SDA)" shapefile https://www.donneesquebec.ca/recherche/dataset/territoires-des-commissions-scolaires-du-quebec/resource/4cd70cc8-2663-4f10-bfce-bb46f62a77da,from which I removed the coastal waters.
+```{r}
+plot(shp_css[,1])
 ```
 
 ### Palettes  

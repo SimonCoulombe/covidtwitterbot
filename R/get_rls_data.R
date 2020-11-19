@@ -5,6 +5,7 @@
 #' @importFrom httr GET stop_for_status content
 #' @importFrom furrr future_map
 #' @importFrom future plan availableCores
+#' @importFrom dplyr glimpse
 #' @examples
 get_jeanpaulrsoucy_tableau_rls_new <- function(){
   #https://stackoverflow.com/questions/25485216/how-to-get-list-files-from-a-github-repository-folder-using-r

@@ -4,7 +4,7 @@
 \alias{graph_quebec_cas_par_rls_heatmap}
 \title{graph_quebec_cas_par_rls_heatmap}
 \usage{
-graph_quebec_cas_par_rls_heatmap()
+graph_quebec_cas_par_rls_heatmap(rls_data = NULL)
 }
 \value{
 
