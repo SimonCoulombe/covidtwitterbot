@@ -1,5 +1,7 @@
 #This script creates all the figures used by the bot.
 
+library(covidtwitterbot)
+
 ## demo some data functions, not necessary here
 #load_inspq_covid19_hist()
 #load_inspq_manual_data()
