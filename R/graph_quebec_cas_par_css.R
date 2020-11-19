@@ -72,9 +72,8 @@ g <- css_last_week %>%
   geom_hline(yintercept = 60, color = "black", size =1 ) +
   geom_hline(yintercept = 100, color = "black", size =1 ) +
   coord_flip() +
-  #cowplot::theme_half_open() +
-  #cowplot::background_grid(major ="x") +
   theme_simon() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + # remove grids
   colorblindr::scale_color_OkabeIto() +
   labs(
     title = "Nombre de nouveaux cas de covid par million d'habitants dans les centres de services scolaires",
