@@ -31,6 +31,16 @@ You can install the development version from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("SimonCoulombe/covidtwitterbot")
 ```
+
+Pour les utilisateurs linux, vous aurez probablement besoin d'installer des librairies tels que 
+`
+geos-devel  
+sqlite3-devel  
+proj-devel  
+gdal-devel  
+libopenssl-devel
+`
+
 ## Example  
 
 
@@ -42,14 +52,73 @@ library(covidtwitterbot)
 
 ```
 
-The `load_inspq_covid19_hist()` function fetches historical data for Quebec by age, health region and gender.   This includes the numbers of cases ("cas_*"), of deaths ("dec_*") of hospitalizations ("hos_*") and .. something else ("psi_*").
+
+#### load_inspq_covid19_hist()  
+
+The `load_inspq_covid19_hist()` function fetches historical data for Quebec by age, health region and gender.   This includes the numbers of cases ("cas_*"), of deaths ("dec_*") of hospitalizations ("hos_*") and persons tested ("psi_*").   
+
+
+**dictionnaire (partiel)des données: **
+
+cas_cum_tot_n = nombre de cas confirmés (cumulatifs) selon date de déclaration
+cas_cum_lab_n = nombre de cas confirmés en laboratoire (cumulatif) selon date de déclaration
+cas_cum_epi_n = nombre de cas confirmés par lien épidémiologique (cumulatif) selon date de déclaration
+cas_quo_tot_n = nombre de cas confirmés (quotidien) selon date de déclaration
+cas_quo_lab_n = nombre de cas confirmés en laboratoire (quotidien) selon date de déclaration
+cas_quo_epi_n = nombre de cas confirmés par lien épidémiologique (quotidien) selon date de déclaration
+
+
+act_cum_tot_n = nombre de cas actifs  (aujourd'hui)
+
+ret_cum_tot_n = nombre de cas rétablis (cumulatifs
+ret_quo_tot_n = nombre de cas rétablis (quotidien)
+
+dec_cum_tot_n = total des décès (cumulatif)
+dec_cum_chs_n = total des décès en CHSLD (cumulatif)
+dec_cum_rpa_n = total des décès en RPA (cumulatif)
+dec_cum_dom_n = total des décès à domicile et inconnu (cumulatif)
+dec_cum_aut_n = total des décès en RI et autre (cumulatif)
+
+ 
+dec_quo_tot_n = total des décès (quotidien)
+dec_quo_chs_n = total des décès en CHSLD (quotidien)
+dec_quo_rpa_n = total des décès en RPA (quotidien)
+dec_quo_dom_n = total des décès à domicile et inconnu (quotidien)
+dec_quo_aut_n = total des décès en RI et autre (quotidien)
+
+ 
+hos_quo_tot_n = nouvelles hospitalisations (régulières + soins intensifs)
+hos_quo_reg_n = nouvelles hospitalisations hors soins intensifs
+hos_quo_si_n = nouvelles hospitalisations aux soins intensifs
+
+psi_cum_test_pos = cas confirmés cumulatif 
+psi_cum_test_inf = personnes infirmées (test négatifs) cumulatif
+psi_cum_test_n = cumul de personnes testées cumulatif
+
+psi_quo_test_pos = cas confirmés quotidien   ## cet colonne  est vide pour la dernière journée
+psi_quo_test_inf = personnes infirmées (test négatifs) quotidien  ## cet colonne  est vide pour la dernière journée
+psi_quo_test_n = cumul de personnes testées quotidien  ## cet colonne  est vide pour la dernière journée
+
+
 
 
 ```{r load_inspq_covid19_hist}
 load_inspq_covid19_hist() %>% tail(20)
 ```
 
+#  load_inspq_manual_data()  
+
+
+
 The load_inspq_manual_data() function returns the historical number of hospitalisation (hospits_ancien and hospits), intensive care (si) and number of tests (volumetrie) for the province
+
+*dictionnaire des données *  
+hospits = hospitalisation hors intensif en cours  
+hospits_ancien = hospitalisation hors intensif  en cours (ancienne mesure, remplacée au printemps 2020 par l'actuelle)   
+si = soins intensifs en cours  
+volumetrie = nombre de tests   (cette colonne est vide pour la dernière journée)
+
+
 
 ```{r load_inspq_manual_data}
 load_inspq_manual_data() %>% tail(20)

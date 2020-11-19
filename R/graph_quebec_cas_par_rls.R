@@ -25,6 +25,7 @@ graph_quebec_cas_par_rls_heatmap <- function(rls_data = NULL){
 #' @importFrom sf st_transform st_drop_geometry st_coordinates
 #' @importFrom purrr map_dbl
 #' @importFrom ggrepel geom_text_repel
+#' @importFrom sf st_transform
 #' @examples
 carte_rls <- function(rls_data = NULL){
   if(is.null(rls_data)) rls <- get_clean_rls_data()

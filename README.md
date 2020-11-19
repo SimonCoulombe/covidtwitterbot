@@ -20,6 +20,10 @@ You can install the development version from
 devtools::install_github("SimonCoulombe/covidtwitterbot")
 ```
 
+Pour les utilisateurs linux, vous aurez probablement besoin d’installer
+des librairies tels que `geos-devel sqlite3-devel proj-devel gdal-devel
+libopenssl-devel`
+
 ## Example
 
 ### Tables
@@ -31,36 +35,81 @@ They are generated from the most up-to-date data.
 library(covidtwitterbot)
 ```
 
+#### load\_inspq\_covid19\_hist()
+
 The `load_inspq_covid19_hist()` function fetches historical data for
 Quebec by age, health region and gender. This includes the numbers of
 cases (“cas\_*"), of deaths ("dec\_*”) of hospitalizations (“hos\_*")
-and .. something else ("psi\_*”).
+and persons tested ("psi\_*”).
+
+**dictionnaire (partiel)des données: **
+
+cas\_cum\_tot\_n = nombre de cas confirmés (cumulatifs) selon date de
+déclaration cas\_cum\_lab\_n = nombre de cas confirmés en laboratoire
+(cumulatif) selon date de déclaration cas\_cum\_epi\_n = nombre de cas
+confirmés par lien épidémiologique (cumulatif) selon date de déclaration
+cas\_quo\_tot\_n = nombre de cas confirmés (quotidien) selon date de
+déclaration cas\_quo\_lab\_n = nombre de cas confirmés en laboratoire
+(quotidien) selon date de déclaration cas\_quo\_epi\_n = nombre de cas
+confirmés par lien épidémiologique (quotidien) selon date de déclaration
+
+act\_cum\_tot\_n = nombre de cas actifs (aujourd’hui)
+
+ret\_cum\_tot\_n = nombre de cas rétablis (cumulatifs ret\_quo\_tot\_n =
+nombre de cas rétablis (quotidien)
+
+dec\_cum\_tot\_n = total des décès (cumulatif) dec\_cum\_chs\_n = total
+des décès en CHSLD (cumulatif) dec\_cum\_rpa\_n = total des décès en RPA
+(cumulatif) dec\_cum\_dom\_n = total des décès à domicile et inconnu
+(cumulatif) dec\_cum\_aut\_n = total des décès en RI et autre
+(cumulatif)
+
+dec\_quo\_tot\_n = total des décès (quotidien) dec\_quo\_chs\_n = total
+des décès en CHSLD (quotidien) dec\_quo\_rpa\_n = total des décès en RPA
+(quotidien) dec\_quo\_dom\_n = total des décès à domicile et inconnu
+(quotidien) dec\_quo\_aut\_n = total des décès en RI et autre
+(quotidien)
+
+hos\_quo\_tot\_n = nouvelles hospitalisations (régulières + soins
+intensifs) hos\_quo\_reg\_n = nouvelles hospitalisations hors soins
+intensifs hos\_quo\_si\_n = nouvelles hospitalisations aux soins
+intensifs
+
+psi\_cum\_test\_pos = cas confirmés cumulatif psi\_cum\_test\_inf =
+personnes infirmées (test négatifs) cumulatif psi\_cum\_test\_n = cumul
+de personnes testées cumulatif
+
+psi\_quo\_test\_pos = cas confirmés quotidien \#\# cet colonne est vide
+pour la dernière journée psi\_quo\_test\_inf = personnes infirmées (test
+négatifs) quotidien \#\# cet colonne est vide pour la dernière journée
+psi\_quo\_test\_n = cumul de personnes testées quotidien \#\# cet
+colonne est vide pour la dernière journée
 
 ``` r
 load_inspq_covid19_hist() %>% tail(20)
 #> # A tibble: 20 x 54
 #>    Date  Regroupement Croisement Nom   cas_cum_lab_n cas_cum_epi_n cas_cum_tot_n
 #>    <chr> <chr>        <chr>      <chr>         <dbl>         <dbl>         <dbl>
-#>  1 2020… Groupe de r… REG02      Cein…         22073          1699         23772
-#>  2 2020… Groupe de r… REG03      Autr…         43293          2180         45473
+#>  1 2020… Groupe de r… REG02      Cein…         22255          1704         23959
+#>  2 2020… Groupe de r… REG03      Autr…         44011          2192         46203
 #>  3 2020… Groupe de r… REG00      Inco…             3             0             3
 #>  4 2020… Groupe de r… REG98      Hors…            75             2            77
-#>  5 2020… Groupe d'âge 0_9        0-9 …          5197          1395          6592
-#>  6 2020… Groupe d'âge 10_19      10-1…         11971          1222         13193
-#>  7 2020… Groupe d'âge 20_29      20-2…         18797          1227         20024
-#>  8 2020… Groupe d'âge 30_39      30-3…         16388           961         17349
-#>  9 2020… Groupe d'âge 40_49      40-4…         17807           986         18793
-#> 10 2020… Groupe d'âge 50_59      50-5…         16028           867         16895
-#> 11 2020… Groupe d'âge 60_69      60-6…         10053           462         10515
-#> 12 2020… Groupe d'âge 70_79      70-7…          7635           192          7827
-#> 13 2020… Groupe d'âge 80_89      80-8…          9417           252          9669
-#> 14 2020… Groupe d'âge 90_        90 a…          6085           215          6300
-#> 15 2020… Groupe d'âge INC        Inco…            38            35            73
-#> 16 2020… Groupe d'âge TOT        Total        119416          7814        127230
-#> 17 2020… Sexe         MASC       Masc…         53474          3941         57415
-#> 18 2020… Sexe         FEM        Fémi…         65833          3872         69705
+#>  5 2020… Groupe d'âge 0_9        0-9 …          5289          1400          6689
+#>  6 2020… Groupe d'âge 10_19      10-1…         12146          1225         13371
+#>  7 2020… Groupe d'âge 20_29      20-2…         18944          1235         20179
+#>  8 2020… Groupe d'âge 30_39      30-3…         16567           963         17530
+#>  9 2020… Groupe d'âge 40_49      40-4…         17974           986         18960
+#> 10 2020… Groupe d'âge 50_59      50-5…         16173           870         17043
+#> 11 2020… Groupe d'âge 60_69      60-6…         10156           465         10621
+#> 12 2020… Groupe d'âge 70_79      70-7…          7703           192          7895
+#> 13 2020… Groupe d'âge 80_89      80-8…          9486           252          9738
+#> 14 2020… Groupe d'âge 90_        90 a…          6123           216          6339
+#> 15 2020… Groupe d'âge INC        Inco…            37            35            72
+#> 16 2020… Groupe d'âge TOT        Total        120598          7839        128437
+#> 17 2020… Sexe         MASC       Masc…         54038          3958         57996
+#> 18 2020… Sexe         FEM        Fémi…         66451          3880         70331
 #> 19 2020… Sexe         INC        Inco…           109             1           110
-#> 20 2020… Sexe         TOT        Total        119416          7814        127230
+#> 20 2020… Sexe         TOT        Total        120598          7839        128437
 #> # … with 47 more variables: cas_cum_tot_t <chr>, cas_quo_tot_t <chr>,
 #> #   cas_quo_lab_n <dbl>, cas_quo_epi_n <dbl>, cas_quo_tot_n <dbl>,
 #> #   act_cum_tot_n <dbl>, act_cum_tot_t <chr>, cas_quo_tot_m <dbl>,
@@ -79,35 +128,45 @@ load_inspq_covid19_hist() %>% tail(20)
 #> #   cas_totaux_quotidien <dbl>, deces_totaux_quotidien <dbl>
 ```
 
+# load\_inspq\_manual\_data()
+
 The load\_inspq\_manual\_data() function returns the historical number
 of hospitalisation (hospits\_ancien and hospits), intensive care (si)
 and number of tests (volumetrie) for the province
+
+*dictionnaire des données *  
+hospits = hospitalisation hors intensif en cours  
+hospits\_ancien = hospitalisation hors intensif en cours (ancienne
+mesure, remplacée au printemps 2020 par l’actuelle)  
+si = soins intensifs en cours  
+volumetrie = nombre de tests (cette colonne est vide pour la dernière
+journée)
 
 ``` r
 load_inspq_manual_data() %>% tail(20)
 #> # A tibble: 20 x 5
 #>    date       hospits hospits_ancien    si volumetrie
 #>    <date>       <dbl>          <dbl> <dbl>      <dbl>
-#>  1 2020-10-29     434             NA    81      27993
-#>  2 2020-10-30     421             NA    82      25279
-#>  3 2020-10-31     412             NA    84      22487
-#>  4 2020-11-01     418             NA    81      17057
-#>  5 2020-11-02     441             NA    85      19597
-#>  6 2020-11-03     458             NA    81      25563
-#>  7 2020-11-04     456             NA    82      28925
-#>  8 2020-11-05     462             NA    77      29776
-#>  9 2020-11-06     445             NA    78      26951
-#> 10 2020-11-07     450             NA    77      21884
-#> 11 2020-11-08     464             NA    76      19848
-#> 12 2020-11-09     452             NA    82      21851
-#> 13 2020-11-10     489             NA    84      28078
-#> 14 2020-11-11     497             NA    86      28916
-#> 15 2020-11-12     498             NA    85      29846
-#> 16 2020-11-13     501             NA    82      29512
-#> 17 2020-11-14     498             NA    89      26864
-#> 18 2020-11-15     504             NA    87      21685
-#> 19 2020-11-16     538             NA   100      21392
-#> 20 2020-11-17     552             NA   100         NA
+#>  1 2020-10-30     421             NA    82      25279
+#>  2 2020-10-31     412             NA    84      22487
+#>  3 2020-11-01     418             NA    81      17057
+#>  4 2020-11-02     441             NA    85      19597
+#>  5 2020-11-03     458             NA    81      25563
+#>  6 2020-11-04     456             NA    82      28925
+#>  7 2020-11-05     462             NA    77      29776
+#>  8 2020-11-06     445             NA    78      26951
+#>  9 2020-11-07     450             NA    77      21884
+#> 10 2020-11-08     464             NA    76      19848
+#> 11 2020-11-09     452             NA    82      21851
+#> 12 2020-11-10     489             NA    84      28078
+#> 13 2020-11-11     497             NA    86      28916
+#> 14 2020-11-12     498             NA    85      29846
+#> 15 2020-11-13     501             NA    82      29512
+#> 16 2020-11-14     498             NA    89      26864
+#> 17 2020-11-15     504             NA    87      21685
+#> 18 2020-11-16     538             NA   100      23150
+#> 19 2020-11-17     552             NA   100      29842
+#> 20 2020-11-18     550             NA   101         NA
 ```
 
 The get\_clean\_rls\_data() function returns the historical number of
@@ -126,26 +185,26 @@ rls_data %>% tail(20)
 #> # A tibble: 20 x 20
 #>    RSS   RLS   date_report cumulative_cases source fix_cummin cases
 #>    <chr> <chr> <date>                 <dbl> <chr>       <dbl> <dbl>
-#>  1 14 -… 1411… 2020-11-18              4655 curre…       4655    65
-#>  2 14 -… 1412… 2020-11-18              5116 curre…       5116    51
-#>  3 15 -… 1511… 2020-11-18               123 curre…        123     4
-#>  4 15 -… 1512… 2020-11-18               307 curre…        307     0
-#>  5 15 -… 1513… 2020-11-18               402 curre…        402     5
-#>  6 15 -… 1514… 2020-11-18               257 curre…        257     0
-#>  7 15 -… 1515… 2020-11-18              1607 curre…       1607     7
-#>  8 15 -… 1516… 2020-11-18              2115 curre…       2115     8
-#>  9 15 -… 1517… 2020-11-18              2611 curre…       2611    28
-#> 10 16 -… 1611… 2020-11-18              3613 curre…       3613    36
-#> 11 16 -… 1612… 2020-11-18              2102 curre…       2102    22
-#> 12 16 -… 1621… 2020-11-18              3923 curre…       3923    20
-#> 13 16 -… 1622… 2020-11-18              2964 curre…       2964    26
-#> 14 16 -… 1623… 2020-11-18               266 curre…        266     8
-#> 15 16 -… 1631… 2020-11-18              1445 curre…       1445     6
-#> 16 16 -… 1632… 2020-11-18               934 curre…        934     0
-#> 17 16 -… 1633… 2020-11-18               209 curre…        209     0
-#> 18 16 -… 1634… 2020-11-18              2721 curre…       2721    14
-#> 19 17 -… 1701… 2020-11-18                30 curre…         30     1
-#> 20 18 -… 1801… 2020-11-18                16 curre…         16     0
+#>  1 14 -… 1411… 2020-11-19              4724 curre…       4724    69
+#>  2 14 -… 1412… 2020-11-19              5162 curre…       5162    46
+#>  3 15 -… 1511… 2020-11-19               126 curre…        126     3
+#>  4 15 -… 1512… 2020-11-19               308 curre…        308     1
+#>  5 15 -… 1513… 2020-11-19               404 curre…        404     2
+#>  6 15 -… 1514… 2020-11-19               258 curre…        258     1
+#>  7 15 -… 1515… 2020-11-19              1610 curre…       1610     3
+#>  8 15 -… 1516… 2020-11-19              2123 curre…       2123     8
+#>  9 15 -… 1517… 2020-11-19              2629 curre…       2629    18
+#> 10 16 -… 1611… 2020-11-19              3632 curre…       3632    19
+#> 11 16 -… 1612… 2020-11-19              2124 curre…       2124    22
+#> 12 16 -… 1621… 2020-11-19              3944 curre…       3944    21
+#> 13 16 -… 1622… 2020-11-19              3012 curre…       3012    48
+#> 14 16 -… 1623… 2020-11-19               275 curre…        275     9
+#> 15 16 -… 1631… 2020-11-19              1457 curre…       1457    12
+#> 16 16 -… 1632… 2020-11-19               934 curre…        934     0
+#> 17 16 -… 1633… 2020-11-19               210 curre…        210     1
+#> 18 16 -… 1634… 2020-11-19              2731 curre…       2731    10
+#> 19 17 -… 1701… 2020-11-19                29 curre…         29     0
+#> 20 18 -… 1801… 2020-11-19                16 curre…         16     0
 #> # … with 13 more variables: shortname_rls <chr>, Population <dbl>,
 #> #   cases_per_100k <dbl>, cases_last_7_days <dbl>,
 #> #   previous_cases_last_7_days <dbl>, cases_last_7_days_per_100k <dbl>,

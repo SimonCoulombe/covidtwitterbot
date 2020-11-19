@@ -1,3 +1,6 @@
+## this palette_OkabeIto and  palette_OkabeIto_black were taken from clauswilke::colorblindr  because I'm not sure how to have my
+## package install packages that arent on CRAN
+
 #' Color palette proposed by Okabe and Ito
 #'
 #' Two color palettes taken from the article "Color Universal Design" by Okabe and Ito, http://jfly.iam.u-tokyo.ac.jp/color/.

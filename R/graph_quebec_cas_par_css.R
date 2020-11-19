@@ -53,7 +53,6 @@ carte_css <- function(css_last_week = NULL){
 #' @return
 #' @export
 #' @importFrom ggplot2 geom_hline coord_flip
-#' @importFrom colorblindr scale_color_OkabeIto
 #' @examples
 graph_css_bars <- function(css_last_week = NULL){
 
@@ -74,7 +73,7 @@ g <- css_last_week %>%
   coord_flip() +
   theme_simon() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + # remove grids
-  colorblindr::scale_color_OkabeIto() +
+  scale_color_OkabeIto() +
   labs(
     title = "Nombre de nouveaux cas de covid par million d'habitants dans les centres de services scolaires",
     subtitle = paste0("moyenne mobile sur 7 jours, dernière mise à jour le " , format(max(css_last_week$date_report), format=format_francais) ),

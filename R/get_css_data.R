@@ -2,12 +2,10 @@
 #'
 #' @return
 #' @export
-#'
+#' @importFrom tongfen proportional_reaggregate
 #' @examples
 get_css_last_week <- function(rls_data = NULL){
-  if(is.null(rls_data)) rls <- get_clean_rls_data()
-
-
+  if(is.null(rls_data)) rls_data <- get_clean_rls_data()
   rls_last_week <- shp_rls %>%
     left_join(rls_data %>%
                 group_by(RLS_code) %>%

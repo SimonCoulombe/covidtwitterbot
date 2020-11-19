@@ -22,6 +22,18 @@ Imports:
     magrittr,
     dplyr,
     ggplot2,
-    cowplot
+    cowplot,
+    tongfen,
+    sf,
+    ggrepel,
+    units,
+    forcats,
+    furrr,
+    tidyr,
+    tibble,
+    stringr,
+    rlang,
+    httr,
+    future
 URL: https://github.com/SimonCoulombe/covidtwitterbot
 BugReports: https://github.com/SimonCoulombe/covidtwitterbot/issues
