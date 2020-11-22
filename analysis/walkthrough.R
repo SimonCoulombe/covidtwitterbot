@@ -1,5 +1,5 @@
 #This script creates all the figures used by the bot.
-
+library(ggplot2)
 library(covidtwitterbot)
 
 ## demo some data functions, not necessary here
