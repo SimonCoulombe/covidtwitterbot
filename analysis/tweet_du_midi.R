@@ -21,7 +21,7 @@ tests <- accueil %>% filter(type == "cumulatif") %>% pull(analyses)
 ## https://unicode.org/emoji/charts/full-emoji-list.html
 
 post_tweet(
-  status = paste0(intToUtf8(0x1F9F5), " du ",format(as.Date(Sys.Date()), format = format_francais) ," midi.\n\n",
+  status = paste0(intToUtf8(0x1F9F5), " covid du ",format(as.Date(Sys.Date()), format = format_francais) ," midi.\n\n",
                   intToUtf8(0x1F3F3), " Sommaire:\n",
                   "+", format(nouveau_cas, big.mark = " "), " cas (", format(total_cas,big.mark = " "),")\n",
                   "+", format(nouveau_deces, big.mark = " "), " décès déclarés (", format(total_deces,big.mark = " "),")\n",
@@ -53,7 +53,7 @@ post_tweet(
   status = paste0(
     intToUtf8(0x1F4C8),  intToUtf8(0x1F5FA)," Cas par habitant par centre de service scolaire (CSS)\n",
     intToUtf8(0x1F4C8), "Cas par habitant par groupe d'âge\n",
-  "2/4"),
+  "covid 2/4"),
   media = c("~/git/adhoc_prive/covid19_PNG/quebec_age.png",
             "~/git/adhoc_prive/covid19_PNG/carte_css_cases.png",
             "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png",
@@ -70,7 +70,7 @@ post_tweet(
 
 post_tweet(
   status = paste0(intToUtf8(0x1F4C8),  intToUtf8(0x1F5FA)," Cas par habitant par réseaux locaux de service (RLS)\n"
-  , "3/4"),
+  , "covid 3/4"),
   media = c("~/git/adhoc_prive/covid19_PNG/carte_rls_cases.png",
             "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png",
             "~/git/adhoc_prive/covid19_PNG/carte_rls_cases_zoom_montreal.png"),
