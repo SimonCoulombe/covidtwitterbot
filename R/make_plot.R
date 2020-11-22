@@ -19,12 +19,6 @@
 make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label, bottom_axis_label, bottom_axis_title,bigaxis,
                       bigaxis_value = 250, smallaxis_value = 200) {
 
-
-
-
-
-
-
   format_francais <- "%d %B %Y"
   #left_labs <- if (right_axis_label) labs(y = NULL)
   #left_name <- if (left_axis_title){ "Nouveaux cas"  } else {""}
@@ -38,10 +32,8 @@ make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label,
   bottom_name <- if(bottom_axis_title) "date"
 
   myyaxis <- if(bigaxis){coord_cartesian(ylim=c(0, bigaxis_value))} else {coord_cartesian(ylim=c(0, smallaxis_value))}
-  #mybackground <- if(bigaxis){theme(panel.background = element_rect(fill = "#ffffbf", colour = "#ffffbf",size = 0.5, linetype = "solid"))} else {}
   mybackground <- if(bigaxis){theme(panel.background = element_rect(fill = "#e8f4f8", colour = "#e8f4f8",size = 0.5, linetype = "solid"))} else {}
 
-  #
   data <- d
 
   mindate <- min(data$date_report)
@@ -62,7 +54,6 @@ make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label,
       ", semaine: ",
       round(7* avg_cases_last7),
       " cas"
-
     ),
     #value =  0.9 *  max(!!mean_column, na.rm = TRUE)
     value =  0.9 *  max(avg_cases_last7, na.rm = TRUE)
@@ -92,7 +83,7 @@ make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label,
 
   #ggplot(d, aes(x = date_report, y = avg_cases_last7)) +
   ggplot(d, aes(x = date_report, y = cases_per_1M)) +
-    geom_line(aes(color = color_per_pop), size = 1) +
+    geom_line(aes(color = color_per_pop), size = 1, na.rm = TRUE) +
 
     #    scale_y_continuous(breaks = scales::pretty_breaks(n =5),
     #sec.axis = sec_axis(trans = ~ . / pop * 1e6, name = right_name)) + #cas par million

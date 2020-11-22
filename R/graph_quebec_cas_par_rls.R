@@ -8,9 +8,9 @@
 #' @importFrom ggplot2 geom_tile scale_fill_gradientn geom_text
 #' @examples
 graph_quebec_cas_par_rls_heatmap <- function(rls_data = NULL){
-  if(is.null(rls_data)) rls <- get_clean_rls_data()
+  if(is.null(rls_data)) rls <- get_rls_data()
 
-  rls_cases <- prep_data(rls_data, shortname_rls, type = cases)
+  rls_cases <- prep_data(rls_data, shortname_rls, variable = cases)
   heatmap_cas(rls_cases, RLS_petit_nom, "RLS")
 }
 
@@ -28,7 +28,7 @@ graph_quebec_cas_par_rls_heatmap <- function(rls_data = NULL){
 #' @importFrom sf st_transform
 #' @examples
 carte_rls <- function(rls_data = NULL){
-  if(is.null(rls_data)) rls <- get_clean_rls_data()
+  if(is.null(rls_data)) rls_data <- get_rls_data()
 
   rls_last_week <- shp_rls %>%
     left_join(rls_data %>%
@@ -61,7 +61,7 @@ carte_rls <- function(rls_data = NULL){
           legend.text = element_text(size=12)
     ) +
     ggrepel::geom_text_repel(data = villes %>%
-                               st_transform(quebec_lambert) %>%
+                               st_transform(crs = quebec_lambert) %>%
                                mutate(
                                  lon= map_dbl( geometry, ~st_coordinates(.x)[1]),
                                  lat= map_dbl( geometry, ~st_coordinates(.x)[2])
@@ -86,7 +86,7 @@ carte_rls <- function(rls_data = NULL){
 #'
 #' @examples
 carte_rls_zoom_montreal <- function(rls_data = NULL){
-  if(is.null(rls_data)) rls <- get_clean_rls_data()
+  if(is.null(rls_data)) rls_data <- get_rls_data()
 
   rls_last_week <- shp_rls %>%
     left_join(rls_data %>%

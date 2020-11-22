@@ -1,6 +1,11 @@
 
 
-#' cases_par_pop_quebec
+#' cases_par_pop_region_quebec
+#' -exécute prep data pour avoir la moyenne sur 7 jours, ainsi que le pire 7 jours et le dernier 7 jour et le ratio dernier/pire,
+#' - left_join la population et calcule
+#'  - cases_per_1M  , soit avg_cases_last7 / 1000000 * pop
+#'  - last_cases_per_1M, soit le cases_per_1M final, qui nous donne la couleur
+#'  -color_per_pop , la couleur qui dépend de last_cases_per_1M
 #'
 #' @return
 #' @export
@@ -8,20 +13,17 @@
 #' @examples
 cases_par_pop_region_quebec <- function(){
   cases_pl_date <- prep_data(
-    load_inspq_covid19_hist() %>%
+    get_inspq_covid19_hist() %>%
       select(date_report= date, cumulative_cases = cas_totaux_cumul, cases = cas_totaux_quotidien, groupe, type) %>%
       filter(type %in% c("region"), groupe !="Hors Québec", groupe != "Inconnue", !is.na(date_report)),
     groupe,
-    type = cases
+    variable = cases
   ) %>%
     left_join(table_correspondances_health_region_quebec %>% select(groupe, health_region, health_region_short)) %>%
     mutate(
       province = "Quebec",
       pr_region = paste0(province,"-", health_region  )
     )
-
-  cases_pl_date %>% ggplot(aes(x=date_report, y= avg_cases_last7)) + geom_line() + facet_wrap(~group)
-
 
   cases2 <- cases_pl_date %>%
     left_join(populations %>% select(pr_region, pop)) %>%

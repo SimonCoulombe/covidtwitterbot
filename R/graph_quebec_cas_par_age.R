@@ -1,17 +1,33 @@
 #' cases_par_pop_age_quebec
+#' -exécute prep data pour avoir la moyenne sur 7 jours, ainsi que le pire 7 jours et le dernier 7 jour et le ratio dernier/pire,
+#' - left_join la population et calcule
+#'  - cases_per_1M  , soit avg_cases_last7 / 1000000 * pop
+#'  - last_cases_per_1M, soit le cases_per_1M final, qui nous donne la couleur
+#'  -color_per_pop , la couleur qui dépend de last_cases_per_1M
 #'
 #' @return
 #' @export
 #' @importFrom dplyr rename
 #' @examples
 cases_par_pop_age_quebec <- function(){
+  #prep_data ajoute 7 colonnes :
+    #'  avg_XXX_last7
+    #'  total
+    #'  worst7
+    #'  last7
+    #'  ratio
+    #'  winning.
+    #'  group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas..)
   cases_pl_date_age <- prep_data(
-    load_inspq_covid19_hist() %>%
+    get_inspq_covid19_hist() %>%
       select(date_report= date, cumulative_cases = cas_totaux_cumul, cases = cas_totaux_quotidien, groupe, type) %>%
       filter(type %in% c("groupe_age"),!is.na(date_report), groupe != "Âge inconnu"),
-    groupe, type = cases )
+    groupe,
+    variable = cases )
 
-  cases2 <- cases_pl_date_age %>% rename(groupe_age = groupe) %>%
+  # une fois qu'on a avg_xxx
+  cases2 <- cases_pl_date_age %>%
+    rename(groupe_age = groupe) %>%
     left_join(populations_age ) %>%
     mutate(groupe_age = factor(groupe_age))  %>%
     mutate(cases_per_1M = avg_cases_last7 * 1000000 / pop) %>%
@@ -25,8 +41,6 @@ cases_par_pop_age_quebec <- function(){
                last_cases_per_1M < 60  ~ "entre 20 et 60 cas par million",
                last_cases_per_1M < 100 ~  "entre 60 et 100 cas par million",
                last_cases_per_1M >= 100  ~ "plus de 100 cas par million"
-               #last_cases_per_1M >= 50 & last_cases_per_1M < 0.9 *previous_cases_per_1M ~ "Plus de 50 et décroissant",
-               #last_cases_per_1M >= 50  ~ "Plus de 50 et stable ou croissante"
              ),
              levels = c("moins de 20 cas par million", "entre 20 et 60 cas par million", "entre 60 et 100 cas par million", "plus de 100 cas par million"))
     ) %>%
@@ -35,6 +49,65 @@ cases_par_pop_age_quebec <- function(){
 
   cases2
 }
+
+
+#' Title
+#'
+#' @param groupe défini par la fonction type... genre "groupe_age" ou "region"
+#' @param variable  genre "cas_totaux_quotidien" ou
+#'
+#' @return
+#' @export
+#'
+#' @examples type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_m  ) %>% ggplot(aes(x= date_report, y = avg_hos_quo_tot_m_last7_per_1M))+ geom_line() + facet_wrap(~groupe)
+type_par_pop_anything_quebec <- function(type, variable){
+    variable_column <- enquo(variable)   ## this has to be !!
+  variable_name <- quo_name(variable_column) ## its a string, dont !!
+
+  type_column <- enquo(type)   ## this has to be !!
+  type_name <- quo_name(type_column) ## its a string, dont !!
+  #prep_data ajoute 7 colonnes :
+  #'  avg_XXX_last7
+  #'  total
+  #'  worst7
+  #'  last7
+  #'  ratio
+  #'  winning.
+  #'  group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas..)
+  data_avec_moy7jours <-
+    get_inspq_covid19_hist() %>%
+      select(date_report= date, {{variable}}, groupe, type,pop) %>%
+      filter(type ==  type_name ,!is.na(date_report), !is.na(pop), !is.na({{variable}})) %>%
+    prep_data(data = .,
+              group = groupe,
+              variable = {{variable}}
+              ) %>%
+    mutate(groupe = factor(groupe),
+           rang = as.integer(groupe))
+
+  mean_name = paste0("avg_", variable_name, "_last7") ## this is a string, dont !!
+  mean_column <- sym(mean_name) ## this is a column, it has to be !!
+
+  mean_per_1M_name = paste0("avg_", variable_name, "_last7_per_1M")
+  mean_per_1M_column = sym(mean_per_1M_name)
+
+  last_mean_per_1M_name = paste0("last_avg_", variable_name, "_last7_per_1M")
+
+  variable_par_million <-
+    data_avec_moy7jours %>%
+    mutate(!!mean_per_1M_name := !!mean_column * 1000000/pop)
+
+  dernier_niveau_variable_par_million <-
+    variable_par_million %>%
+    group_by(groupe) %>%
+    arrange(date_report) %>%
+    mutate(!!last_mean_per_1M_name := max(!!mean_per_1M_column * (date_report==max(date_report)), na.rm = TRUE) )
+
+
+}
+
+
+
 
 
 #' Title
@@ -168,7 +241,7 @@ heatmap_cas <- function(prepped_data, variable, variable_title){
     geom_text(aes(label= round(cases_per_1M_week)), color = "white", size =3) +
 
     theme_simon(font_size=10) +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + # remove grids
+    nogrid()+
 
     labs(
       title = paste0("Nombre quotidien de nouveaux cas de covid par million d'habitants par ", variable_title, " et semaine"),

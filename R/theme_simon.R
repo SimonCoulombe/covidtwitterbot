@@ -37,3 +37,11 @@ theme_simon <- function(font_size = 14, font_family = "") {
 
 
 }
+
+#' nogrid() enlève les grilles sur les plots
+#'
+#' @return
+#' @export
+#'
+#' @examples + nogrid()
+nogrid <-function(){ theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())}

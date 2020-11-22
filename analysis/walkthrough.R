@@ -3,10 +3,27 @@
 library(covidtwitterbot)
 
 ## demo some data functions, not necessary here
-#load_inspq_covid19_hist()
-#load_inspq_manual_data()
 
 
+
+get_sommaire_quebec <- function(){
+
+  hist <- get_inspq_covid19_hist() %>% filter(Nom == "Ensemble du Québec")
+  manual <- get_inspq_manual_data_hospits()
+  cas_confirmes_cumulatif <- hist %>% filter(date == max(date)) %>% pull(cas_cum_tot_n) # manque 3 ? OK avec graphique 1, pas avec dsahboard
+  #cas_confirmes_quotidien <- hist %>% filter(date == max(date)) %>% pull(cas_quo_tot_n)
+  cas_actifs <- hist %>% filter(date==max(date))  %>% pull(act_cum_tot_n) # ok
+  retablis_cumulatif <-  hist %>% filter(date==max(date)) %>% pull(ret_cum_tot_n )# wrong
+  retablis_quotidien <-  hist %>% filter(date==max(date)) %>% pull( ret_quo_tot_n ) #wrong
+  deces_cumulatif <- hist %>% filter(date==max(date)) %>% pull(dec_cum_tot_n) #  ok avec graphique 2, wrong avec dashboard
+  deces_quotidien <- hist %>% filter(date==max(date)) %>% pull(dec_quo_tot_n) # ok avec tableau 2, pas avec dashboard
+
+  hospitalisations_en_cours <- manual %>% filter(date==max(date)) %>%
+    mutate(hospitalisations_en_cours = hospits + si) %>% pull(hospitalisations_en_cours)# OK
+  hospitalisations_si_en_cours <- manual %>% filter(date==max(date)) %>%  pull(si) # OK
+  prelements_analyses <- manual %>% filter(!is.na(volumetrie)) %>% filter(date==max(date)) %>% pull(volumetrie) # OK
+
+}
 
 
 graph_deces_hospit_tests()
@@ -29,7 +46,7 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 14
 #plot(shp_water[,1])
 
 # créer la carte des cas par RLS de la semaine passée
-rls_data <- get_clean_rls_data()
+rls_data <- get_rls_data()
 
 graph_quebec_cas_par_rls_heatmap(rls_data = rls_data)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png" , width = 16, height =22)

@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: Create the covid graphs my twitter bot publishes
+Description: Create the covid graphs my twitter bot publishes at @covid_coulsim
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -34,6 +34,9 @@ Imports:
     stringr,
     rlang,
     httr,
-    future
+    future,
+    tidyselect,
+    patchwork
+Remotes: github::clauswilke/colorblindr
 URL: https://github.com/SimonCoulombe/covidtwitterbot
 BugReports: https://github.com/SimonCoulombe/covidtwitterbot/issues

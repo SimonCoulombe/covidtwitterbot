@@ -14,21 +14,23 @@ get_jeanpaulrsoucy_tableau_rls_new <- function(){
   filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
   liste_tableau_rls_new <- grep("qc/cases-by-rss-and-rls/tableau-rls-new_", filelist, value = TRUE, fixed = TRUE)
   plan("multisession", workers = availableCores()-1)
-  csvs <-
-    furrr::future_map(
-      liste_tableau_rls_new,
-      ~readr::read_csv(
-        paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data/master/", .x),
-        col_types= readr::cols(
-          No = readr::col_character(),
-          RSS = readr::col_character() ,
-          NoRLS = readr::col_character(),
-          RLS= readr::col_character(),
-          .default = readr::col_number()
+
+  suppressWarnings(
+    csvs <-
+      furrr::future_map(
+        liste_tableau_rls_new,
+        ~readr::read_csv(
+          paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data/master/", .x),
+          col_types= readr::cols(
+            No = readr::col_character(),
+            RSS = readr::col_character() ,
+            NoRLS = readr::col_character(),
+            RLS= readr::col_character(),
+            .default = readr::col_number()
+          )
         )
       )
-    )
-
+  )
   years =  stringr::str_sub(liste_tableau_rls_new, -20,-17)
   months = stringr::str_sub(liste_tableau_rls_new,-15,-14)
   days = stringr::str_sub(liste_tableau_rls_new,-12,-11)
@@ -181,19 +183,19 @@ fill_missing_dates_and_create_daily_counts_for_rls_data <- function(rls_data){
     ungroup() %>%
     mutate(pop = Population,
            RLS_petit_nom = str_replace(RLS, "RLS des |RLS de la |RLS du |RLS de l' |RLS de |RLS ", "")
-           )
+    )
 
   rls
 }
 
 
-#' get_clean_rls_data
+#' get_rls_data
 #'
 #' @return
 #' @export
 #'
 #' @examples
-get_clean_rls_data <- function(){
+get_rls_data <- function(){
 
   get_raw_rls_data() %>%
     fill_missing_dates_and_create_daily_counts_for_rls_data()

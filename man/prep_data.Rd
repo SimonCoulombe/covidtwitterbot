@@ -2,23 +2,39 @@
 % Please edit documentation in R/prep_data.R
 \name{prep_data}
 \alias{prep_data}
-\title{prep_data}
+\title{prep_data est une fonction qui prend une base  le nombre de cas / décès / hospit quotidien
+et qui retourne 7 variables supplémentaires:
+ avg_XXX_last7
+ total
+ worst7
+ last7
+ ratio
+ winning.
+ group <-- soit la variable de groupe (genre 0-9 ans) réordonnée en fonction du total décroissant.. on a tu vraiment besoin de ça??}
 \usage{
-prep_data(data, group, type)
+prep_data(data, group, variable)
 }
 \arguments{
 \item{data}{data frame}
 
-\item{group}{nom de variable groupe, ex: health_region}
+\item{group}{nom de variable groupe, ex: health_region ou groupe_age}
 
-\item{type}{type de ce qui est compté, ex: cases ou deaths}
+\item{type}{type de ce qui est compté quotidiennement , ex: cases ou deaths ou hos}
 }
 \value{
 
 }
 \description{
-prep_data
+prep_data est une fonction qui prend une base  le nombre de cas / décès / hospit quotidien
+et qui retourne 7 variables supplémentaires:
+ avg_XXX_last7
+ total
+ worst7
+ last7
+ ratio
+ winning.
+ group <-- soit la variable de groupe (genre 0-9 ans) réordonnée en fonction du total décroissant.. on a tu vraiment besoin de ça??
 }
 \examples{
-prep_data(cases_prov, province, type = cases )
+prep_data(cases_prov, province, variable = cases )
 }

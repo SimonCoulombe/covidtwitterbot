@@ -33,13 +33,13 @@ devtools::install_github("SimonCoulombe/covidtwitterbot")
 ```
 
 Pour les utilisateurs linux, vous aurez probablement besoin d'installer des librairies tels que 
-`
-geos-devel  
-sqlite3-devel  
-proj-devel  
-gdal-devel  
-libopenssl-devel
-`
+
+geos-devel    
+sqlite3-devel    
+proj-devel   
+gdal-devel   
+libopenssl-devel  
+
 
 ## Example  
 
@@ -48,97 +48,128 @@ libopenssl-devel
 Here are the tables you can fetch and the graphics you can generate..  They are generated from the most up-to-date data.
 
 ```{r example}
+library(ggplot2)
+library(patchwork)
 library(covidtwitterbot)
-
+library(knitr)
 ```
 
 
-#### load_inspq_covid19_hist()  
+#### get_inspq_covid19_hist()  
 
-The `load_inspq_covid19_hist()` function fetches historical data for Quebec by age, health region and gender.   This includes the numbers of cases ("cas_*"), of deaths ("dec_*") of hospitalizations ("hos_*") and persons tested ("psi_*").   
+The `get_inspq_covid19_hist()` function fetches historical data for Quebec by age, health region and gender.   This includes the numbers of cases ("cas_*"), of deaths ("dec_*") of hospitalizations ("hos_*") and persons tested ("psi_*").   
 
 
 **dictionnaire (partiel)des données: **
 
-cas_cum_tot_n = nombre de cas confirmés (cumulatifs) selon date de déclaration
-cas_cum_lab_n = nombre de cas confirmés en laboratoire (cumulatif) selon date de déclaration
-cas_cum_epi_n = nombre de cas confirmés par lien épidémiologique (cumulatif) selon date de déclaration
-cas_quo_tot_n = nombre de cas confirmés (quotidien) selon date de déclaration
-cas_quo_lab_n = nombre de cas confirmés en laboratoire (quotidien) selon date de déclaration
-cas_quo_epi_n = nombre de cas confirmés par lien épidémiologique (quotidien) selon date de déclaration
+cas_cum_tot_n = nombre de cas confirmés (cumulatifs) selon date de déclaration  
+cas_cum_lab_n = nombre de cas confirmés en laboratoire (cumulatif) selon date de déclaration  
+cas_cum_epi_n = nombre de cas confirmés par lien épidémiologique (cumulatif) selon date de déclaration  
+cas_quo_tot_n = nombre de cas confirmés (quotidien) selon date de déclaration  
+cas_quo_lab_n = nombre de cas confirmés en laboratoire (quotidien) selon date de déclaration  
+cas_quo_epi_n = nombre de cas confirmés par lien épidémiologique (quotidien) selon date de déclaration  
+
+act_cum_tot_n = nombre de cas actifs  (aujourd'hui)  
+
+ret_cum_tot_n = nombre de cas rétablis (cumulatifs  
+ret_quo_tot_n = nombre de cas rétablis (quotidien)  
+
+dec_cum_tot_n = total des décès (cumulatif)  
+dec_cum_chs_n = total des décès en CHSLD (cumulatif)  
+dec_cum_rpa_n = total des décès en RPA (cumulatif)  
+dec_cum_dom_n = total des décès à domicile et inconnu (cumulatif)  
+dec_cum_aut_n = total des décès en RI et autre (cumulatif)  
+dec_quo_tot_n = total des décès (quotidien)  
+dec_quo_chs_n = total des décès en CHSLD (quotidien)  
+dec_quo_rpa_n = total des décès en RPA (quotidien)  
+dec_quo_dom_n = total des décès à domicile et inconnu (quotidien)  
+dec_quo_aut_n = total des décès en RI et autre (quotidien)  
 
 
-act_cum_tot_n = nombre de cas actifs  (aujourd'hui)
+ATTENTION: EN DATE DU 18 novembre 2020 LES HOSPITALISATIONS NE SONT PAS AUGMENTÉES ENTRE LE DERNIER JOUR ET L'AVANT DERNIER JOUR 
+  Date       Nom                hos_cum_reg_n hos_cum_si_n hos_cum_tot_n hos_cum_tot_t hos_quo_tot_t hos_quo_reg_n hos_quo_si_n hos_quo_tot_n hos_quo_tot_m
+  <chr>      <chr>                      <dbl>        <dbl>         <dbl>         <dbl>         <dbl>         <dbl>        <dbl>         <dbl>         <dbl>
+1 2020-11-17 Ensemble du Québec          8846         1847         10693          125.          0.37            30            2            32            NA
+2 2020-11-18 Ensemble du Québec          8846         1847         10693          125.          0                0            0             0            NA
 
-ret_cum_tot_n = nombre de cas rétablis (cumulatifs
-ret_quo_tot_n = nombre de cas rétablis (quotidien)
+hos_quo_tot_n = nouvelles hospitalisations (régulières + soins intensifs)  
+hos_quo_reg_n = nouvelles hospitalisations hors soins intensifs  
+hos_quo_si_n = nouvelles hospitalisations aux soins intensifs  
 
-dec_cum_tot_n = total des décès (cumulatif)
-dec_cum_chs_n = total des décès en CHSLD (cumulatif)
-dec_cum_rpa_n = total des décès en RPA (cumulatif)
-dec_cum_dom_n = total des décès à domicile et inconnu (cumulatif)
-dec_cum_aut_n = total des décès en RI et autre (cumulatif)
 
- 
-dec_quo_tot_n = total des décès (quotidien)
-dec_quo_chs_n = total des décès en CHSLD (quotidien)
-dec_quo_rpa_n = total des décès en RPA (quotidien)
-dec_quo_dom_n = total des décès à domicile et inconnu (quotidien)
-dec_quo_aut_n = total des décès en RI et autre (quotidien)
+# ATENTION : EN DATE DU 18 novembre 2020 les PSI quotidiens sont à 0 pour la dernière journée ..  sur le site ils utilisent le cumulatif du 18 novembre 2079892 et le quotidien du 17 novembre 28121
+ A tibble: 2 x 9
+  Date       Nom                psi_cum_tes_n psi_cum_pos_n psi_cum_inf_n psi_quo_pos_n psi_quo_inf_n psi_quo_tes_n psi_quo_pos_t
+  <chr>      <chr>                      <dbl>         <dbl>         <dbl>         <dbl>         <dbl>         <dbl>         <dbl>
+1 2020-11-17 Ensemble du Québec       2074847        119933       1954914          1246         26875         28121          4.44
+2 2020-11-18 Ensemble du Québec       2079892        120548       1959344             0             0             0         NA
 
- 
-hos_quo_tot_n = nouvelles hospitalisations (régulières + soins intensifs)
-hos_quo_reg_n = nouvelles hospitalisations hors soins intensifs
-hos_quo_si_n = nouvelles hospitalisations aux soins intensifs
 
-psi_cum_test_pos = cas confirmés cumulatif 
-psi_cum_test_inf = personnes infirmées (test négatifs) cumulatif
-psi_cum_test_n = cumul de personnes testées cumulatif
-
-psi_quo_test_pos = cas confirmés quotidien   ## cet colonne  est vide pour la dernière journée
-psi_quo_test_inf = personnes infirmées (test négatifs) quotidien  ## cet colonne  est vide pour la dernière journée
-psi_quo_test_n = cumul de personnes testées quotidien  ## cet colonne  est vide pour la dernière journée
+psi_cum_test_pos = cas confirmés cumulatif   
+psi_cum_test_inf = personnes infirmées (test négatifs) cumulatif  
+psi_cum_test_n = cumul de personnes testées cumulatif  
+psi_quo_test_pos = cas confirmés quotidien   ## ATTENTION cet colonne  est vide pour la dernière journée  
+psi_quo_test_inf = personnes infirmées (test négatifs) quotidien  ## ATTENTION cet colonne  est vide pour la dernière journée  
+psi_quo_test_n = cumul de personnes testées quotidien  ## ATTENTION  cet colonne  est vide pour la dernière journée  
 
 
 
 
-```{r load_inspq_covid19_hist}
-load_inspq_covid19_hist() %>% tail(20)
+```{r get_inspq_covid19_hist}
+get_inspq_covid19_hist() %>% tail(20)  %>%  knitr::kable()
 ```
 
-#  load_inspq_manual_data()  
+####  get_inspq_manual_data_hospits()  
 
 
 
-The load_inspq_manual_data() function returns the historical number of hospitalisation (hospits_ancien and hospits), intensive care (si) and number of tests (volumetrie) for the province
+The get_inspq_manual_data_hospits() function returns the historical number of hospitalisation (hospits_ancien and hospits), intensive care (si) and number of tests (volumetrie) for the province
 
 *dictionnaire des données *  
-hospits = hospitalisation hors intensif en cours  
+hospits = hospitalisation hors intensif en cours    
 hospits_ancien = hospitalisation hors intensif  en cours (ancienne mesure, remplacée au printemps 2020 par l'actuelle)   
-si = soins intensifs en cours  
-volumetrie = nombre de tests   (cette colonne est vide pour la dernière journée)
+si = soins intensifs en cours    
+volumetrie = nombre de tests   (cette colonne est vide pour la dernière journée)  
 
 
 
-```{r load_inspq_manual_data}
-load_inspq_manual_data() %>% tail(20)
+
+```{r get_inspq_manual_data_hospits}
+get_inspq_manual_data_hospits() %>% tail(20)   %>%  knitr::kable()
 ```
-The get_clean_rls_data() function returns the historical number of cases at the RLS (région locale de service).  There are no historical files at the RLS level on the INSPQ website. This function depends on a bunch of historical data that I collected, plus a daily archive repository maintained by Jean-Paul R Soucy.
+
+
+#### get_inspq_manual_data_tableau_accueil()  
+
+get_inspq_manual_data_tableau_accueil() retourne les chiffres utilisés dans le haut de la page de données covid19 de l'inspq.  ça balance pas toujours avec l'output des 2 fonctions précédentes.
+```{r}
+get_inspq_manual_data_tableau_accueil()   %>%  knitr::kable()
+```
+
+#### get_rls_data()  
+
+
+The get_rls_data() function returns the historical number of cases at the RLS (région locale de service).  There are no historical files at the RLS level on the INSPQ website. This function depends on a bunch of historical data that I collected, plus a daily archive repository maintained by Jean-Paul R Soucy.
 
 This function takes a while because it has to download a few hundred of CSVs before aggregating them.  
 ```{r}
-rls_data <- get_clean_rls_data() 
+rls_data <-suppressMessages( get_rls_data() )
 
-rls_data %>% tail(20)
+rls_data %>% tail(20)   %>%  knitr::kable()
 ```
 
 We estimate number of cases at the school board (centre de service scolaire) level based on the more fine-grained RLS data. It is not perfect (sometime a RLS stradles 2 CSS so we have to split the cases proportionally to the population in the intersections), but it's a good start.  The get_css_last_week() functions runs faster if you provide it with the `rls_data` object we created when we downloaded the RLS data. If this is not provided then the RLS data has to be downloaded again.
 
 
+#### get_css_last_week()    
+
 
 ```{r}
-css_last_week  <- get_css_last_week(rls_data)
+css_last_week  <- get_css_last_week(rls_data)   
+css_last_week %>% tail(20) %>% sf::st_drop_geometry() %>% knitr::kable()
 ```
+
+
 
 
 ### Figures and maps
@@ -165,7 +196,7 @@ graph_quebec_cas_par_age()
 ```{r,fig.height = 6, fig.width = 16}
 graph_quebec_cas_par_age_heatmap()
 ```
-graph_quebec_cas_par_rls_heatmap() generates the heatmap showing the history of cases per capita.  It runs faster if you provide it with an already-downloaded "rls_data"  dataframe provided by  get_clean_rls_data() 
+graph_quebec_cas_par_rls_heatmap() generates the heatmap showing the history of cases per capita.  It runs faster if you provide it with an already-downloaded "rls_data"  dataframe provided by  get_rls_data() 
 
 ```{r,fig.height = 22, fig.width = 16}
 graph_quebec_cas_par_rls_heatmap(rls_data)
@@ -198,23 +229,88 @@ Some shapefiles are included with this package.  They are created using script l
 
 `shp_water` is a (simplified) shapefile showing all coastal water in a single multipolygon.  It is used when I want to remove water from other shapefiles (such as RLS or CSS).  It is derived from statistics canada's "Coastal waters (polygons)"  for Census 2011 at https://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/bound-limit-2011-eng.cfm . I tried the 2016 version, but some polygons are broken.
 ```{r}
-plot(shp_water[,1])
+ggplot() + 
+  geom_sf(data = shp_water, fill = "#56B4E950")+
+  labs(title = "shp_water: Coastal water polyhon shapefile")
 ```
 
 
 The shapefile `shp_rls`  shows all the RLS in Quebec after removing water.  It is derived from "Limites territoriales des réseaux locaux de santé (RLS) en 2020"  (https://www.donneesquebec.ca/recherche/fr/dataset/limites-territoriales/resource/a73c9996-010d-41ac-a4ba-4def322d55bf),from which I removed the coastal waters.
 
 ```{r}
-plot(shp_rls[,1])
+ggplot() +
+  geom_sf(data= shp_rls, fill ="#E69F00B0")+
+  labs(title = "shp_rls: Réseaux locaux de services shapefile")
+
+
 ```
 The shapefile `shp_css`  shows all the CSS (centres de services scolaires) in Quebec after removing water.  It is derived from "Centres de services scolaires francophones (SDA)" shapefile https://www.donneesquebec.ca/recherche/dataset/territoires-des-commissions-scolaires-du-quebec/resource/4cd70cc8-2663-4f10-bfce-bb46f62a77da,from which I removed the coastal waters.
 ```{r}
-plot(shp_css[,1])
+ggplot() + 
+  geom_sf(data= shp_css, fill = "#E69F00B0") +
+  labs(title = "shp_css: Centres de services francophones shapefile ")
 ```
+    
+###  coordinate reference systems (CRS)  
+
+I added references to 2 useful CRS : `quebec_lambert`and `statistics_canada_lambert`
+
+Quebec Lambert is defined here on [spatialreference.org](https://spatialreference.org/ref/epsg/nad83-quebec-lambert/) the string is '+proj=lcc +lat_1=60 +lat_2=46 +lat_0=44 +lon_0=-68.5 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs' and was found [here](https://spatialreference.org/ref/epsg/nad83-quebec-lambert/proj4/).
+
+```{r}
+ggplot() + 
+  geom_sf(data= shp_rls, fill = "#E69F00B0") + 
+  coord_sf(crs= quebec_lambert) + 
+  labs(title = "RLS with Quebec Lambert CRS")
+```
+Statistics Canada Lambert is useful when mapping Canada as a whole.   I found a reference to it [here](https://spatialreference.org/ref/epsg/3347/) and the string '+proj=lcc +lat_1=49 +lat_2=77 +lat_0=63.390675 +lon_0=-91.86666666666666 +x_0=6200000 +y_0=3000000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs' was [here](https://spatialreference.org/ref/epsg/3347/proj4/)
+
+```{r}
+ggplot() + 
+  geom_sf(data = shp_water, fill = "#56B4E950")+
+  coord_sf(crs=statistics_canada_lambert)+
+  labs(title = "shp_water: Coastal water polygon shapefile projected with statistics canada lambert")
+```
+  
+### Theme   
+
+
+`theme_simon` is my default theme for figures.  I start with the default `cowplot`theme and change the color of the axis lines and axis labels to grey
+It comes with grids, with can be removed with the `nogrid()` function.  
+
+```{r}
+
+base_plot <- get_inspq_covid19_hist() %>% 
+  dplyr::filter(Nom == "Ensemble du Québec") %>% 
+  ggplot()+
+  geom_line( aes(x=date, y= hos_quo_tot_n))+
+  #expand_limits(y = 0)
+  scale_y_continuous(expand = c(0, 0))
+
+p1 <- base_plot +
+  labs(title = "no theme") 
+
+p2 <-base_plot +
+  cowplot::theme_cowplot()  + 
+  labs(title = "theme_cowplot(") 
+
+
+p3 <- base_plot +
+  theme_simon() + 
+  labs(title = "theme_simon()")
+
+p4 <- base_plot +
+  theme_simon() + nogrid() + 
+  labs(title = "theme_simon() + nogrid()")
+
+(p1 + p2) / (p3 + p4 )
+```
+
+
 
 ### Palettes  
 
-palette_OkabeIto is a color palette that was built by higher beings to be visible to color-blind people
+palette_OkabeIto is a color palette that was built by higher beings to be visible to color-blind people. I copied the code from Claus Wilke's `colorblindr` package because I don't know how to import packages from github.
 ```{r}
 palette_OkabeIto
 ```
