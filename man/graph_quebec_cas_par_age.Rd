@@ -12,3 +12,6 @@ graph_quebec_cas_par_age()
 \description{
 Title
 }
+\examples{
+graph_quebec_cas_par_age()
+}

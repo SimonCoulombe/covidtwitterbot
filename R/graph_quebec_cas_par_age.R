@@ -51,6 +51,7 @@ cases_par_pop_age_quebec <- function(){
 }
 
 
+
 #' Title
 #'
 #' @param groupe défini par la fonction type... genre "groupe_age" ou "region"
@@ -73,7 +74,7 @@ type_par_pop_anything_quebec <- function(type, variable){
   #'  last7
   #'  ratio
   #'  winning.
-  #'  group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas..)
+  #'  group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas.... TODO: on ditche tu ça?
   data_avec_moy7jours <-
     get_inspq_covid19_hist() %>%
       select(date_report= date, {{variable}}, groupe, type,pop) %>%
@@ -107,15 +108,12 @@ type_par_pop_anything_quebec <- function(type, variable){
 }
 
 
-
-
-
 #' Title
 #'
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples graph_quebec_cas_par_age()
 graph_quebec_cas_par_age <- function(){
 
   cases2 <- cases_par_pop_age_quebec()

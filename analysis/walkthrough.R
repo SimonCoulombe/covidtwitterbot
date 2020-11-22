@@ -43,4 +43,58 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png" , width =
 
 
 
+temp <- type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_n  )
+
+ggplot(data = temp,aes(x= date_report, y = avg_hos_quo_tot_n_last7_per_1M))+
+  geom_line() +
+  facet_wrap(~groupe) +
+  theme_simon() +
+  labs(
+    title = "Hospitalisations en cours par million d'habitant par région ",
+    subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm= TRUE), format = format_francais)),
+    caption = "gossé par @coulsim",
+    y = "Hospitalisations",
+    x = "Date"
+  )
+
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_hospit_by_pop.png" )
+
+temp <- type_par_pop_anything_quebec(type = region, variable = dec_quo_tot_n  )
+
+ggplot(data = temp,aes(x= date_report, y = avg_dec_quo_tot_n_last7_per_1M))+
+  geom_line() +
+  facet_wrap(~groupe) +
+  theme_simon() +
+  labs(
+    title = "Décès par million d'habitant par région ",
+    subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm= TRUE), format = format_francais)),
+    caption = "gossé par @coulsim",
+    y = "Décès",
+    x = "Date"
+  )
+
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_by_pop.png" )
+
+
+
+
+temp <- type_par_pop_anything_quebec(type = region, variable = psi_quo_tes_n  )
+
+ggplot(data = temp,aes(x= date_report, y = avg_psi_quo_tes_n_last7_per_1M))+
+  geom_line() +
+  facet_wrap(~groupe) +
+  theme_simon() +
+  labs(
+    title = "Tests par million d'habitant par région ",
+    subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm= TRUE), format = format_francais)),
+    caption = "gossé par @coulsim",
+    y = "Tests",
+    x = "Date"
+  )
+
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_by_pop.png" )
+
+
+
+
 
