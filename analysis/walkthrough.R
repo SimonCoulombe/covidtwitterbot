@@ -56,7 +56,7 @@ ggplot(data = temp,aes(x= date_report, y = avg_hos_quo_tot_n_last7_per_1M))+
   facet_wrap(~groupe) +
   theme_simon() +
   labs(
-    title = "Hospitalisations en cours par million d'habitant par région ",
+    title = "Nouvelles hospitalisations par million d'habitant par région ",
     subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm= TRUE), format = format_francais)),
     caption = "gossé par @coulsim",
     y = "Hospitalisations",
