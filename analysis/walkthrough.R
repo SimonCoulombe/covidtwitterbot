@@ -1,7 +1,7 @@
 #This script creates all the figures used by the bot.
 library(ggplot2)
 library(covidtwitterbot)
-
+Sys.setlocale("LC_TIME", "fr_CA.UTF8")
 ## demo some data functions, not necessary here
 
 hist <- get_inspq_covid19_hist()
@@ -55,7 +55,8 @@ ggplot(data = temp,aes(x= date_report, y = avg_hos_quo_tot_n_last7_per_1M))+
     caption = "gossé par @coulsim",
     y = "Hospitalisations",
     x = "Date"
-  )
+  ) +
+  scale_y_continuous(expand = c(0, 0))
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_hospit_by_pop.png" )
 
@@ -71,7 +72,8 @@ ggplot(data = temp,aes(x= date_report, y = avg_dec_quo_tot_n_last7_per_1M))+
     caption = "gossé par @coulsim",
     y = "Décès",
     x = "Date"
-  )
+  ) +
+  scale_y_continuous(expand = c(0, 0))
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_by_pop.png" )
 
@@ -90,11 +92,68 @@ ggplot(data = temp,aes(x= date_report, y = avg_psi_quo_tes_n_last7_per_1M))+
     caption = "gossé par @coulsim",
     y = "Tests",
     x = "Date"
-  )
+  ) +
+  scale_y_continuous(expand = c(0, 0))
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_by_pop.png" )
 
 
+# Pourcentage de positivité québec
 
 
+
+temp <- type_par_pop_anything_quebec(type = region, variable = psi_quo_pos_t  )
+temp  %>%
+  filter(groupe == "Ensemble du Québec") %>%
+  ggplot(aes(x=date_report, y = psi_quo_pos_t))+
+  geom_line() +
+  theme_simon()+
+  labs(
+    title = "Pourcentage de positivité (Ensemble du Québec",
+    subtitle = paste0("dernière mise à jour le ", format(max(hist$date, na.rm= TRUE), format = format_francais)),
+    x = "Date de résultat du test",
+    y = "Pourcentage de positivité",
+    caption = "gossé par @coulsim"
+  ) +
+  scale_y_continuous(expand = c(0, 0))
+
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite.png" )
+
+temp  %>%
+  ggplot(aes(x=date_report, y = psi_quo_pos_t))+
+  geom_line() +
+  theme_simon()+
+  labs(
+    title = "Pourcentage de positivité par région",
+    subtitle = paste0("dernière mise à jour le ", format(max(hist$date, na.rm= TRUE), format = format_francais)),
+    x = "Date de résultat du test",
+    y = "Pourcentage de positivité",
+    caption = "gossé par @coulsim"
+  ) +
+  facet_wrap(~ groupe) +
+  scale_y_continuous(expand = c(0, 0))
+
+
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.png" )
+
+
+
+temp <- type_par_pop_anything_quebec(type = groupe_age, variable = psi_quo_pos_t  )
+
+temp  %>%
+  ggplot(aes(x=date_report, y = psi_quo_pos_t))+
+  geom_line() +
+  theme_simon()+
+  labs(
+    title = "Pourcentage de positivité par groupe d'âge",
+    subtitle = paste0("dernière mise à jour le ", format(max(hist$date, na.rm= TRUE), format = format_francais)),
+    x = "Date de résultat du test",
+    y = "Pourcentage de positivité",
+    caption = "gossé par @coulsim"
+  ) +
+  facet_wrap(~ groupe) +
+  scale_y_continuous(expand = c(0, 0))
+
+
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png" )
 

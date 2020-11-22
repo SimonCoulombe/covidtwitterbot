@@ -102,7 +102,8 @@ type_par_pop_anything_quebec <- function(type, variable){
     variable_par_million %>%
     group_by(groupe) %>%
     arrange(date_report) %>%
-    mutate(!!last_mean_per_1M_name := max(!!mean_per_1M_column * (date_report==max(date_report)), na.rm = TRUE) )
+    mutate(!!last_mean_per_1M_name := max(!!mean_per_1M_column * (date_report==max(date_report)), na.rm = TRUE) ) %>%
+    ungroup()
 
 
 }
