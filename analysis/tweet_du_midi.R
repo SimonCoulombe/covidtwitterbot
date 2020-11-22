@@ -1,12 +1,37 @@
 library(tidyverse)
 library(rtweet)
+library(covidtwitterbot)
+token <- rtweet::get_tokens()
 
-token <- get_tokens()
+
+accueil <- get_inspq_manual_data_tableau_accueil()
+
+nouveau_cas <- accueil %>% filter(type == "quotidien") %>% pull(cas)
+total_cas <-accueil %>% filter(type == "cumulatif") %>% pull(cas)
+nouveau_deces <- accueil %>% filter(type == "quotidien") %>% pull(deces)
+total_deces <- accueil %>% filter(type == "cumulatif") %>% pull(deces)
+hospit_en_cours <- accueil %>% filter(type == "cumulatif") %>% pull(hospit)
+hospit_delta <- accueil %>% filter(type == "quotidien") %>% pull(hospit)
+si_en_cours <- accueil %>% filter(type == "cumulatif") %>% pull(soins)
+si_delta <- accueil %>% filter(type == "quotidien") %>% pull(soins)
+tests <- accueil %>% filter(type == "cumulatif") %>% pull(analyses)
+
+
+
+## https://unicode.org/emoji/charts/full-emoji-list.html
 
 post_tweet(
-  status = paste0("Thread #covid19 du midi.",
-                  "\nNouveaux cas de covid au Québec par région sociosanitaire, commission scolaire et âge ",
-                  "\n#polqc #Covid19Qc  #eduqc #covid19 ",
+  status = paste0(intToUtf8(0x1F9F5), " du ",format(as.Date(Sys.Date()), format = format_francais) ," midi.\n\n",
+                  intToUtf8(0x1F3F3), " Sommaire:\n",
+                  "+", format(nouveau_cas, big.mark = " "), " cas (", format(total_cas,big.mark = " "),")\n",
+                  "+", format(nouveau_deces, big.mark = " "), " décès déclarés (", format(total_deces,big.mark = " "),")\n",
+                  format(hospit_en_cours, big.mark = " "), " hospit. en cours (diff: ",format(hospit_delta,big.mark = " "),")\n",
+                  "+", format(tests, big.mark = " "), " tests\n\n",
+
+                  intToUtf8(0x1F4C8), " Cas par habitant par région\n",
+                  intToUtf8(0x1F4C8), " Cas par habitant par âge\n",
+                  intToUtf8(0x1F4C8), intToUtf8(0x1F5FA), " Cas par habitant par centre de service scolaire\n",
+                  #polqc #Covid19Qc  #eduqc #covid19 ",
                   "\n 1/6"),
   media = c("~/git/adhoc_prive/covid19_PNG/quebec_cases_by_pop.png",
             "~/git/adhoc_prive/covid19_PNG/carte_css_cases.png",
@@ -20,9 +45,8 @@ post_tweet(
   auto_populate_reply_metadata = FALSE
 )
 
-
 post_tweet(
-  status = paste0("Tableau/carte/heatmap des cas de #covid par réseaux locaux de service (RLS)\n  2/6"),
+  status = paste0(intToUtf8(0x1F4C8),  intToUtf8(0x1F5FA)," Cas par habitant par réseaux locaux de service (RLS)\n  2/6"),
   media = c("~/git/adhoc_prive/covid19_PNG/carte_rls_cases.png",
             "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png",
             "~/git/adhoc_prive/covid19_PNG/carte_rls_cases_zoom_montreal.png"),
@@ -35,8 +59,8 @@ post_tweet(
 
 
 post_tweet(
-  status = paste0("Tests, hospitalisations aux soins intensifs et décès de #covid",
-                  ".\n  3/6"),
+  status = paste0(intToUtf8(0x1F4C8), "Tests, hospitalisations aux soins intensifs et décès de #covid\n",
+                  "3/6"),
   media = c("~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png"
   ),
   token = NULL,

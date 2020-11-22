@@ -29,7 +29,7 @@ get_inspq_manual_data_tableau_accueil <- function(){
       select(cas, deces, hospit, soins, gueris, analyses) %>%
       ungroup() %>%
       dplyr::mutate_if(
-        is.character, ~ stringr::str_replace_all(., " ", "")
+        is.character, ~ as.numeric(stringr::str_replace_all(., " ", ""))
       ) %>%
       mutate(type = c("cumulatif", "quotidien"))
   )
