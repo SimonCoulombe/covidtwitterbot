@@ -65,7 +65,7 @@ last_value_label_data <-
 
 
 
-ggplot()+
+p1 <- ggplot()+
   geom_line(data = temp,aes(x= date_report, y = avg_hos_quo_tot_n_last7_per_1M),  color = palette_OkabeIto["blue"], size =1, alpha=0.8) +
   facet_wrap(~groupe) +
   theme_simon() +
@@ -84,6 +84,30 @@ ggplot()+
                            force =4,
                            color ="black",
                            nudge_y = c(0.5))
+
+
+
+ggp <- ggplot_build(p1)
+my.ggp.yrange <- ggp$layout$panel_scales_y[[1]]$range$range  # data range!
+my.ggp.xrange <- ggp$layout$panel_scales_x[[1]]$range$range  # data range!
+
+
+p1 +
+  geom_point(
+    data = temp %>% mutate(hos_per_1M = hos_quo_tot_n / pop * 1000000),
+    aes(x = date_report, y = hos_per_1M),
+    color = "gray50",
+    alpha =0.1
+  )+
+  ylim(my.ggp.yrange[1],my.ggp.yrange[2])
+#
+# The returned values are atomic, numeric vectors. I assume the [[1]] index is for multiple panels (facets).
+#
+# UPDATE: I noticed the above are for the untrained, unextended ranges.
+# From the link at the top, we have:
+#
+#   ggp$layout$panel_params[[1]]$x.range
+# ggp$layout$panel_params[[1]]$y.range
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_hospit_by_pop.png" )
 
@@ -195,7 +219,7 @@ temp  %>%
   ) +
   scale_y_continuous(expand = c(0, 0))+
   ggrepel::geom_text_repel(data = last_value_label_data  %>%filter(groupe == "Ensemble du Québec"),
-                            aes(x = date_report, y=psi_quo_pos_t,  label = label),
+                           aes(x = date_report, y=psi_quo_pos_t,  label = label),
                            size = 4, # changer la taille texte geom_text
                            force =4,
                            color ="black",
