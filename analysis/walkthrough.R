@@ -51,10 +51,11 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png" , width =
 message("type_pop_anything_quebec")
 temp <- type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_n  )
 
-ggplot(data = temp,aes(x= date_report, y = avg_hos_quo_tot_n_last7_per_1M))+
-  geom_line() +
+ggplot()+
+  geom_line(data = temp,aes(x= date_report, y = avg_hos_quo_tot_n_last7_per_1M),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
   facet_wrap(~groupe) +
   theme_simon() +
+
   labs(
     title = "Nouvelles hospitalisations par million d'habitant par région ",
     subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm= TRUE), format = format_francais)),
@@ -70,8 +71,8 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_hospit_by_pop.png" )
 message("type_pop_anything_quebec2")
 temp <- type_par_pop_anything_quebec(type = region, variable = dec_quo_tot_n  )
 
-ggplot(data = temp,aes(x= date_report, y = avg_dec_quo_tot_n_last7_per_1M))+
-  geom_line() +
+ggplot()+
+  geom_line(data = temp,aes(x= date_report, y = avg_dec_quo_tot_n_last7_per_1M),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
   facet_wrap(~groupe) +
   theme_simon() +
   labs(
@@ -90,8 +91,8 @@ message("type_pop_anything_quebec3")
 
 temp <- type_par_pop_anything_quebec(type = region, variable = psi_quo_tes_n  )
 
-ggplot(data = temp,aes(x= date_report, y = avg_psi_quo_tes_n_last7_per_1M))+
-  geom_line() +
+ggplot()+
+  geom_line(data = temp,aes(x= date_report, y = avg_psi_quo_tes_n_last7_per_1M),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
   facet_wrap(~groupe) +
   theme_simon() +
   labs(
@@ -114,8 +115,8 @@ temp <- type_par_pop_anything_quebec(type = region, variable = psi_quo_pos_t  )
 
 temp  %>%
   filter(groupe == "Ensemble du Québec") %>%
-  ggplot(aes(x=date_report, y = psi_quo_pos_t))+
-  geom_line() +
+  ggplot()+
+  geom_line(aes(x=date_report, y = psi_quo_pos_t),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
   theme_simon()+
   labs(
     title = "Pourcentage de positivité (Ensemble du Québec",
@@ -130,8 +131,8 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite.png" )
 message("pourcentage de positivité québec par région")
 
 temp  %>%
-  ggplot(aes(x=date_report, y = psi_quo_pos_t))+
-  geom_line() +
+  ggplot()+
+  geom_line(aes(x=date_report, y = psi_quo_pos_t),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
   theme_simon()+
   labs(
     title = "Pourcentage de positivité par région",
@@ -151,8 +152,8 @@ message("pourcentage de positivité québec par âge")
 temp <- type_par_pop_anything_quebec(type = groupe_age, variable = psi_quo_pos_t  )
 
 temp  %>%
-  ggplot(aes(x=date_report, y = psi_quo_pos_t))+
-  geom_line() +
+  ggplot()+
+  geom_line(aes(x=date_report, y = psi_quo_pos_t),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
   theme_simon()+
   labs(
     title = "Pourcentage de positivité par groupe d'âge",
