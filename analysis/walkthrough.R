@@ -51,6 +51,18 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png" , width =
 message("type_pop_anything_quebec")
 temp <- type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_n  )
 
+
+last_value_label_data <-
+  temp %>%
+  filter(!is.na(avg_hos_quo_tot_n_last7_per_1M)) %>%
+  group_by(groupe) %>%
+  filter(date_report == max(date_report)) %>%
+  ungroup() %>%
+  select(date_report, avg_hos_quo_tot_n_last7_per_1M, groupe) %>%
+  mutate(label = sprintf("%.1f",round(avg_hos_quo_tot_n_last7_per_1M,1)))
+
+
+
 ggplot()+
   geom_line(data = temp,aes(x= date_report, y = avg_hos_quo_tot_n_last7_per_1M),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
   facet_wrap(~groupe) +
@@ -63,13 +75,31 @@ ggplot()+
     y = "Hospitalisations",
     x = "Date"
   ) +
-  scale_y_continuous(expand = c(0, 0))
+  scale_y_continuous(expand = c(0, 0))+
+  ggrepel::geom_text_repel(data = last_value_label_data  ,
+                           aes(x = date_report, y=avg_hos_quo_tot_n_last7_per_1M,  label = label),
+                           size = 4, # changer la taille texte geom_text
+                           force =4,
+                           color ="black",
+                           nudge_y = c(0.5))
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_hospit_by_pop.png" )
 
 
 message("type_pop_anything_quebec2")
 temp <- type_par_pop_anything_quebec(type = region, variable = dec_quo_tot_n  )
+
+
+
+last_value_label_data <-
+  temp %>%
+  filter(!is.na(avg_dec_quo_tot_n_last7_per_1M)) %>%
+  group_by(groupe) %>%
+  filter(date_report == max(date_report)) %>%
+  ungroup() %>%
+  select(date_report, avg_dec_quo_tot_n_last7_per_1M, groupe) %>%
+  mutate(label = sprintf("%.1f",round(avg_dec_quo_tot_n_last7_per_1M,1)))
+
 
 ggplot()+
   geom_line(data = temp,aes(x= date_report, y = avg_dec_quo_tot_n_last7_per_1M),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
@@ -82,7 +112,13 @@ ggplot()+
     y = "Décès",
     x = "Date"
   ) +
-  scale_y_continuous(expand = c(0, 0))
+  scale_y_continuous(expand = c(0, 0))+
+  ggrepel::geom_text_repel(data = last_value_label_data  ,
+                           aes(x = date_report, y=avg_dec_quo_tot_n_last7_per_1M,  label = label),
+                           size = 4, # changer la taille texte geom_text
+                           force =4,
+                           color ="black",
+                           nudge_y = c(0.5))
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_by_pop.png" )
 
@@ -90,6 +126,18 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_by_pop.png" )
 message("type_pop_anything_quebec3")
 
 temp <- type_par_pop_anything_quebec(type = region, variable = psi_quo_tes_n  )
+
+
+last_value_label_data <-
+  temp %>%
+  filter(!is.na(avg_psi_quo_tes_n_last7_per_1M)) %>%
+  group_by(groupe) %>%
+  filter(date_report == max(date_report)) %>%
+  ungroup() %>%
+  select(date_report, avg_psi_quo_tes_n_last7_per_1M, groupe) %>%
+  mutate(label = sprintf("%.0f",round(avg_psi_quo_tes_n_last7_per_1M,1)))
+
+
 
 ggplot()+
   geom_line(data = temp,aes(x= date_report, y = avg_psi_quo_tes_n_last7_per_1M),  color = palette_OkabeIto["vermillion"], size =1, alpha=0.8) +
@@ -102,7 +150,13 @@ ggplot()+
     y = "Tests",
     x = "Date"
   ) +
-  scale_y_continuous(expand = c(0, 0))
+  scale_y_continuous(expand = c(0, 0))+
+  ggrepel::geom_text_repel(data = last_value_label_data  ,
+                           aes(x = date_report, y=avg_psi_quo_tes_n_last7_per_1M,  label = label),
+                           size = 4, # changer la taille texte geom_text
+                           force =4,
+                           color ="black",
+                           nudge_y = c(0.5))
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_by_pop.png" )
 
@@ -112,6 +166,15 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_by_pop.png" )
 message("pourcentage de positivité québec")
 
 temp <- type_par_pop_anything_quebec(type = region, variable = psi_quo_pos_t  )
+
+last_value_label_data <-
+  temp %>%
+  filter(!is.na(psi_quo_pos_t)) %>%
+  group_by(groupe) %>%
+  filter(date_report == max(date_report)) %>%
+  ungroup() %>%
+  select(date_report, psi_quo_pos_t, groupe) %>%
+  mutate(label = sprintf("%.1f",round(psi_quo_pos_t,1)))
 
 temp  %>%
   filter(groupe == "Ensemble du Québec") %>%
@@ -125,10 +188,17 @@ temp  %>%
     y = "Pourcentage de positivité",
     caption = "gossé par @coulsim"
   ) +
-  scale_y_continuous(expand = c(0, 0))
+  scale_y_continuous(expand = c(0, 0))+
+  ggrepel::geom_text_repel(data = last_value_label_data  %>%filter(groupe == "Ensemble du Québec"),
+                            aes(x = date_report, y=psi_quo_pos_t,  label = label),
+                           size = 4, # changer la taille texte geom_text
+                           force =4,
+                           color ="black",
+                           nudge_y = c(0.5))
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite.png" )
 message("pourcentage de positivité québec par région")
+
 
 temp  %>%
   ggplot()+
@@ -142,7 +212,13 @@ temp  %>%
     caption = "gossé par @coulsim"
   ) +
   facet_wrap(~ groupe) +
-  scale_y_continuous(expand = c(0, 0))
+  scale_y_continuous(expand = c(0, 0))+
+  ggrepel::geom_text_repel(data = last_value_label_data  ,
+                           aes(x = date_report, y=psi_quo_pos_t,  label = label),
+                           size = 4, # changer la taille texte geom_text
+                           force =4,
+                           color ="black",
+                           nudge_y = c(0.5))
 
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.png" )
@@ -150,6 +226,17 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.
 
 message("pourcentage de positivité québec par âge")
 temp <- type_par_pop_anything_quebec(type = groupe_age, variable = psi_quo_pos_t  )
+
+last_value_label_data <-
+  temp %>%
+  filter(!is.na(psi_quo_pos_t)) %>%
+  group_by(groupe) %>%
+  filter(date_report == max(date_report)) %>%
+  ungroup() %>%
+  select(date_report, psi_quo_pos_t, groupe) %>%
+  mutate(label = sprintf("%.1f",round(psi_quo_pos_t,1)))
+
+
 
 temp  %>%
   ggplot()+
@@ -163,7 +250,14 @@ temp  %>%
     caption = "gossé par @coulsim"
   ) +
   facet_wrap(~ groupe) +
-  scale_y_continuous(expand = c(0, 0))
+  scale_y_continuous(expand = c(0, 0))+
+  ggrepel::geom_text_repel(data = last_value_label_data  ,
+                           aes(x = date_report, y=psi_quo_pos_t,  label = label),
+                           size = 4, # changer la taille texte geom_text
+                           force =4,
+                           color ="black",
+                           nudge_y = c(0.5))
+
 
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png" )
