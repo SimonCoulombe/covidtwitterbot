@@ -26,8 +26,8 @@ graph_deces_hospit_tests <- function(){
 
   p1 <-
     ggplot2::ggplot() +
-    ggplot2::geom_col(data =rr, aes(x = date, y = nombre),width=1, na.rm = TRUE) +
-    ggplot2::geom_line(data = rr, ggplot2::aes(x= date, y= moyenne7), color = palette_OkabeIto["vermillion"], size =1, alpha=0.8, na.rm = TRUE) +
+    ggplot2::geom_col(data =rr, aes(x = date, y = nombre),width=1, na.rm = TRUE, alpha =0.8) +
+    ggplot2::geom_line(data = rr, ggplot2::aes(x= date, y= moyenne7), color = palette_OkabeIto["blue"], size =1, alpha=0.8, na.rm = TRUE) +
     ggplot2::facet_wrap(~type, ncol =1, scales ="free_y" )+
     theme_simon(font_size = 12) +
     ggplot2::theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1)) +  # rotate axis text 30 degrees

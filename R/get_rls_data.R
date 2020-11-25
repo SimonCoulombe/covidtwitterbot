@@ -83,7 +83,14 @@ get_historical_tableau_rls_new_from_github <- function(){
 #'
 #' @examples
 get_current_tableau_rls_new_from_inspq <- function(){
-  mycsv <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/tableau-rls-new.csv")
+  mycsv <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/tableau-rls-new.csv",
+                           col_types= readr::cols(
+                             No = readr::col_character(),
+                             RSS = readr::col_character() ,
+                             NoRLS = readr::col_character(),
+                             RLS= readr::col_character(),
+                             .default = readr::col_number()
+                           ))
   mydatetime <- lubridate::ymd_hms(Sys.time())
   current_tableau_rls_new <- create_date_report_from_datetimes(datetimes = mydatetime, csvs = list(mycsv))
   current_tableau_rls_new %>%
