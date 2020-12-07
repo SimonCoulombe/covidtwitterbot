@@ -106,7 +106,7 @@ get_raw_mtl_data <- function(){
 
     mtl_claude %>%
       mutate(source = "bouchecl") %>%
-      filter(!(date_report %in% unique(c(historical_municipal$date_report, current_municipal$date_report)))) %>%
+      filter(!(date_report %in% unique(c(historical_municipal$date_report)))) %>%
       select(arrondissement, date_report, cumulative_cases),
 
     historical_municipal %>%
