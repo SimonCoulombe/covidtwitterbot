@@ -14,6 +14,8 @@ palette_OkabeIto <- c(orange= "#E69F00", skyblue="#56B4E9", bluishgreen="#009E73
 palette_OkabeIto_black <- c(orange= "#E69F00", skyblue="#56B4E9", bluishgreen="#009E73", yellow="#F0E442", blue="#0072B2", vermillion="#D55E00", reddishpurple="#CC79A7", black = "#000000")
 
 
+#' mes4 couleurs de paliers d'alertes
+#' @export
 mes4couleurs <- setNames(
   c(palette_OkabeIto["bluishgreen"],
     palette_OkabeIto["yellow"],

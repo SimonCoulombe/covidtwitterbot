@@ -298,6 +298,7 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png
 
 
 library(rmapzen)
+library(sf)
 options(nextzen_API_key=Sys.getenv("nextzen_api_key"))
 mz_set_tile_host_nextzen(key = getOption("nextzen_API_key"))
 
@@ -325,7 +326,7 @@ water <- as_sf(vector_tiles$water)
 roads <- as_sf(vector_tiles$roads)
 
 g <- ggplot()+
-  geom_sf(data = water %>% filter(id != "6ca3a536c897eb73e8a5f5ec09dab040",  is.na(boundary), is.na(label_placement)) , fill = "#56B4E950", color = "#56B4E950", alpha =1) +
+  geom_sf(data = water , fill = "#56B4E950", color = "#56B4E950", alpha =1) +
   geom_sf(data = mtl_graph_data  , aes(fill=color_per_pop), color= "white")+
   scale_fill_manual(drop = TRUE,
                     limits = names(mes4couleurs), ## les limits  c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
