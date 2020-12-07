@@ -37,6 +37,19 @@ get_jeanpaulrsoucy_municipal <- function(){
   minutes = stringr::str_sub(liste_municipal,-6, -5)
   datetimes <- lubridate::ymd_hm(paste(years, months, days, hours, minutes))
 
+
+  ## get current csv from montreal and append to github files ----
+  current_csv <-  read_delim(
+    paste0("https://santemontreal.qc.ca/fileadmin/fichiers/Campagnes/coronavirus/situation-montreal/municipal.csv"),
+    delim = ";",
+    locale = locale(encoding = "Windows-1252"),
+    col_types = readr::cols(.default = readr::col_character())
+  )
+  current_datetime <- lubridate::ymd_hms(Sys.time())
+  csvs <- c(csvs, list(current_csv))
+  datetimes  <- c(datetimes, current_datetime)
+
+
   # drop duplicates
   keep <- rep(TRUE, length(csvs))
   for (i in seq(from=2, to = length(csvs))){
@@ -77,44 +90,6 @@ get_historical_municipal_from_github <- function(){
 }
 
 
-#' get_current_tableau_rls_new_from_inspq
-#'
-#' @return
-#'
-#' @examples
-#'
-#'
-#'
-get_current_municipal <- function(){
-  mycsv <-  read_delim(
-    paste0("https://santemontreal.qc.ca/fileadmin/fichiers/Campagnes/coronavirus/situation-montreal/municipal.csv"),
-    delim = ";",
-    locale = locale(encoding = "Windows-1252"),
-    col_types = readr::cols(.default = readr::col_character())
-  )
-  mydatetime <- lubridate::ymd_hms(Sys.time())
-  current_municipal <- create_date_report_from_datetimes(datetimes = mydatetime, csvs = list(mycsv))
-
-
-  current_municipal %>%
-    bind_rows() %>%   #(relent de la fonction create_date_report_from_datetimes qui retourne une liste..)
-    rename(arrondissement = "Arrondissement ou ville liée") %>%
-    mutate(
-      cumulative_cases = dplyr::coalesce( `Nombre de cas cumulatif, depuis le début de la pandémie`),
-      cumulative_deaths = dplyr::coalesce( `Nombre de décès cumulatif, depuis le début de la pandémie` )
-    ) %>%
-    select( arrondissement, date_report, cumulative_cases, cumulative_deaths) %>%
-    mutate_at(
-      vars(starts_with("cumulative_")),
-      ~ str_replace_all(., ",", ".") %>%
-        str_replace_all(., "\\*", "") %>%
-        str_replace_all(., "< 5", "0") %>%
-        str_replace_all(., "n.p.", "") %>%
-        as.numeric()
-    ) %>%
-    filter(!is.na(cumulative_cases))
-}
-
 
 
 #' get_raw_rls_data - combine RLS data from 3 sources to get the best possible historical data
@@ -126,7 +101,6 @@ get_current_municipal <- function(){
 get_raw_mtl_data <- function(){
 
   historical_municipal <- get_historical_municipal_from_github()
-  current_municipal <- get_current_municipal()
 
   all_rls_tables <- bind_rows(
 
@@ -136,11 +110,7 @@ get_raw_mtl_data <- function(){
       select(arrondissement, date_report, cumulative_cases),
 
     historical_municipal %>%
-      mutate(source= "github") %>%
-      filter(!date_report %in% unique(current_municipal$date_report)),
-
-    current_municipal %>%
-      mutate(source = "montreal")
+      mutate(source= "github")
   )
 }
 

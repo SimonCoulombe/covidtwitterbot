@@ -38,6 +38,21 @@ get_jeanpaulrsoucy_tableau_rls_new <- function(){
   minutes = stringr::str_sub(liste_tableau_rls_new,-6, -5)
   datetimes <- lubridate::ymd_hm(paste(years, months, days, hours, minutes))
 
+  # add current csv from inspq
+
+  current_csv <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/tableau-rls-new.csv",
+                           col_types= readr::cols(
+                             No = readr::col_character(),
+                             RSS = readr::col_character() ,
+                             NoRLS = readr::col_character(),
+                             RLS= readr::col_character(),
+                             .default = readr::col_number()
+                           ))
+  current_datetime <- lubridate::ymd_hms(Sys.time())
+
+
+  csvs <- c(csvs, list(current_csv))
+  datetimes  <- c(datetimes, current_datetime)
   # drop duplicates
   keep <- rep(TRUE, length(csvs))
   for (i in seq(from=2, to = length(csvs))){
@@ -76,40 +91,40 @@ get_historical_tableau_rls_new_from_github <- function(){
   tableau_rls_new
 }
 
-
-#' get_current_tableau_rls_new_from_inspq
 #'
-#' @return
+#' #' get_current_tableau_rls_new_from_inspq
+#' #'
+#' #' @return
+#' #'
+#' #' @examples
+#' get_current_tableau_rls_new_from_inspq <- function(){
+  # mycsv <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/tableau-rls-new.csv",
+  #                          col_types= readr::cols(
+  #                            No = readr::col_character(),
+  #                            RSS = readr::col_character() ,
+  #                            NoRLS = readr::col_character(),
+  #                            RLS= readr::col_character(),
+  #                            .default = readr::col_number()
+  #                          ))
+  # mydatetime <- lubridate::ymd_hms(Sys.time())
+#'   current_tableau_rls_new <- create_date_report_from_datetimes(datetimes = mydatetime, csvs = list(mycsv))
+#'   current_tableau_rls_new %>%
+#'     bind_rows() %>%   #(relent de la fonction create_date_report_from_datetimes qui retourne une liste..)
+#'     rename(cumulative_cases = Cas) %>%
+#'     filter(!is.na(NoRLS), RLS != "Total") %>%
+#'     mutate(
+#'       RSS = case_when(
+#'         RSS == "01 - Bas-Saint-Laurent" ~  "01 - Bas-St-Laurent",
+#'         RSS == "02 - Saguenay–Lac-Saint-Jean" ~ "02 - Saguenay – Lac-St-Jean",
+#'         RSS == "04 - Mauricie et Centre-du-Québec" ~ "04 - Mauricie-et-Centre-du-Québec",
+#'         TRUE ~ RSS
+#'       )
 #'
-#' @examples
-get_current_tableau_rls_new_from_inspq <- function(){
-  mycsv <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/tableau-rls-new.csv",
-                           col_types= readr::cols(
-                             No = readr::col_character(),
-                             RSS = readr::col_character() ,
-                             NoRLS = readr::col_character(),
-                             RLS= readr::col_character(),
-                             .default = readr::col_number()
-                           ))
-  mydatetime <- lubridate::ymd_hms(Sys.time())
-  current_tableau_rls_new <- create_date_report_from_datetimes(datetimes = mydatetime, csvs = list(mycsv))
-  current_tableau_rls_new %>%
-    bind_rows() %>%   #(relent de la fonction create_date_report_from_datetimes qui retourne une liste..)
-    rename(cumulative_cases = Cas) %>%
-    filter(!is.na(NoRLS), RLS != "Total") %>%
-    mutate(
-      RSS = case_when(
-        RSS == "01 - Bas-Saint-Laurent" ~  "01 - Bas-St-Laurent",
-        RSS == "02 - Saguenay–Lac-Saint-Jean" ~ "02 - Saguenay – Lac-St-Jean",
-        RSS == "04 - Mauricie et Centre-du-Québec" ~ "04 - Mauricie-et-Centre-du-Québec",
-        TRUE ~ RSS
-      )
-
-    ) %>%
-    select(RSS, RLS, cumulative_cases, date_report) %>%
-    filter(!is.na(cumulative_cases))
-
-}
+#'     ) %>%
+#'     select(RSS, RLS, cumulative_cases, date_report) %>%
+#'     filter(!is.na(cumulative_cases))
+#'
+#' }
 
 
 
@@ -122,7 +137,7 @@ get_current_tableau_rls_new_from_inspq <- function(){
 get_raw_rls_data <- function(){
 
   historical_tableau_rls_new <- get_historical_tableau_rls_new_from_github()
-  current_tableau_rls_new <- get_current_tableau_rls_new_from_inspq()
+  #current_tableau_rls_new <- get_current_tableau_rls_new_from_inspq()
 
   all_rls_tables <- bind_rows(
     rls_claude %>%
@@ -131,10 +146,10 @@ get_raw_rls_data <- function(){
     tableau_rls %>%
       mutate(source = "cronjob"),
     historical_tableau_rls_new %>%
-      mutate(source= "cronjob_new") %>%
-      filter(!date_report %in% unique(current_tableau_rls_new$date_report)),
-    current_tableau_rls_new %>%
-      mutate(source = "current")
+      mutate(source= "cronjob_new") #%>%
+      #filter(!date_report %in% unique(current_tableau_rls_new$date_report)),
+    #current_tableau_rls_new %>%
+      #mutate(source = "current")
   )
 }
 
