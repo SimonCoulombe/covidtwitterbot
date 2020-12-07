@@ -3,6 +3,12 @@ library(rtweet)
 library(covidtwitterbot)
 token <- rtweet::get_tokens()
 
+emoji_carte <-  intToUtf8(0x1F5FA)
+emoji_graph <- intToUtf8(0x1F4C8)
+emoji_malade <- intToUtf8(0x1F912)
+emoji_cercueil <- intToUtf8(0x26B0)
+emoji_hopital <- intToUtf8(0x1F3E5)
+emoji_eprouvette <- intToUtf8(0x1F9EA)
 Sys.setlocale("LC_TIME", "fr_CA.UTF8")
 
 avg_cas_quo_tot_n_last7_per_1M <- type_par_pop_anything_quebec(type = region, variable = cas_quo_tot_n  ) %>% filter(groupe == "Ensemble du Québec", date_report ==max(date_report)) %>% pull(avg_cas_quo_tot_n_last7_per_1M)
@@ -36,7 +42,7 @@ post_tweet(
                   "Hospit par million par région\n",
                   "Décès par million par région\n",
                   "Tests par million par région\n",
-                  "#polqc 1/4"),
+                  "#polqc 1/5"),
 
   media = c("~/git/adhoc_prive/covid19_PNG/quebec_cases_by_pop.png",
             "~/git/adhoc_prive/covid19_PNG/quebec_hospit_by_pop.png",
@@ -55,7 +61,7 @@ post_tweet(
   status = paste0(
     intToUtf8(0x1F4C8),  intToUtf8(0x1F5FA)," Cas par habitant par centre de service scolaire (CSS)\n",
     intToUtf8(0x1F4C8), "Cas par habitant par groupe d'âge\n",
-    "covid 2/4"),
+    "covid 2/5"),
   media = c("~/git/adhoc_prive/covid19_PNG/quebec_age.png",
             "~/git/adhoc_prive/covid19_PNG/carte_css_cases.png",
             "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png",
@@ -72,7 +78,7 @@ post_tweet(
 
 post_tweet(
   status = paste0(intToUtf8(0x1F4C8),  intToUtf8(0x1F5FA)," Cas par habitant par réseaux locaux de service (RLS)\n"
-                  , "covid 3/4"),
+                  , "covid 3/5"),
   media = c("~/git/adhoc_prive/covid19_PNG/carte_rls_cases.png",
             "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png",
             "~/git/adhoc_prive/covid19_PNG/carte_rls_cases_zoom_montreal.png"),
@@ -89,7 +95,7 @@ post_tweet(
                   intToUtf8(0x1F4C8), " Pourcentage de positivité (Ensemble du Québec)\n",
                   intToUtf8(0x1F4C8), " Pourcentage de positivité par région\n",
                   intToUtf8(0x1F4C8), " Pourcentage de positivité par âge\n",
-                  "4/4"),
+                  "4/5"),
   media = c("~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png",
             "~/git/adhoc_prive/covid19_PNG/quebec_positivite.png" ,
             "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.png",
@@ -102,5 +108,24 @@ post_tweet(
   retweet_id = NULL,
   auto_populate_reply_metadata = FALSE
 )
+
+
+
+post_tweet(
+  status = paste0(intToUtf8(0x1F4C8), " Cas par habitant par arrondissement de la ville de Montréal\n"
+                  , "covid 5/5"),
+  media = c(
+            "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png"
+            ),
+  token = NULL,
+  in_reply_to_status_id = get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% pull(status_id) %>% .[1],
+  destroy_id = NULL,
+  retweet_id = NULL,
+  auto_populate_reply_metadata = FALSE
+)
+
+
+
+
 
 

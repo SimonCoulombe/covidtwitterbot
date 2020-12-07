@@ -8,7 +8,7 @@
 #' @importFrom ggplot2 geom_tile scale_fill_gradientn geom_text
 #' @examples
 graph_quebec_cas_par_rls_heatmap <- function(rls_data = NULL){
-  if(is.null(rls_data)) rls <- get_rls_data()
+  if(is.null(rls_data)) rls_data <- get_rls_data()
 
   rls_cases <- prep_data(rls_data, shortname_rls, variable = cases)
   heatmap_cas(rls_cases, RLS_petit_nom, "RLS")

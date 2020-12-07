@@ -292,3 +292,11 @@ temp  %>%
 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png" )
 
+
+
+
+message("graph mtl")
+mtl_data <- get_mtl_data()
+
+graph_quebec_cas_par_mtl_heatmap(mtl_data = mtl_data)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png" , width = 16, height =22)

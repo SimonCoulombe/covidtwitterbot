@@ -11,13 +11,13 @@
 #' @examples
 cases_par_pop_age_quebec <- function(){
   #prep_data ajoute 7 colonnes :
-    #'  avg_XXX_last7
-    #'  total
-    #'  worst7
-    #'  last7
-    #'  ratio
-    #'  winning.
-    #'  group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas..)
+  #'  avg_XXX_last7
+  #'  total
+  #'  worst7
+  #'  last7
+  #'  ratio
+  #'  winning.
+  #'  group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas..)
   cases_pl_date_age <- prep_data(
     get_inspq_covid19_hist() %>%
       select(date_report= date, cumulative_cases = cas_totaux_cumul, cases = cas_totaux_quotidien, groupe, type) %>%
@@ -62,7 +62,7 @@ cases_par_pop_age_quebec <- function(){
 #'
 #' @examples type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_m  ) %>% ggplot(aes(x= date_report, y = avg_hos_quo_tot_m_last7_per_1M))+ geom_line() + facet_wrap(~groupe)
 type_par_pop_anything_quebec <- function(type, variable){
-    variable_column <- enquo(variable)   ## this has to be !!
+  variable_column <- enquo(variable)   ## this has to be !!
   variable_name <- quo_name(variable_column) ## its a string, dont !!
 
   type_column <- enquo(type)   ## this has to be !!
@@ -77,12 +77,12 @@ type_par_pop_anything_quebec <- function(type, variable){
   #'  group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas.... TODO: on ditche tu ça?
   data_avec_moy7jours <-
     get_inspq_covid19_hist() %>%
-      select(date_report= date, {{variable}}, groupe, type,pop) %>%
-      filter(type ==  type_name ,!is.na(date_report), !is.na(pop), !is.na({{variable}})) %>%
+    select(date_report= date, {{variable}}, groupe, type,pop) %>%
+    filter(type ==  type_name ,!is.na(date_report), !is.na(pop), !is.na({{variable}})) %>%
     prep_data(data = .,
               group = groupe,
               variable = {{variable}}
-              ) %>%
+    ) %>%
     mutate(groupe = factor(groupe),
            rang = as.integer(groupe))
 
@@ -216,12 +216,15 @@ heatmap_cas <- function(prepped_data, variable, variable_title){
 
 
   zz <- cases2 %>% mutate(week = lubridate::isoweek(date_report)) %>%
-    group_by({{ variable }}, week) %>%
-    mutate(pouet = paste0(str_pad(month(min(date_report)), 2, pad ="0"), "-", str_pad(day(min(date_report)), 2, pad = "0"),
-                          "\n"  ,
-                          str_pad(month(max(date_report)), 2, pad ="0"), "-", str_pad(day(max(date_report)), 2, pad = "0")
-    )
+    group_by(week) %>%
+    mutate(
+      pouet = paste0(str_pad(month(min(date_report)), 2, pad ="0"), "-", str_pad(day(min(date_report)), 2, pad = "0"),
+                     "\n"  ,
+                     str_pad(month(max(date_report)), 2, pad ="0"), "-", str_pad(day(max(date_report)), 2, pad = "0")
+      )
     )%>%
+    ungroup() %>%
+    group_by({{variable}}, week) %>%
     mutate(cases_per_1M_week = mean(cases *  1000000 / pop, na.rm = TRUE)) %>%
     filter(date_report == max(date_report)) %>%   # dernière journée de la semaine
     ungroup()
@@ -248,7 +251,7 @@ heatmap_cas <- function(prepped_data, variable, variable_title){
       caption = "(la dernière semaine peut compter moins de 7 jours) \n
     gossé par @coulsim",
       x = "Semaine ",
-      y= "Groupe d'âge"
+      y= variable_title
     ) +
     theme(
       axis.line.y = element_blank(), # enelever ligne axes y

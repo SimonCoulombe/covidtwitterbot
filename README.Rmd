@@ -171,6 +171,17 @@ css_last_week %>% tail(20) %>% sf::st_drop_geometry() %>% knitr::kable()
 
 
 
+#### Montreal data    
+
+
+```{r}
+mtl_data <-suppressMessages( get_mtl_data() )
+
+mtl_data %>% tail(20)   %>%  knitr::kable()
+```
+
+
+
 
 ### Figures and maps
 
@@ -220,7 +231,10 @@ carte_css(css_last_week)
 ```{r,fig.height = 14, fig.width = 14}
 graph_css_bars(css_last_week)
 ```
-  
+
+```{r,fig.height = 22, fig.width = 16}
+graph_quebec_cas_par_mtl_heatmap(mtl_data)
+```  
   
 ### Shapefiles  
 
