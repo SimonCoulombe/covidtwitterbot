@@ -295,6 +295,12 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png
 
 
 # mtl ----
+
+
+library(rmapzen)
+options(nextzen_API_key=Sys.getenv("nextzen_api_key"))
+mz_set_tile_host_nextzen(key = getOption("nextzen_API_key"))
+
 message("graph mtl")
 raw_mtl_data <- get_raw_mtl_data()
 mtl_data <- fill_missing_dates_and_create_daily_counts_for_mtl_data(raw_mtl_data)
@@ -305,8 +311,22 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png" , width = 16
 # carte mtl derniere journée
 mtl_graph_data <- shp_mtl %>% inner_join(mtl_data %>% filter(date_report == max(date_report)))
 
+
+get_vector_tiles <- function(bbox){
+  mz_box=mz_rect(bbox$xmin,bbox$ymin,bbox$xmax,bbox$ymax)
+  mz_vector_tiles(mz_box)
+}
+
+
+bbox <- st_bbox(mtl_graph_data)
+bbox_quebec_lambert <-st_bbox(st_transform(mtl_graph_data, crs = quebec_lambert) )
+vector_tiles <- get_vector_tiles(bbox)
+water <- as_sf(vector_tiles$water)
+roads <- as_sf(vector_tiles$roads)
+
 g <- ggplot()+
-  geom_sf(data = mtl_graph_data  , aes(fill=color_per_pop))+
+  geom_sf(data = water %>% filter(id != "6ca3a536c897eb73e8a5f5ec09dab040",  is.na(boundary), is.na(label_placement)) , fill = "#56B4E950", color = "#56B4E950", alpha =1) +
+  geom_sf(data = mtl_graph_data  , aes(fill=color_per_pop), color= "white")+
   scale_fill_manual(drop = TRUE,
                     limits = names(mes4couleurs), ## les limits  c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
                     values = alpha(mes4couleurs, 1.0)
@@ -325,7 +345,12 @@ g <- ggplot()+
         legend.text = element_text(size=12)
   ) +
 
-  theme(legend.position= c(0.05,0.7))  +
-  coord_sf(crs = quebec_lambert)
+  theme(legend.position= c(0.9,0.4))  +
+  geom_sf(data = roads %>% filter(kind == "highway"), colour = "grey10") +
+
+  coord_sf(crs = quebec_lambert,
+           xlim = c(bbox_quebec_lambert["xmin"], bbox_quebec_lambert["xmax"]),
+           ylim = c(bbox_quebec_lambert["ymin"], bbox_quebec_lambert["ymax"])
+  )
 g
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/carte_mtl.png" , width = 12, height =10)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_rls_data.R
 \name{get_raw_rls_data}
 \alias{get_raw_rls_data}
-\title{}
+\title{get_raw_rls_data - combine RLS data from 3 sources to get the best possible historical data}
 \usage{
 get_raw_rls_data()
 }
@@ -10,10 +10,5 @@ get_raw_rls_data()
 
 }
 \description{
-) %>%
-    select(RSS, RLS, cumulative_cases, date_report) %>%
-    filter(!is.na(cumulative_cases))
-}
-\details{
-
+get_raw_rls_data - combine RLS data from 3 sources to get the best possible historical data
 }

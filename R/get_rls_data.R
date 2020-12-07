@@ -91,42 +91,6 @@ get_historical_tableau_rls_new_from_github <- function(){
   tableau_rls_new
 }
 
-#'
-#' #' get_current_tableau_rls_new_from_inspq
-#' #'
-#' #' @return
-#' #'
-#' #' @examples
-#' get_current_tableau_rls_new_from_inspq <- function(){
-  # mycsv <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/tableau-rls-new.csv",
-  #                          col_types= readr::cols(
-  #                            No = readr::col_character(),
-  #                            RSS = readr::col_character() ,
-  #                            NoRLS = readr::col_character(),
-  #                            RLS= readr::col_character(),
-  #                            .default = readr::col_number()
-  #                          ))
-  # mydatetime <- lubridate::ymd_hms(Sys.time())
-#'   current_tableau_rls_new <- create_date_report_from_datetimes(datetimes = mydatetime, csvs = list(mycsv))
-#'   current_tableau_rls_new %>%
-#'     bind_rows() %>%   #(relent de la fonction create_date_report_from_datetimes qui retourne une liste..)
-#'     rename(cumulative_cases = Cas) %>%
-#'     filter(!is.na(NoRLS), RLS != "Total") %>%
-#'     mutate(
-#'       RSS = case_when(
-#'         RSS == "01 - Bas-Saint-Laurent" ~  "01 - Bas-St-Laurent",
-#'         RSS == "02 - Saguenay–Lac-Saint-Jean" ~ "02 - Saguenay – Lac-St-Jean",
-#'         RSS == "04 - Mauricie et Centre-du-Québec" ~ "04 - Mauricie-et-Centre-du-Québec",
-#'         TRUE ~ RSS
-#'       )
-#'
-#'     ) %>%
-#'     select(RSS, RLS, cumulative_cases, date_report) %>%
-#'     filter(!is.na(cumulative_cases))
-#'
-#' }
-
-
 
 #' get_raw_rls_data - combine RLS data from 3 sources to get the best possible historical data
 #'
