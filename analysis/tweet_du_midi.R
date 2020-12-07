@@ -115,7 +115,8 @@ post_tweet(
   status = paste0(intToUtf8(0x1F4C8), " Cas par habitant par arrondissement de la ville de Montréal\n"
                   , "covid 5/5"),
   media = c(
-            "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png"
+            "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png",
+            "~/git/adhoc_prive/covid19_PNG/carte_mtl.png"
             ),
   token = NULL,
   in_reply_to_status_id = get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% pull(status_id) %>% .[1],

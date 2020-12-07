@@ -328,30 +328,4 @@ g <- ggplot()+
   theme(legend.position= c(0.05,0.7))  +
   coord_sf(crs = quebec_lambert)
 g
-
-
-# pourquoi c'est si différent? on dirait que c'est parce que montréal a oublié de modifier ses données..
-
-rls_data_total <- rls_data %>% filter(stringr::str_sub(RLS,1,2)== "06") %>% group_by(date_report) %>% summarise(cumulative_cases = sum(cumulative_cases), cases_last_7_days = sum(cases_last_7_days))
-mtl_data_total <- mtl_data %>% filter((arrondissement== "Total à Montréal") ) %>% select(date_report, cumulative_cases, cases_last_7_days )
-#
-# > rls_data_total %>% tail
-# # A tibble: 6 x 3
-# date_report cumulative_cases cases_last_7_days
-# <date>                 <dbl>             <dbl>
-#   1 2020-12-02             50615              2565
-# 2 2020-12-03             50982              2617
-# 3 2020-12-04             51429              2741
-# 4 2020-12-05             52047              2950
-# 5 2020-12-06             52551              3031
-# 6 2020-12-07             52551              2633
-# > mtl_data_total %>% tail
-# # A tibble: 6 x 3
-# date_report cumulative_cases cases_last_7_days
-# <date>                 <dbl>             <dbl>
-#   1 2020-12-02             51848              2600
-# 2 2020-12-03             52221              2652
-# 3 2020-12-04             52674              2784
-# 4 2020-12-05             52674              2362
-# 5 2020-12-06             52674              1940
-# 6 2020-12-07             52674              1518
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/carte_mtl.png" , width = 12, height =10)
