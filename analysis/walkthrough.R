@@ -6,7 +6,7 @@ library(rmapzen)
 library(sf)
 options(nextzen_API_key=Sys.getenv("nextzen_api_key"))
 mz_set_tile_host_nextzen(key = getOption("nextzen_API_key"))
-library(gganimate)
+
 library(patchwork)
 Sys.setlocale("LC_TIME", "fr_CA.UTF8")
 ## demo some data functions, not necessary here
@@ -333,9 +333,9 @@ g <- ggplot()+
   geom_sf(data = mtl_graph_data  , aes(fill=cases_per_1M), color= "white")+
   #geom_sf(data = mtl_graph_data  , aes(fill=pmin(cases_per_1M, 1000)), color= "white")+
 
-    scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
-                         values = c(0, 20, 60, 100, pmax(500,max(mtl_graph_data$cases_per_1M))) / pmax(500,max(mtl_graph_data$cases_per_1M)), limits = c(0,pmax(500,max(mtl_graph_data$cases_per_1M))),
-                         name = "Cas par million") +
+  scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                       values = c(0, 20, 60, 100, pmax(500,max(mtl_graph_data$cases_per_1M))) / pmax(500,max(mtl_graph_data$cases_per_1M)), limits = c(0,pmax(500,max(mtl_graph_data$cases_per_1M))),
+                       name = "Cas par million") +
   #geom_sf(data = mtl_graph_data  , aes(fill=color_per_pop), color= "white")+
   #scale_fill_viridis_c() +
   #   scale_fill_manual(drop = TRUE,
@@ -345,19 +345,19 @@ g <- ggplot()+
   # #
   #   scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
   #                        values = c(0, 20, 60, 100, max(mtl_graph_data$cases_per_1M)) / max(mtl_graph_data$cases_per_1M), limits = c(0,max(mtl_graph_data$cases_per_1M)),
-#                        name = "Cas par million") +
-#
+  #                        name = "Cas par million") +
+  #
 # scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
 #                      values = c(0, 20, 60, 100, 1000) / 1000, limits = c(0,1000),
 #                      name = "Cas par million") +
 # scale_fill_gradientn(colours = c("white", palette_OkabeIto["vermillion"]),
 #                      values = c(0,1), limits = c(0,1000),
 #                      name = "Cas par million") +
-  labs(title = paste0("Nouveaux cas de covid par million d'habitants par arrondissement de Montréal"),
-       fill = "Cas par 1M habitants",
-       subtitle = paste0("en date du " , format(max(mtl_graph_data$date_report), format=format_francais),". (moyenne mobile sur 7 jours)"),
-       caption = paste0("gossé par @coulsim")
-  )+
+labs(title = paste0("Nouveaux cas de covid par million d'habitants par arrondissement de Montréal"),
+     fill = "Cas par 1M habitants",
+     subtitle = paste0("en date du " , format(max(mtl_graph_data$date_report), format=format_francais),". (moyenne mobile sur 7 jours)"),
+     caption = paste0("gossé par @coulsim")
+)+
   cowplot::theme_map()+
   theme(text = element_text(size=12), # tous les textes... sauf geom_text
         strip.text.x = element_text(size = 12, angle = 0, hjust = 0), # change la  taille et angle du texte facet
@@ -378,28 +378,29 @@ g
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/carte_mtl.png" , width = 15, height =10)
 # version animée? ----
 
+if(FALSE){
+  library(gganimate)
+  mtl_animated_graph <- mtl_data %>% inner_join(shp_mtl) %>% st_as_sf()# %>% filter(date_report >= lubridate::ymd("202001"))
 
-mtl_animated_graph <- mtl_data %>% inner_join(shp_mtl) %>% st_as_sf()# %>% filter(date_report >= lubridate::ymd("202001"))
+  bbox <- st_bbox(mtl_animated_graph)
+  bbox_quebec_lambert <-st_bbox(st_transform(mtl_animated_graph, crs = quebec_lambert) )
+  vector_tiles <- get_vector_tiles(bbox)
+  water <- as_sf(vector_tiles$water)
+  roads <- as_sf(vector_tiles$roads)
 
-bbox <- st_bbox(mtl_animated_graph)
-bbox_quebec_lambert <-st_bbox(st_transform(mtl_animated_graph, crs = quebec_lambert) )
-vector_tiles <- get_vector_tiles(bbox)
-water <- as_sf(vector_tiles$water)
-roads <- as_sf(vector_tiles$roads)
+  plot1 <- ggplot()+
+    geom_sf(data = water , fill = "#56B4E950", color = "#56B4E950", alpha =1) +
+    geom_sf(data = mtl_graph_data  , aes(fill=cases_per_1M), color= "white")+
 
-plot1 <- ggplot()+
-  geom_sf(data = water , fill = "#56B4E950", color = "#56B4E950", alpha =1) +
-  geom_sf(data = mtl_graph_data  , aes(fill=cases_per_1M), color= "white")+
-
-  scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
-                       values = c(0, 20, 60, 100, pmax(500, max(mtl_graph_data$cases_per_1M))) / pmax(500,max(mtl_graph_data$cases_per_1M)), limits = c(0,pmax(500,max(mtl_graph_data$cases_per_1M))),
-                       name = "Cas par million") +
+    scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                         values = c(0, 20, 60, 100, pmax(500, max(mtl_graph_data$cases_per_1M))) / pmax(500,max(mtl_graph_data$cases_per_1M)), limits = c(0,pmax(500,max(mtl_graph_data$cases_per_1M))),
+                         name = "Cas par million") +
 
 
-  labs(title = paste0("Nouveaux cas de covid par million d'habitants par arrondissement de Montréal"),
-       fill = "Cas par 1M habitants",
-       subtitle =
-         "{paste('au  ',
+    labs(title = paste0("Nouveaux cas de covid par million d'habitants par arrondissement de Montréal"),
+         fill = "Cas par 1M habitants",
+         subtitle =
+           "{paste('au  ',
                lubridate::month(frame_time, label = TRUE, abbr = FALSE),
                lubridate::day(frame_time),
                ',',
@@ -407,33 +408,34 @@ plot1 <- ggplot()+
                )
            }",
 
-       caption = paste0("gossé par @coulsim")
-  )+
-  cowplot::theme_map()+
-  theme(text = element_text(size=12), # tous les textes... sauf geom_text
-        strip.text.x = element_text(size = 12, angle = 0, hjust = 0), # change la  taille et angle du texte facet
-        plot.title = element_text(size=14),
-        plot.subtitle = element_text(size=12),
-        plot.caption = element_text(size=12),
-        legend.text = element_text(size=12)
-  ) +
+         caption = paste0("gossé par @coulsim")
+    )+
+    cowplot::theme_map()+
+    theme(text = element_text(size=12), # tous les textes... sauf geom_text
+          strip.text.x = element_text(size = 12, angle = 0, hjust = 0), # change la  taille et angle du texte facet
+          plot.title = element_text(size=14),
+          plot.subtitle = element_text(size=12),
+          plot.caption = element_text(size=12),
+          legend.text = element_text(size=12)
+    ) +
 
-  theme(legend.position= c(0.9,0.4))  +
-  geom_sf(data = roads %>% filter(kind == "highway"), colour = "grey10") +
+    theme(legend.position= c(0.9,0.4))  +
+    geom_sf(data = roads %>% filter(kind == "highway"), colour = "grey10") +
 
-  coord_sf(crs = quebec_lambert,
-           xlim = c(bbox_quebec_lambert["xmin"], bbox_quebec_lambert["xmax"]),
-           ylim = c(bbox_quebec_lambert["ymin"], bbox_quebec_lambert["ymax"])
-  ) +
-  transition_time(date_report) +
-  ease_aes('linear')
-#plot1
+    coord_sf(crs = quebec_lambert,
+             xlim = c(bbox_quebec_lambert["xmin"], bbox_quebec_lambert["xmax"]),
+             ylim = c(bbox_quebec_lambert["ymin"], bbox_quebec_lambert["ymax"])
+    ) +
+    transition_time(date_report) +
+    ease_aes('linear')
+  #plot1
 
-my_end_pause = 6
-my_frames <- 1* (as.numeric(max(mtl_animated_graph$date_report) - min(mtl_animated_graph$date_report)) + 1) + my_end_pause
-my_fps = 3
+  my_end_pause = 6
+  my_frames <- 1* (as.numeric(max(mtl_animated_graph$date_report) - min(mtl_animated_graph$date_report)) + 1) + my_end_pause
+  my_fps = 3
 
-animated_gif1 <- animate(plot1, nframes = my_frames, fps = my_fps, end_pause = my_end_pause, width = 775, height = 650)
-anim_save("mtl.gif", animated_gif1)
+  animated_gif1 <- animate(plot1, nframes = my_frames, fps = my_fps, end_pause = my_end_pause, width = 775, height = 650)
+  anim_save("mtl.gif", animated_gif1)
 
 
+}
