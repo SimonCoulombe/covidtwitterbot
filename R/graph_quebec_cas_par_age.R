@@ -236,9 +236,9 @@ heatmap_cas <- function(prepped_data, variable, variable_title){
 
   mygraph <- zz %>%
     ggplot(aes(x= as.factor(pouet), y = {{variable}}, )) +
-    geom_tile(aes(fill = pmin(cases_per_1M_week, 200)), color = "white", size = 1 )+
+    geom_tile(aes(fill = pmin(cases_per_1M_week, 500)), color = "white", size = 1 )+
     scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
-                         values = c(0, 20, 60, 100, 200) / 200, limits = c(0,200),
+                         values = c(0, 20, 60, 100, 500) / 500, limits = c(0,500),
                          name = "Cas par million") +
     geom_text(aes(label= round(cases_per_1M_week)), color = "white", size =3) +
 

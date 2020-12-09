@@ -29,3 +29,12 @@ mes4couleurs <- setNames(
   )
 )
 
+
+#' bleu eau
+#' @export
+bleu_eau <- "#56B4E950"
+
+
+#' brun terre
+#' @export
+brun_terre <- "#E69F00B0"

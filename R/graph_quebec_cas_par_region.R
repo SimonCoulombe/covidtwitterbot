@@ -113,7 +113,7 @@ mesregions <- purrr::pmap(
          FALSE, FALSE, FALSE, FALSE,FALSE,
          FALSE, FALSE, FALSE, FALSE
        ),
-       bigaxis_value = 500, smallaxis_value = 500
+       bigaxis_value = 700, smallaxis_value = 700
   ),
   make_plot)
 
@@ -128,7 +128,8 @@ combined <- c(mesregions) %>% # , list(p1, p2 )
     (ici = meilleur car directement de INSPQ avec journées précédentes révisées) par @coulsim"
   )&
   theme(legend.position = "bottom") &# a single shared legend for all plots (+ guides = "collect")
-  theme(plot.margin =  unit(c(0, 0, 0, 0), "cm"))
+  theme(plot.margin =  unit(c(0, 0, 0, 0), "cm")) +
+  theme(legend.key.width = unit(4, "line"))
 
 #Sys.setlocale("LC_TIME", "mylocale")
 

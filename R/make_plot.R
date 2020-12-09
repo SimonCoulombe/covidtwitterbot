@@ -17,7 +17,7 @@
 #' @importFrom ggplot2 element_rect scale_colour_manual expand_limits unit
 #' @examples
 make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label, bottom_axis_label, bottom_axis_title,bigaxis,
-                      bigaxis_value = 250, smallaxis_value = 200) {
+                      bigaxis_value = 250, smallaxis_value = 200, type = "maximum500") {
 
   format_francais <- "%d %B %Y"
   #left_labs <- if (right_axis_label) labs(y = NULL)
@@ -34,6 +34,7 @@ make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label,
   myyaxis <- if(bigaxis){coord_cartesian(ylim=c(0, bigaxis_value))} else {coord_cartesian(ylim=c(0, smallaxis_value))}
   mybackground <- if(bigaxis){theme(panel.background = element_rect(fill = "#e8f4f8", colour = "#e8f4f8",size = 0.5, linetype = "solid"))} else {}
 
+  d <- d %>% filter(!is.na(cases_per_1M))
   data <- d
 
   mindate <- min(data$date_report)
@@ -83,14 +84,34 @@ make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label,
 
   #ggplot(d, aes(x = date_report, y = avg_cases_last7)) +
   ggplot(d, aes(x = date_report, y = cases_per_1M)) +
-    geom_line(aes(color = color_per_pop), size = 1, na.rm = TRUE) +
+    {
+      if (type == "paliers"){
+    geom_line(aes(color = color_per_pop), size = 1, na.rm = TRUE)
+      }
+    } +
 
     #    scale_y_continuous(breaks = scales::pretty_breaks(n =5),
     #sec.axis = sec_axis(trans = ~ . / pop * 1e6, name = right_name)) + #cas par million
     #sec.axis = sec_axis(trans = ~ . /1e6 * pop, name = right_name)) + ## cas
+    {
+      if (type == "paliers"){
     scale_colour_manual(drop = TRUE,
                         limits = names(mes4couleurs), ## les limits (+myColors?) c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
-                        values = mes4couleurs)+
+                        values = mes4couleurs)
+      }
+    } +
+    {
+      if (type == "maximum500"){
+        geom_line(aes(color = last_cases_per_1M), size = 1, na.rm = TRUE)
+      }
+    } +
+    {
+      if(type == "maximum500"){
+        scale_color_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                             values = c(0, 20, 60, 100, pmax(500,max(d$last_cases_per_1M))) / pmax(500,max(d$last_cases_per_1M)), limits = c(0,pmax(500,max(d$last_cases_per_1M))),
+                             name = "Cas par million")
+      }
+    } +
     #facet_wrap(~ health_region,  scales = "free") +
     ggrepel::geom_text_repel(
       data = last_value_label_data,

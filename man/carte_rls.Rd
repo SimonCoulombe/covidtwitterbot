@@ -4,7 +4,7 @@
 \alias{carte_rls}
 \title{carte_rls}
 \usage{
-carte_rls(rls_data = NULL)
+carte_rls(rls_data = NULL, type = "maximum500")
 }
 \value{
 

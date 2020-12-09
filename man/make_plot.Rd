@@ -14,7 +14,8 @@ make_plot(
   bottom_axis_title,
   bigaxis,
   bigaxis_value = 250,
-  smallaxis_value = 200
+  smallaxis_value = 200,
+  type = "maximum500"
 )
 }
 \arguments{
