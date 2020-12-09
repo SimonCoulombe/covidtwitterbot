@@ -70,6 +70,7 @@ g <- ggplot(data = rls_last_week)+
                              name = "Cas par million")
       }
     }+
+
     {
       if (type == "maximum500"){
         geom_sf(aes(fill=cases_per_1M), color = "white")
@@ -82,6 +83,18 @@ g <- ggplot(data = rls_last_week)+
                              name = "Cas par million")
       }
     }+
+  {
+    if (type == "maximum500rouge"){
+      geom_sf(aes(fill=cases_per_1M), color = "grey50")
+    }
+  } +
+  {
+    if(type == "maximum500rouge"){
+      scale_fill_gradientn(colours = c("white", palette_OkabeIto["vermillion"]),
+                           values = c(0,1), limits = c(0,pmax(500, max(rls_last_week$cases_per_1M))),
+                           name = "Cas par million")
+    }
+  }+
   labs(title = paste0("Nouveaux cas de covid par million d'habitants par réseau local de service"),
        fill = "Cas par 1M habitants",
        subtitle = paste0("en date du " , format(max(rls_last_week$date_report), format=format_francais),". (moyenne mobile sur 7 jours)"),
@@ -156,6 +169,18 @@ g <- ggplot(data = rls_last_week)+
                              name = "Cas par million")
       }
     }+
+      {
+        if (type == "maximum500rouge"){
+          geom_sf(aes(fill=cases_per_1M), color = "grey50")
+        }
+      } +
+      {
+        if(type == "maximum500rouge"){
+          scale_fill_gradientn(colours = c("white", palette_OkabeIto["vermillion"]),
+                               values = c(0,1), limits = c(0,pmax(500, max(rls_last_week$cases_per_1M))),
+                               name = "Cas par million")
+        }
+      }+
     cowplot::theme_map()+
     theme(text = element_text(size=12), # tous les textes... sauf geom_text
           strip.text.x = element_text(size = 12, angle = 0, hjust = 0), # change la  taille et angle du texte facet
@@ -208,6 +233,18 @@ g <- ggplot(data = rls_last_week)+
         if(type == "maximum500"){
           scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
                                values = c(0, 20, 60, 100, pmax(500,max(rls_last_week$cases_per_1M))) / pmax(500,max(rls_last_week$cases_per_1M)), limits = c(0,pmax(500,max(rls_last_week$cases_per_1M))),
+                               name = "Cas par million")
+        }
+      }+
+      {
+        if (type == "maximum500rouge"){
+          geom_sf(aes(fill=cases_per_1M), color = "grey50")
+        }
+      } +
+      {
+        if(type == "maximum500rouge"){
+          scale_fill_gradientn(colours = c("white", palette_OkabeIto["vermillion"]),
+                               values = c(0,1), limits = c(0,pmax(500, max(rls_last_week$cases_per_1M))),
                                name = "Cas par million")
         }
       }+
