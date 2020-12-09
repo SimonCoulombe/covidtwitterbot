@@ -19,6 +19,10 @@ graph_deces_hospit_tests <- function(){
     dplyr::bind_rows(get_inspq_covid19_hist() %>% dplyr::filter(!is.na(date), groupe == "Ensemble du Québec") %>%
                        dplyr::select(date, nombre = deces_totaux_quotidien) %>%
                        dplyr::mutate(type = "deces")) %>%
+    dplyr::bind_rows(get_inspq_covid19_hist() %>% dplyr::filter(!is.na(date), groupe == "Ensemble du Québec") %>%
+                       dplyr::select(date, nombre = cas_quo_tot_n ) %>%
+                       dplyr::mutate(type = "cas")) %>%
+
     dplyr::group_by(type) %>%
     dplyr::arrange(date) %>%
     dplyr::mutate(moyenne7 = (nombre+ dplyr::lag(nombre,1)+ dplyr::lag(nombre,2)+ dplyr::lag(nombre,3)+ dplyr::lead(nombre,1)+ dplyr::lead(nombre,2)+ dplyr::lead(nombre,3))/7) %>%
@@ -32,12 +36,22 @@ graph_deces_hospit_tests <- function(){
     theme_simon(font_size = 12) +
     ggplot2::theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 1)) +  # rotate axis text 30 degrees
     ggplot2::labs(
-      title = "Décès quotidiens, hospitalisations, soins intensifs, tests",
+      title = "Cas, Décès, hospitalisations, soins intensifs, tests",
       x = "date",
       y = "Nombre") +
     xlim(lubridate::ymd("20200315"), NA)+
     scale_y_continuous(expand = c(0,0))
 
 
-  p1
+  p1 +
+    geom_rect(
+      data = rr,
+      fill = palette_OkabeIto["vermillion"],
+      alpha = 0.01,
+      xmin = max(rr$date)-3,
+      xmax = max(rr$date),
+      ymin = -Inf,
+      ymax = Inf
+    )+
+    labs(caption = "gossé par @coulsim")
 }

@@ -33,6 +33,7 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png" , width = 14
 # créer la carte des cas par RLS de la semaine passée
 message("graph rls")
 rls_data <- get_rls_data()
+readr::write_csv(rls_data, "~/git/adhoc_prive/covid19_PNG/rls_data.csv" )
 
 graph_quebec_cas_par_rls_heatmap(rls_data = rls_data)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png" , width = 16, height =22)
@@ -439,3 +440,36 @@ if(FALSE){
 
 
 }
+
+## leaflet des caps par million ----
+library(mapview)
+
+library(RColorBrewer)
+rls_last_week <- shp_rls %>% left_join(rls_data %>% filter(date_report == max(date_report))) %>%
+  filter(!is.na(cases_per_1M))
+mymap <- mapview::mapview(rls_last_week , zcol="cases_per_1M",
+                 layer.name= paste0("Nombre moyen quotidien de cas de covid19 <br>par million d'habitant <br> pour la semaine se terminant le ", max(rls_last_week$date_report, na.rm = TRUE)),
+                 col.regions = brewer.pal(3, "YlOrRd"),
+                 popup = leafpop::popupTable(rls_last_week,
+                                             zcol = c("RLS_nom","cumulative_cases", "cases", "cases_per_1M", "Population" ))#,
+                 #label = makeLabels(rls_last_week,
+                  #                  zcol = c("RLS_nom","cumulative_cases", "cases", "cases_per_1M", "Population" ))
+)
+
+
+mapview::mapshot(
+  mymap,
+  url = "~/git/adhoc_prive/covid19_PNG/leaflet_cas_rls.html",
+  vwidth = 1080, vheight = 1080,
+  selfcontained = TRUE
+)
+
+
+
+# mymap@map %>%
+#   addCircleMarkers(data=blog_logements_solo_pour_cartez ,
+#                    radius = ~20* sqrt(pieds_a_terre)/ sqrt(max(pieds_a_terre)), popup = ~ paste0(pieds_a_terre),
+#                    color = "red", fillColor = "red", fillOpacity = 1, opacity=1)
+
+
+
