@@ -5,7 +5,7 @@
 #' @importFrom dplyr filter select mutate bind_rows coalesce group_by ungroup arrange lead lag case_when summarise
 #' @importFrom tidyr gather spread drop_na
 #' @importFrom ggplot2 '%+replace%'
-#' @importFrom ggplot2 aes theme margin element_text element_line element_blank xlim ylim scale_y_continuous scale_x_continuous ggplot aes geom_col geom_line facet_wrap facet_grid labs xlim ylim scale_x_discrete
+#' @importFrom ggplot2 aes theme margin element_text element_line element_blank xlim ylim scale_y_continuous scale_x_continuous ggplot aes geom_col geom_line facet_wrap facet_grid labs xlim ylim scale_x_discrete geom_rect
 #' @importFrom readr read_csv
 #' @importFrom tibble tribble
 #'
@@ -26,7 +26,19 @@ graph_deces_hospit_tests <- function(){
     dplyr::group_by(type) %>%
     dplyr::arrange(date) %>%
     dplyr::mutate(moyenne7 = (nombre+ dplyr::lag(nombre,1)+ dplyr::lag(nombre,2)+ dplyr::lag(nombre,3)+ dplyr::lead(nombre,1)+ dplyr::lead(nombre,2)+ dplyr::lead(nombre,3))/7) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    mutate(
+      type = factor(
+        case_when(
+        type == "cas"~ "Nouveaux cas",
+        type == "deces" ~ "Décès",
+        type == "hospitalisations" ~ "Hospitalisations hors soins intensifs",
+        type == "soins_intensifs" ~ "Hospitalisations aux soins intensifs",
+        type == "volumetrie" ~ "Tests"
+      ),
+      levels = c("Nouveaux cas", "Décès", "Hospitalisations hors soins intensifs", "Hospitalisations aux soins intensifs", "Tests")
+    )
+    )
 
   p1 <-
     ggplot2::ggplot() +
