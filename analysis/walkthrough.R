@@ -468,6 +468,8 @@ if(FALSE){
 }
 
 ## leaflet des caps par million ----
+
+if (FALSE){
 library(mapview)
 
 library(RColorBrewer)
@@ -489,13 +491,6 @@ mapview::mapshot(
   vwidth = 1080, vheight = 1080,
   selfcontained = TRUE
 )
-
-
-
-# mymap@map %>%
-#   addCircleMarkers(data=blog_logements_solo_pour_cartez ,
-#                    radius = ~20* sqrt(pieds_a_terre)/ sqrt(max(pieds_a_terre)), popup = ~ paste0(pieds_a_terre),
-#                    color = "red", fillColor = "red", fillOpacity = 1, opacity=1)
-
+}
 
 
