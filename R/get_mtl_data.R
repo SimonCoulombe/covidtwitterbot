@@ -10,10 +10,10 @@
 #' @examples
 get_jeanpaulrsoucy_municipal <- function(){
   #https://stackoverflow.com/questions/25485216/how-to-get-list-files-from-a-github-repository-folder-using-r
-  req <- GET("https://api.github.com/repos/jeanpaulrsoucy/covid-19-canada-gov-data/git/trees/master?recursive=1")
+  req <- GET("https://api.github.com/repos/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/git/trees/master?recursive=1")
   stop_for_status(req)
   filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
-  liste_municipal <- grep("qc/montreal-cases-by-area/municipal", filelist, value = TRUE, fixed = TRUE)
+  liste_municipal <- grep("montreal-cases-by-area/municipal", filelist, value = TRUE, fixed = TRUE)
   plan("multisession", workers = availableCores()-1)
 
 
@@ -23,7 +23,7 @@ get_jeanpaulrsoucy_municipal <- function(){
       furrr::future_map(
         liste_municipal,
         ~  read_delim(
-          paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data/master/", .x),
+          paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/master/", .x),
           delim = ";",
           locale = locale(encoding = "Windows-1252"),
           col_types = readr::cols(.default = readr::col_character())

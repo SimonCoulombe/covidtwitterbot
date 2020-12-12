@@ -9,10 +9,10 @@
 #' @examples
 get_jeanpaulrsoucy_tableau_rls_new <- function(){
   #https://stackoverflow.com/questions/25485216/how-to-get-list-files-from-a-github-repository-folder-using-r
-  req <- GET("https://api.github.com/repos/jeanpaulrsoucy/covid-19-canada-gov-data/git/trees/master?recursive=1")
+  req <- GET("https://api.github.com/repos/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/git/trees/master?recursive=1")
   stop_for_status(req)
   filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
-  liste_tableau_rls_new <- grep("qc/cases-by-rss-and-rls/tableau-rls-new_", filelist, value = TRUE, fixed = TRUE)
+  liste_tableau_rls_new <- grep("cases-by-rss-and-rls/tableau-rls-new_", filelist, value = TRUE, fixed = TRUE)
   plan("multisession", workers = availableCores()-1)
 
   suppressWarnings(
@@ -20,7 +20,7 @@ get_jeanpaulrsoucy_tableau_rls_new <- function(){
       furrr::future_map(
         liste_tableau_rls_new,
         ~readr::read_csv(
-          paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data/master/", .x),
+          paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/master/", .x),
           col_types= readr::cols(
             No = readr::col_character(),
             RSS = readr::col_character() ,
