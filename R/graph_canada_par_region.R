@@ -138,7 +138,9 @@ get_prov_data <- function(){
   cases_prov <- readr::read_csv("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_prov/cases_timeseries_prov.csv") %>%
     mutate(date_report = lubridate::dmy(date_report))
 
-  prov_pop <- populations  %>% group_by(province) %>% summarise(pop = sum(pop))
+  prov_pop <- populations  %>%
+    filter(!is.na(HR_UID)) %>%
+    group_by(province) %>% summarise(pop = sum(pop))
 
 
   cases2 <- prep_data(cases_prov, province, variable = cases ) %>%
