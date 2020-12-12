@@ -55,6 +55,30 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/carte_css_cases.png" , width 
 graph_css_bars(css_last_week)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png" , width = 14, height =14)
 
+## canada -----
+
+ prov_data <- get_prov_data()
+ heatmap_cas(prov_data, province, "province")
+ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_prov.png" , width = 14, height =8)
+
+ simple_make_plot(data = prov_data, group_var = province )
+ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/canada_cases_by_pop.png")
+
+
+ pr_region_data <- get_pr_region_data()
+ heatmap_cas(pr_region_data, pr_region, " région sanitaire")
+ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_pr_region.png" , width = 16, height =22)
+
+
+ worst16 <- pr_region_data %>%
+   filter(date_report==max(date_report)) %>%
+   arrange(desc(total_per_1M)) %>%
+   head(16) %>%
+   select(pr_region)
+
+ simple_make_plot(data = pr_region_data %>% inner_join( worst16), group_var = pr_region )
+ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/canada_cases_by_worst16.png", height = 11)
+
 ### un paquet de graphs à convertir en fonction un jour.. genre utiliser make_plot() ?----
 
 message("type_pop_anything_quebec")
@@ -85,13 +109,7 @@ p1 <- ggplot()+
     y = "Hospitalisations",
     x = "Date"
   ) +
-  scale_y_continuous(expand = c(0, 0))+
-  ggrepel::geom_text_repel(data = last_value_label_data  ,
-                           aes(x = date_report, y=avg_hos_quo_tot_n_last7_per_1M,  label = label),
-                           size = 4, # changer la taille texte geom_text
-                           force =4,
-                           color ="black",
-                           nudge_y = c(0.5))
+  scale_y_continuous(expand = c(0, 0))
 
 
 
@@ -101,13 +119,21 @@ my.ggp.xrange <- ggp$layout$panel_scales_x[[1]]$range$range  # data range!
 
 
 p1 +
-  geom_point(
+  geom_col(
     data = temp %>% mutate(hos_per_1M = hos_quo_tot_n / pop * 1000000),
     aes(x = date_report, y = hos_per_1M),
     color = "gray50",
-    alpha =0.1
+    width = 1,
+    alpha = 0.7
   )+
-  ylim(my.ggp.yrange[1],my.ggp.yrange[2])
+  ylim(my.ggp.yrange[1],my.ggp.yrange[2])+
+  ggrepel::geom_text_repel(data = last_value_label_data  ,
+                           aes(x = date_report, y=avg_hos_quo_tot_n_last7_per_1M,  label = label),
+                           size = 4, # changer la taille texte geom_text
+                           force =4,
+                           color ="black",
+                           nudge_y = c(0.5))+
+  geom_line(data = temp,aes(x= date_report, y = avg_hos_quo_tot_n_last7_per_1M),  color = palette_OkabeIto["blue"], size =1, alpha=0.8)
 #
 # The returned values are atomic, numeric vectors. I assume the [[1]] index is for multiple panels (facets).
 #

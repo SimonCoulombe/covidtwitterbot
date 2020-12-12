@@ -208,8 +208,9 @@ graph_quebec_cas_par_age_heatmap <- function(){
 #' @importFrom stringr str_pad
 #' @importFrom lubridate year month day hms isoweek
 #' @importFrom ggplot2 geom_tile scale_fill_gradientn geom_text
+#' @importFrom dplyr desc
 #' @examples
-heatmap_cas <- function(prepped_data, variable, variable_title){
+heatmap_cas <- function(prepped_data, variable, variable_title, type = "maximum"){
 
   cases2 <- prepped_data %>%
     filter(date_report >= lubridate::ymd("20200302"))
@@ -235,11 +236,22 @@ heatmap_cas <- function(prepped_data, variable, variable_title){
   Sys.setlocale("LC_TIME", "fr_CA.UTF8")
 
   mygraph <- zz %>%
-    ggplot(aes(x= as.factor(pouet), y = {{variable}}, )) +
+    ggplot(aes(x= as.factor(pouet), y = reorder({{variable}},desc({{variable}})) )) +
     geom_tile(aes(fill = pmin(cases_per_1M_week, 500)), color = "white", size = 1 )+
-    scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
-                         values = c(0, 20, 60, 100, 500) / 500, limits = c(0,500),
-                         name = "Cas par million") +
+    {
+      if(type == "maximum500"){
+        scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                              values = c(0, 20, 60, 100, max(500,max(zz$last_cases_per_1M))) / max(500,max(zz$last_cases_per_1M)), limits = c(0,max(500,max(zz$last_cases_per_1M))),
+                              name = "Cas par million")
+      }
+    }+
+    {
+      if(type == "maximum"){
+        scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                              values = c(0, 20, 60, 100, max(zz$cases_per_1M)) / max(zz$cases_per_1M), limits = c(0,max(zz$cases_per_1M)),
+                              name = "Cas par million")
+      }
+    }+
     geom_text(aes(label= round(cases_per_1M_week)), color = "white", size =3) +
 
     theme_simon(font_size=10) +

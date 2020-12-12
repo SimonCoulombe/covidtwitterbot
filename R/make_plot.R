@@ -1,5 +1,5 @@
 
-#' make_plot fait les graphiques qui vont être combinés
+#' make_plot fait les graphiques qui vont être combinés et permet de forcer des axes différents selon la province.. hard to maintain
 #'
 #' @param d
 #' @param pop
@@ -143,3 +143,8 @@ make_plot <- function(d, pop, left_axis_title, left_axis_text, right_axis_label,
     myyaxis  +
     mybackground
 }
+
+
+
+
+

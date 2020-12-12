@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_plot.R
 \name{make_plot}
 \alias{make_plot}
-\title{make_plot fait les graphiques qui vont être combinés}
+\title{make_plot fait les graphiques qui vont être combinés et permet de forcer des axes différents selon la province.. hard to maintain}
 \usage{
 make_plot(
   d,
@@ -25,5 +25,5 @@ make_plot(
 
 }
 \description{
-make_plot fait les graphiques qui vont être combinés
+make_plot fait les graphiques qui vont être combinés et permet de forcer des axes différents selon la province.. hard to maintain
 }

@@ -112,7 +112,7 @@ post_tweet(
 
 
 post_tweet(
-  status = paste0(intToUtf8(0x1F4C8), " Cas par habitant par arrondissement de la ville de Montréal\n"
+  status = paste0(emoji_graph, emoji_carte, " Cas par habitant par arrondissement de la ville de Montréal\n"
                   , "covid 5/5"),
   media = c(
             "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png",
@@ -127,6 +127,25 @@ post_tweet(
 
 
 
+
+post_tweet(
+  status = paste0(emoji_graph, " nouveaux cas quotidien par province (heatmap)\n",
+                  emoji_graph, " nouveaux cas quotidien par province (line)\n",
+                  emoji_graph, " nouveaux cas quotidiens par régions sanitaire (heatmap)\n",
+                  emoji_graph, " nouveaux cas quotidiens pour 16 régions sanitaires les plus touchées (ligne)\n"
+                  , "covid 6/6"),
+  media = c(
+    "~/git/adhoc_prive/covid19_PNG/heatmap_prov.png",
+    "~/git/adhoc_prive/covid19_PNG/canada_cases_by_pop.png",
+    "~/git/adhoc_prive/covid19_PNG/heatmap_pr_region.png",
+    "~/git/adhoc_prive/covid19_PNG/canada_cases_by_worst16.png"
+  ),
+  token = NULL,
+  in_reply_to_status_id = get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% pull(status_id) %>% .[1],
+  destroy_id = NULL,
+  retweet_id = NULL,
+  auto_populate_reply_metadata = FALSE
+)
 
 
 

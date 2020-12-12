@@ -4,7 +4,7 @@
 \alias{heatmap_cas}
 \title{heatmap_cas}
 \usage{
-heatmap_cas(prepped_data, variable, variable_title)
+heatmap_cas(prepped_data, variable, variable_title, type = "maximum")
 }
 \value{
 
