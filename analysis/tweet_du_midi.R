@@ -55,7 +55,7 @@ pct_positif <- hist %>%
 post_tweet(
   status = paste0(
     intToUtf8(0x1F9F5), "covid du ", format(as.Date(Sys.Date()), format = format_francais), "\n\n",
-    "Sommaire:\n",
+    "Résumé:\n",
     format(nouveau_cas, big.mark = " "), " ", intToUtf8(0x1F912), " cas (", format(round(avg_cas_quo_tot_n_last7_per_1M, 0), big.mark = " "), " par M sur 7 j)\n",
     format(nouveau_deces, big.mark = " "), " ", intToUtf8(0x26B0), " décès (", format(total_deces, big.mark = " "), ")\n",
     format(hospit_en_cours, big.mark = " "), " ", intToUtf8(0x1F3E5), " hospit. (diff: ", format(hospit_delta, big.mark = " "), ")\n",
