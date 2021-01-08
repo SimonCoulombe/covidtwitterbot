@@ -1,4 +1,5 @@
 # This script creates all the figures used by the bot.
+tictoc::tic()
 library(ggplot2)
 library(dplyr)
 library(covidtwitterbot)
@@ -518,3 +519,5 @@ if (FALSE) {
 
 
 source(here::here("analysis/save_on_amazon_bucket.R"))
+source(here::here("analysis/tweet_du_midi.R"))
+tictoc::toc()

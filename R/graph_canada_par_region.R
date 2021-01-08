@@ -221,10 +221,6 @@ get_pr_region_data <- function() {
     )
   }
 
-
-
-
-
   cases2 <- prep_data(cases_timeseries_hr, pr_region, variable = cases) %>%
     filter(province != "Repatriated") %>%
     left_join(populations) %>%
