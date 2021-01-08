@@ -1,24 +1,23 @@
 library(tidyverse)
 
 # on commence par domper un paquet de tableau-rls.csv dans data-raw/tableau-rls, sans commiter car il y a des doublons.
-delete_duplicate_tableau_rls <- function(mypath = "data-raw/tableau-rls"){
-
+delete_duplicate_tableau_rls <- function(mypath = "data-raw/tableau-rls") {
   pouet <- list.files(
-    path =mypath,
+    path = mypath,
     pattern = ".csv$",
-    full.names = TRUE)
+    full.names = TRUE
+  )
 
-  csvs <- purrr::map(pouet, ~readr::read_csv(.x))
+  csvs <- purrr::map(pouet, ~ readr::read_csv(.x))
 
   mydelete <- rep(FALSE, length(csvs))
-  for (i in seq(from=2, to = length(csvs))){
-
-    if ( isTRUE(dplyr::all_equal(csvs[[i]],csvs[[i-1]]))){
-      mydelete[i]= TRUE
+  for (i in seq(from = 2, to = length(csvs))) {
+    if (isTRUE(dplyr::all_equal(csvs[[i]], csvs[[i - 1]]))) {
+      mydelete[i] <- TRUE
     }
   }
   deleteme <- pouet[mydelete]
-  purrr::map(deleteme, ~file.remove(.x))
+  purrr::map(deleteme, ~ file.remove(.x))
 }
 # on efface les doublons
 delete_duplicate_tableau_rls()

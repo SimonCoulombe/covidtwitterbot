@@ -13,6 +13,6 @@
 #'
 #' @examples
 myggsave <- function(filename = default_name(plot), plot = last_plot(),
-                     height= 9, width= 12, dpi= 250, ...) {
-  ggsave(filename=filename, plot,  height=height, width=width, dpi=dpi, ...)
+                     height = 9, width = 12, dpi = 250, ...) {
+  ggsave(filename = filename, plot, height = height, width = width, dpi = dpi, ...)
 }

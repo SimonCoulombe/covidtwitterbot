@@ -8,7 +8,7 @@ gs4_deauth()
 
 attempt <- 0
 prout <- NULL
-while( is.null(prout) && attempt <= 100 ) {
+while (is.null(prout) && attempt <= 100) {
   attempt <- attempt + 1
   message(attempt)
   Sys.sleep(3)
@@ -20,13 +20,13 @@ while( is.null(prout) && attempt <= 100 ) {
 # #rls_population <- prout %>% select(RLS, Population) %>% filter(RLS != "Total")
 # #datapasta::dpasta(rls_population)
 
-rls_claude  <- prout[1:which(prout$NoRLS == 1801), ] %>%
+rls_claude <- prout[1:which(prout$NoRLS == 1801), ] %>%
   filter(!is.na(NoRLS)) %>%
-  select(-No,  -NoRLS,  -Population)%>%
-  gather(key=key, value=cumulative_cases, -RLS, -RSS) %>%
-  mutate_at( vars(cumulative_cases) , as.numeric) %>%
+  select(-No, -NoRLS, -Population) %>%
+  gather(key = key, value = cumulative_cases, -RLS, -RSS) %>%
+  mutate_at(vars(cumulative_cases), as.numeric) %>%
   filter(!is.na(cumulative_cases)) %>%
-  #filter(NoRLS == "0112") %>%
+  # filter(NoRLS == "0112") %>%
   mutate(cumulative_cases = map_int(cumulative_cases, ~ as.integer(str_replace_all(.x, " ", "")))) %>% # remove spaces from numbers
   mutate(date_report = lubridate::ymd(key)) %>%
   select(-key) %>%

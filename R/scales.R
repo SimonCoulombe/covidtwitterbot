@@ -32,9 +32,11 @@ scale_fill_OkabeIto <- function(aesthetics = "fill", ...) {
 #' @examples
 #' library(ggplot2)
 #' ggplot(iris, aes(Sepal.Length, Sepal.Width, color = Species)) +
-#'   geom_point() + scale_color_OkabeIto()
+#'   geom_point() +
+#'   scale_color_OkabeIto()
 #' ggplot(iris, aes(Sepal.Length, fill = Species)) +
-#'   geom_density(alpha = 0.7) + scale_fill_OkabeIto(order = c(1, 3, 5))
+#'   geom_density(alpha = 0.7) +
+#'   scale_fill_OkabeIto(order = c(1, 3, 5))
 #'
 #' cowplot::plot_grid(
 #'   gg_color_swatches(8) + scale_fill_OkabeIto(darken = 0.6),
@@ -43,7 +45,9 @@ scale_fill_OkabeIto <- function(aesthetics = "fill", ...) {
 #'   gg_color_swatches(8) + scale_fill_OkabeIto(darken = 0),
 #'   gg_color_swatches(8) + scale_fill_OkabeIto(darken = -0.2),
 #'   gg_color_swatches(8) + scale_fill_OkabeIto(darken = -0.4),
-#'   gg_color_swatches(8) + scale_fill_OkabeIto(darken = -0.6), ncol = 1)
+#'   gg_color_swatches(8) + scale_fill_OkabeIto(darken = -0.6),
+#'   ncol = 1
+#' )
 #' @export
 #' @usage NULL
 scale_OkabeIto <- function(aesthetics, use_black = FALSE, order = 1:8, darken = 0, alpha = NA, ...) {
@@ -65,7 +69,7 @@ scale_OkabeIto <- function(aesthetics, use_black = FALSE, order = 1:8, darken = 
 
   li <- darken < 0
   if (sum(li) > 0) { # at least one color needs lightening
-    values[li] <- colorspace::lighten(values[li], amount = -1*darken[li])
+    values[li] <- colorspace::lighten(values[li], amount = -1 * darken[li])
   }
 
   ai <- !is.na(alpha)
@@ -76,7 +80,9 @@ scale_OkabeIto <- function(aesthetics, use_black = FALSE, order = 1:8, darken = 
   pal <- function(n) {
     if (n > length(values)) {
       warning("Insufficient values in manual scale. ", n, " needed but only ",
-              length(values), " provided.", call. = FALSE)
+        length(values), " provided.",
+        call. = FALSE
+      )
     }
     values
   }

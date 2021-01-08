@@ -7,7 +7,7 @@ gs4_deauth()
 
 attempt <- 0
 prout <- NULL
-while( is.null(prout) && attempt <= 100 ) {
+while (is.null(prout) && attempt <= 100) {
   attempt <- attempt + 1
   message(attempt)
   Sys.sleep(3)
@@ -18,9 +18,9 @@ while( is.null(prout) && attempt <= 100 ) {
 
 
 
-colnames(prout) <- c("arrondissement" , as.character(seq(lubridate::ymd("20200329"), lubridate::ymd("20200329")+  ncol(prout)-2, by = 1)))
-mtl_claude  <- prout[1:which(prout$arrondissement == "Westmount"), ] %>%
-  gather(key=date_report, value=cumulative_cases, -arrondissement) %>%
+colnames(prout) <- c("arrondissement", as.character(seq(lubridate::ymd("20200329"), lubridate::ymd("20200329") + ncol(prout) - 2, by = 1)))
+mtl_claude <- prout[1:which(prout$arrondissement == "Westmount"), ] %>%
+  gather(key = date_report, value = cumulative_cases, -arrondissement) %>%
   mutate(date_report = lubridate::ymd(date_report)) %>%
   mutate(cumulative_cases = map_int(cumulative_cases, ~ as.integer(str_replace_all(.x, " ", "")))) %>% # remove spaces from numbers
   group_by(arrondissement) %>%
@@ -33,14 +33,13 @@ mtl_claude  <- prout[1:which(prout$arrondissement == "Westmount"), ] %>%
   mutate(
     arrondissement =
       case_when(
-        arrondissement ==  "Ahuntsic-Cartierville" ~ "Ahuntsic–Cartierville",
-        arrondissement ==  "Baie-D'Urfé" ~ "Baie D'urfé",
-        arrondissement ==  "Côte-des-Neiges–Notre-Dame-de-Grâace" ~ "Côte-des-Neiges–Notre-Dame-de-Grâce",
-        arrondissement ==  "Mercier–Hochelaga–Maisonneuve" ~ "Mercier–Hochelaga-Maisonneuve",
-        arrondissement ==  "Montréal-Est" ~ "Montréal Est",
-        arrondissement ==  "Villeray–Saint-Michel–Parc Extension" ~ "Villeray–Saint-Michel–Parc-Extension",
+        arrondissement == "Ahuntsic-Cartierville" ~ "Ahuntsic–Cartierville",
+        arrondissement == "Baie-D'Urfé" ~ "Baie D'urfé",
+        arrondissement == "Côte-des-Neiges–Notre-Dame-de-Grâace" ~ "Côte-des-Neiges–Notre-Dame-de-Grâce",
+        arrondissement == "Mercier–Hochelaga–Maisonneuve" ~ "Mercier–Hochelaga-Maisonneuve",
+        arrondissement == "Montréal-Est" ~ "Montréal Est",
+        arrondissement == "Villeray–Saint-Michel–Parc Extension" ~ "Villeray–Saint-Michel–Parc-Extension",
         TRUE ~ arrondissement
-
       )
   )
 
@@ -75,7 +74,7 @@ usethis::use_data(mtl_claude)
 
 attempt <- 0
 prout <- NULL
-while( is.null(prout) && attempt <= 100 ) {
+while (is.null(prout) && attempt <= 100) {
   attempt <- attempt + 1
   message(attempt)
   Sys.sleep(3)
@@ -87,20 +86,18 @@ while( is.null(prout) && attempt <= 100 ) {
 mtl_population <- prout %>% janitor::clean_names()
 mtl_population$population <- mtl_population$population %>% unlist()
 mtl_population <- mtl_population %>%
-  mutate(population =  as.integer(str_replace_all(population, " ", ""))
-  ) %>%
-  rename(Population = population)  %>%
+  mutate(population = as.integer(str_replace_all(population, " ", ""))) %>%
+  rename(Population = population) %>%
   mutate(
     arrondissement =
       case_when(
-        arrondissement ==  "Ahuntsic-Cartierville" ~ "Ahuntsic–Cartierville",
-        arrondissement ==  "Baie-D'Urfé" ~ "Baie D'urfé",
-        arrondissement ==  "Côte-des-Neiges–Notre-Dame-de-Grâace" ~ "Côte-des-Neiges–Notre-Dame-de-Grâce",
-        arrondissement ==  "Mercier–Hochelaga–Maisonneuve" ~ "Mercier–Hochelaga-Maisonneuve",
-        arrondissement ==  "Montréal-Est" ~ "Montréal Est",
-        arrondissement ==  "Villeray–Saint-Michel–Parc Extension" ~ "Villeray–Saint-Michel–Parc-Extension",
+        arrondissement == "Ahuntsic-Cartierville" ~ "Ahuntsic–Cartierville",
+        arrondissement == "Baie-D'Urfé" ~ "Baie D'urfé",
+        arrondissement == "Côte-des-Neiges–Notre-Dame-de-Grâace" ~ "Côte-des-Neiges–Notre-Dame-de-Grâce",
+        arrondissement == "Mercier–Hochelaga–Maisonneuve" ~ "Mercier–Hochelaga-Maisonneuve",
+        arrondissement == "Montréal-Est" ~ "Montréal Est",
+        arrondissement == "Villeray–Saint-Michel–Parc Extension" ~ "Villeray–Saint-Michel–Parc-Extension",
         TRUE ~ arrondissement
-
       )
   )
 

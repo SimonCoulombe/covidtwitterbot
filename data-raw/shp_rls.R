@@ -14,17 +14,17 @@ library(covidtwitterbot) # pour shp_water
 #  - remove the water from the RLS polygons using st_difference.  Then make
 
 rls_shp_simple <- read_sf("~/git/adhoc_prive/data/downloads/Territoires_RLS_2020.shp") %>%
-   st_transform(crs=4326) %>%
-   rmapshaper::ms_simplify()
+  st_transform(crs = 4326) %>%
+  rmapshaper::ms_simplify()
 
 # write_sf(rls_shp_simple,here::here("data/processed/Territoires_RLS_2020_simple.shp"))
 
-rls_no_water <- st_difference(rls_shp_simple, shp_water) #shp_water est fourni avec le package..
+rls_no_water <- st_difference(rls_shp_simple, shp_water) # shp_water est fourni avec le package..
 
 shp_rls <- rls_no_water %>%
   rmapshaper::ms_simplify(keep = 0.7) %>%
   sf::st_make_valid() %>%
-  st_collection_extract(type="POLYGON")
+  st_collection_extract(type = "POLYGON")
 
 
 usethis::use_data(shp_rls)

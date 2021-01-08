@@ -6,16 +6,16 @@ library(covidtwitterbot) # pour shp_water
 
 # shapefile css
 CS_FRA_SDA_simple <- read_sf("~/git/adhoc_prive/data/downloads/CS/CS_FRA_SDA.shp") %>%
-  rmapshaper::ms_simplify(keep = 0.3)  %>%
+  rmapshaper::ms_simplify(keep = 0.3) %>%
   sf::st_make_valid() %>%
-  st_transform(crs=4326)
+  st_transform(crs = 4326)
 
 
 
 shp_css <- st_difference(CS_FRA_SDA_simple, shp_water) %>%
   rmapshaper::ms_simplify(keep = 0.5) %>%
   sf::st_make_valid() %>%
-  st_collection_extract(type="POLYGON")
+  st_collection_extract(type = "POLYGON")
 
 
 usethis::use_data(shp_css)

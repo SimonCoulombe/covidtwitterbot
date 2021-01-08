@@ -5,19 +5,18 @@
 #' @return data frame
 #' @export
 #'
-#' @examples get_inspq_manual_data_hospits()
-get_inspq_manual_data_hospits <- function(){
-
-
+#' @examples
+#' get_inspq_manual_data_hospits()
+get_inspq_manual_data_hospits <- function() {
   attempt <- 0
   latest_combine <- NULL
-  while( is.null(latest_combine) && attempt <= 100 ) {
+  while (is.null(latest_combine) && attempt <= 100) {
     attempt <- attempt + 1
-    message("attempt: " , attempt)
+    message("attempt: ", attempt)
     Sys.sleep(3)
     try(
       suppressWarnings(
-        latest_combine <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/manual-data.csv", skip =23) %>%
+        latest_combine <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/manual-data.csv", skip = 23) %>%
           janitor::clean_names() %>%
           dplyr::mutate(date = lubridate::dmy(date)) %>%
           dplyr::select(date, hospits, hospits_ancien, si, volumetrie)
@@ -36,10 +35,11 @@ get_inspq_manual_data_hospits <- function(){
 #' @return
 #' @export
 #'
-#' @examples get_inspq_manual_data_tableau_accueil()
-get_inspq_manual_data_tableau_accueil <- function(){
+#' @examples
+#' get_inspq_manual_data_tableau_accueil()
+get_inspq_manual_data_tableau_accueil <- function() {
   suppressWarnings(
-    tableau_accueil <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/manual-data.csv", skip =1, n_max = 2) %>%
+    tableau_accueil <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/manual-data.csv", skip = 1, n_max = 2) %>%
       select(cas, deces, hospit, soins, gueris, analyses) %>%
       ungroup() %>%
       dplyr::mutate_if(

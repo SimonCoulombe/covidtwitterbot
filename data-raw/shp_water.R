@@ -9,30 +9,30 @@ water_shapefile <- st_read("~/git/adhoc_prive/data/downloads/ghy_000h11a_e/ghy_0
 
 
 water_shapefile_simple <- water_shapefile %>%
-  rmapshaper::ms_simplify(keep=0.3) %>%
+  rmapshaper::ms_simplify(keep = 0.3) %>%
   sf::st_make_valid() %>%
-  sf::st_transform( crs = 4326)
+  sf::st_transform(crs = 4326)
 
 water_single_collection <- water_shapefile_simple %>%
-  mutate( dummy = 1 ) %>%
+  mutate(dummy = 1) %>%
   group_by(dummy) %>%
-  summarise(dummy2= 1)
+  summarise(dummy2 = 1)
 
 water_single_collection2 <- water_single_collection %>%
   sf::st_make_valid() %>%
-  rmapshaper::ms_simplify(keep=0.7) %>%
+  rmapshaper::ms_simplify(keep = 0.7) %>%
   sf::st_make_valid()
 
 shp_water <- water_single_collection2 %>%
-  st_collection_extract(type="POLYGON")
+  st_collection_extract(type = "POLYGON")
 
-#mapview::mapview(water_clean)
+# mapview::mapview(water_clean)
 
 #  inondable4 <-  inondable3 %>% sf::st_make_valid()
 # inondable5 <- inondable4 %>% rmapshaper::ms_simplify(keep=0.3)%>% sf::st_make_valid()
-#st_write(inondable5, here::here("data/water_union_valid_simple.shp"))
+# st_write(inondable5, here::here("data/water_union_valid_simple.shp"))
 
-#water_union_valid_simple <- read_sf(here::here("data/water_union_valid_simple.shp"))
+# water_union_valid_simple <- read_sf(here::here("data/water_union_valid_simple.shp"))
 
 
 usethis::use_data(shp_water)
