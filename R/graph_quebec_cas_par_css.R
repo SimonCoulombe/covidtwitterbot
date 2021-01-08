@@ -4,16 +4,61 @@
 #' @export
 #'
 #' @examples
-carte_css <- function(css_last_week = NULL){
+carte_css <- function(css_last_week = NULL, type = "maximum"){
 
   if (is.null(css_last_week)) css_last_week <- get_css_last_week()
 
-  g <- ggplot()+
-    geom_sf(data = css_last_week  , aes(fill=color_per_pop))+
-    scale_fill_manual(drop = TRUE,
-                      limits = names(mes4couleurs), ## les limits  c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
-                      values = alpha(mes4couleurs, 1.0)
-    ) +
+  g <- ggplot(data = css_last_week)+
+    {
+      if (type == "paliers"){
+        geom_sf( aes(fill=color_per_pop), color = "white")
+      }
+    } +
+    {
+      if(type == "paliers"){
+        scale_fill_manual(drop = TRUE,
+                          limits = names(mes4couleurs), ## les limits  c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
+                          values = alpha(mes4couleurs, 1.0)
+        )
+      }
+    } +
+    {
+      if (type == "maximum"){
+        geom_sf( aes(fill=cases_per_1M), color = "white")
+      }
+    } +
+    {
+      if(type == "maximum"){
+        scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                             values = c(0, 20, 60, 100, max(css_last_week$cases_per_1M)) / max(css_last_week$cases_per_1M), limits = c(0,max(css_last_week$cases_per_1M)),
+                             name = "Cas par million")
+      }
+    }+
+
+    {
+      if (type == "maximum500"){
+        geom_sf(aes(fill=cases_per_1M), color = "white")
+      }
+    } +
+    {
+      if(type == "maximum500"){
+        scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                             values = c(0, 20, 60, 100, pmax(500,max(css_last_week$cases_per_1M))) / pmax(500,max(css_last_week$cases_per_1M)), limits = c(0,pmax(500,max(css_last_week$cases_per_1M))),
+                             name = "Cas par million")
+      }
+    }+
+    {
+      if (type == "maximum500rouge"){
+        geom_sf(aes(fill=cases_per_1M), color = "grey50")
+      }
+    } +
+    {
+      if(type == "maximum500rouge"){
+        scale_fill_gradientn(colours = c("white", palette_OkabeIto["vermillion"]),
+                             values = c(0,1), limits = c(0,pmax(500, max(css_last_week$cases_per_1M))),
+                             name = "Cas par million")
+      }
+    }+
     labs(title = paste0("Nouveaux cas de covid par million d'habitants par centre de services scolaires"),
          fill = "Cas par 1M habitants",
          subtitle = paste0("en date du " , format(max(css_last_week$date_report), format=format_francais),". (moyenne mobile sur 7 jours)"),

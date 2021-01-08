@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-simple_make_plot<- function(data, group_var, type = "maximum"){
+simple_make_plot<- function(data, group_var, type = "maximum", reorder = TRUE){
 
   group_var_column <- enquo(group_var)   ## this has to be !!
   group_var_string <- quo_name(group_var_column) ## its a string, dont !!
@@ -17,12 +17,16 @@ simple_make_plot<- function(data, group_var, type = "maximum"){
   data <- data %>%
     select({{group_var}}, date_report, cumulative_cases, avg_cases_last7, cases_per_1M, last_cases_per_1M, color_per_pop, total_per_1M) %>%
     filter(!is.na(cases_per_1M)) %>%
-    filter(date_report >= lubridate::ymd("20200315")) %>%
-    mutate({{group_var}} := fct_reorder({{group_var}}, total_per_1M, .desc =TRUE))
+    filter(date_report >= lubridate::ymd("20200315"))
 
+  if(reorder){
+    data <- data %>%
+      mutate({{group_var}} := fct_reorder({{group_var}}, total_per_1M, .desc =TRUE))
+  }
   mindate <- min(data$date_report)
 
   summary_labels <- data %>%
+    mutate(y_axis = 0.9 *  max(cases_per_1M, na.rm = TRUE)) %>%
     filter(date_report == max(date_report) ) %>%
     mutate(
       label = paste0(
@@ -32,7 +36,7 @@ simple_make_plot<- function(data, group_var, type = "maximum"){
                big.mark=" ",
                small.mark=".",
                small.interval=3),
-        " total cas par million\n",
+        " cas total/M\n",
         format(cumulative_cases,
                digits=9,
                decimal.mark=",",
@@ -48,7 +52,7 @@ simple_make_plot<- function(data, group_var, type = "maximum"){
                small.interval=3),
         " cas semaine"
       ),
-      cases_per_1M =  0.9 *  max(cases_per_1M, na.rm = TRUE),
+      cases_per_1M =  y_axis,
       date_report = mindate+1
 
     ) %>%
@@ -64,9 +68,6 @@ simple_make_plot<- function(data, group_var, type = "maximum"){
       label = paste0(round(cases_per_1M)),
       value = cases_per_1M) %>%
     ungroup()
-
-
-
 
   ggplot(data, aes(x = date_report, y = cases_per_1M)) +
     facet_wrap( vars ({{ group_var }})) +
@@ -84,7 +85,7 @@ simple_make_plot<- function(data, group_var, type = "maximum"){
       }
     } +
     {
-      if (type %in% c("maximum", "maximum500")){
+      if (type %in% c("maximum", "maximum500", "maximumviridis")){
         geom_line(aes(color = last_cases_per_1M), size = 1, na.rm = TRUE)
       }
     } +
@@ -102,6 +103,13 @@ simple_make_plot<- function(data, group_var, type = "maximum"){
                               name = "Cas par million")
       }
     }+
+
+    {
+      if(type == "maximumviridis"){
+        scale_color_viridis(name = "Cas par million", direction = -1)
+      }
+    }+
+
     ggrepel::geom_text_repel(
       data = last_value_label_data,
       aes(label = label),
@@ -135,8 +143,24 @@ simple_make_plot<- function(data, group_var, type = "maximum"){
 #'
 #' @examples
 get_prov_data <- function(){
-  cases_prov <- readr::read_csv("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_prov/cases_timeseries_prov.csv") %>%
-    mutate(date_report = lubridate::dmy(date_report))
+
+
+  attempt <- 0
+  cases_prov <- NULL
+  while( is.null(cases_prov) && attempt <= 100 ) {
+    attempt <- attempt + 1
+    message("attempt: " , attempt)
+    Sys.sleep(3)
+    try(
+      cases_prov <- readr::read_csv("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_prov/cases_timeseries_prov.csv") %>%
+        mutate(date_report = lubridate::dmy(date_report))
+    )
+  }
+
+
+
+
+
 
   prov_pop <- populations  %>%
     filter(!is.na(HR_UID)) %>%
@@ -176,12 +200,25 @@ get_prov_data <- function(){
 #' @examples
 get_pr_region_data <- function(){
 
+  attempt <- 0
+  cases_timeseries_hr <- NULL
+  while( is.null(cases_timeseries_hr) && attempt <= 100 ) {
+    attempt <- attempt + 1
+    message("attempt: " , attempt)
+    Sys.sleep(3)
+    try(
 
-  cases_timeseries_hr <- read_csv("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_hr/cases_timeseries_hr.csv") %>%
-    mutate(date_report = lubridate::dmy(date_report))%>%
-    filter(health_region != "Not Reported") %>%
-    mutate(health_region_bak = health_region) %>%
-    mutate(pr_region = paste0(province,"-", health_region)  )
+
+      cases_timeseries_hr <- read_csv("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_hr/cases_timeseries_hr.csv") %>%
+        mutate(date_report = lubridate::dmy(date_report))%>%
+        filter(health_region != "Not Reported") %>%
+        mutate(health_region_bak = health_region) %>%
+        mutate(pr_region = paste0(province,"-", health_region)  )
+    )
+  }
+
+
+
 
 
   cases2 <- prep_data(cases_timeseries_hr, pr_region, variable = cases ) %>%

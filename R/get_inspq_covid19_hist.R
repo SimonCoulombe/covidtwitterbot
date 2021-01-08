@@ -8,16 +8,24 @@
 #'
 #' @examples get_inspq_covid19_hist()
 get_inspq_covid19_hist <- function() {
-  suppressWarnings(
-    pouet <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/covid19-hist.csv",
-                             col_types= cols(Date = col_character(),
-                                             Regroupement = col_character(),
-                                             Croisement  = col_character(),
-                                             Nom =  col_character(),
-                                             .default = col_double()
-                             )
+
+  attempt <- 0
+  pouet <- NULL
+  while( is.null(pouet) && attempt <= 100 ) {
+    attempt <- attempt + 1
+    message("attempt: " , attempt)
+    Sys.sleep(3)
+    try(
+      pouet <- readr::read_csv("https://inspq.qc.ca/sites/default/files/covid/donnees/covid19-hist.csv",
+                               col_types= cols(Date = col_character(),
+                                               Regroupement = col_character(),
+                                               Croisement  = col_character(),
+                                               Nom =  col_character(),
+                                               .default = col_double()
+                               )
+      )
     )
-  )
+  }
 
     pouet2 <- pouet %>%
       dplyr::filter(Date != "Date inconnue") %>% dplyr::mutate(date = lubridate::ymd(Date)) %>%

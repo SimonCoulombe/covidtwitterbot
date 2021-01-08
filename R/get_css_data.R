@@ -45,7 +45,8 @@ get_css_last_week <- function(rls_data = NULL){
         levels = c("moins de 20 cas par million", "entre 20 et 60 cas par million", "entre 60 et 100 cas par million", "plus de 100 cas par million")),
       cases_last_7_days_per_100k = round(cases_last_7_days * 100000 / Population,1),
       cases_last_7_days = round(cases_last_7_days),
-      Population = round(Population)
+      Population = round(Population),
+      cases_per_1M = dailycases_per_1M_avg_7_days  ### TODO 20210: est-ce vraiment égal?
     )   %>%
     mutate(
       NOM_CS_petit_nom = str_replace(NOM_CS, "CSS des |CSS de la |CSS du |CSS de l' |CSS de |CSS ", "")

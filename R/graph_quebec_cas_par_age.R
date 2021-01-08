@@ -30,6 +30,7 @@ cases_par_pop_age_quebec <- function(){
     rename(groupe_age = groupe) %>%
     left_join(populations_age ) %>%
     mutate(groupe_age = factor(groupe_age))  %>%
+    mutate(total_per_1M = total * 1e6/pop)  %>%
     mutate(cases_per_1M = avg_cases_last7 * 1000000 / pop) %>%
     group_by( groupe_age ) %>%
     arrange(date_report) %>%
@@ -195,7 +196,7 @@ graph_quebec_cas_par_age <- function(){
 graph_quebec_cas_par_age_heatmap <- function(){
 
 
-  heatmap_cas(cases_par_pop_age_quebec(), groupe_age, "groupe d'âge")
+  heatmap_cas(cases_par_pop_age_quebec(), groupe_age, "groupe d'âge", type = "maximum")
 }
 
 
@@ -235,9 +236,25 @@ heatmap_cas <- function(prepped_data, variable, variable_title, type = "maximum"
   mylocale <- Sys.getlocale()
   Sys.setlocale("LC_TIME", "fr_CA.UTF8")
 
+
+  # il faut ordonner les string de semaine en fonction de la vraie date, sinon janvier 2021 passe avant mars 2020..
+  mylevels <-   zz %>% group_by(pouet) %>% summarise(date_report = min(date_report)) %>% ungroup()  %>% arrange(date_report)
+  zz <-zz %>% mutate(pouet = factor(pouet, levels = mylevels$pouet))
+
+
   mygraph <- zz %>%
-    ggplot(aes(x= as.factor(pouet), y = reorder({{variable}},desc({{variable}})) )) +
-    geom_tile(aes(fill = pmin(cases_per_1M_week, 500)), color = "white", size = 1 )+
+
+    ggplot(aes(x= pouet, y = reorder({{variable}},desc({{variable}})) )) +
+    {
+      if(type == "maximum500"){
+        geom_tile(aes(fill = pmin(cases_per_1M_week, 500)), color = "white", size = 1 )
+      }
+    }+
+    {
+      if(type %in% c("maximum", "maximumviridis")){
+        geom_tile(aes(fill = cases_per_1M_week), color = "white", size = 1 )
+      }
+    }+
     {
       if(type == "maximum500"){
         scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
@@ -250,6 +267,12 @@ heatmap_cas <- function(prepped_data, variable, variable_title, type = "maximum"
         scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
                               values = c(0, 20, 60, 100, max(zz$cases_per_1M)) / max(zz$cases_per_1M), limits = c(0,max(zz$cases_per_1M)),
                               name = "Cas par million")
+      }
+    }+
+    {
+      if(type == "maximumviridis"){
+        scale_fill_viridis(direction = -1,
+                             name = "Cas par million")
       }
     }+
     geom_text(aes(label= round(cases_per_1M_week)), color = "white", size =3) +

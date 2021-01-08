@@ -4,6 +4,7 @@ library(dplyr)
 library(covidtwitterbot)
 library(rmapzen)
 library(sf)
+library(viridis)
 options(nextzen_API_key=Sys.getenv("nextzen_api_key"))
 mz_set_tile_host_nextzen(key = getOption("nextzen_API_key"))
 
@@ -20,10 +21,15 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png")
 
 
 message("graph quebec cases by pop, test")
-graph_quebec_cas_par_region()
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_cases_by_pop.png")
+#graph_quebec_cas_par_region()  # j 'aime pu ça.
 
-graph_quebec_cas_par_age()
+cases2_par_pop_region_quebec  <-    cases_par_pop_region_quebec()
+simple_make_plot(data = cases2_par_pop_region_quebec, group_var = health_region_short, type = "maximumviridis" )
+
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_cases_by_pop.png")
+#graph_quebec_cas_par_age()
+cases2_par_pop_age_quebec <- cases_par_pop_age_quebec()
+simple_make_plot(data = cases2_par_pop_age_quebec, group_var = groupe_age, type = "maximumviridis", reorder = FALSE )
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_age.png" )
 
 graph_quebec_cas_par_age_heatmap()
@@ -61,7 +67,7 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png" , width =
  heatmap_cas(prov_data, province, "province")
  myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_prov.png" , width = 14, height =8)
 
- simple_make_plot(data = prov_data, group_var = province )
+ simple_make_plot(data = prov_data, group_var = province, type = "maximumviridis" )
  myggsave(filename = "~/git/adhoc_prive/covid19_PNG/canada_cases_by_pop.png")
 
 

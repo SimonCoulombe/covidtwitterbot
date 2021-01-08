@@ -29,7 +29,7 @@ graph_quebec_cas_par_rls_heatmap <- function(rls_data = NULL){
 #' @importFrom units set_units
 #' @importFrom patchwork inset_element
 #' @examples
-carte_rls <- function(rls_data = NULL, type = "maximum500"){
+carte_rls <- function(rls_data = NULL, type = "maximum"){
   if(is.null(rls_data)) rls_data <- get_rls_data()
 
   rls_last_week <- shp_rls %>%
@@ -278,7 +278,7 @@ fail
 #' @export
 #'
 #' @examples
-carte_rls_zoom_montreal <- function(rls_data = NULL){
+carte_rls_zoom_montreal <- function(rls_data = NULL, type = "maximum"){
   if(is.null(rls_data)) rls_data <- get_rls_data()
 
   rls_last_week <- shp_rls %>%
@@ -286,18 +286,64 @@ carte_rls_zoom_montreal <- function(rls_data = NULL){
                 group_by(RLS_code) %>%
                 filter(date_report ==max(date_report)) %>%
                 ungroup() %>%
-                select(date_report, RLS_code, cases_last_7_days_per_100k, cumulative_cases, cases_last_7_days, previous_cases_last_7_days, Population, last_cases_per_1M,color_per_pop)) %>%
+                select(date_report, RLS_code, cases_last_7_days_per_100k, cumulative_cases, cases_last_7_days, previous_cases_last_7_days, Population, cases_per_1M, last_cases_per_1M,color_per_pop)) %>%
     mutate(dailycases_per_1M_avg_7_days = round(last_cases_per_1M,1))
 
 
 
 
-  g <- ggplot()+
-    geom_sf(data = rls_last_week  , aes(fill=color_per_pop))+
-    scale_fill_manual(drop = TRUE,
-                      limits = names(mes4couleurs), ## les limits  c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
-                      values = alpha(mes4couleurs, 1.0)
-    ) +
+  g <- ggplot(data = rls_last_week)+
+    #geom_sf(data= water, fill = bleu_eau, color = bleu_eau, alpha = 1 )+
+    {
+      if (type == "paliers"){
+        geom_sf( aes(fill=color_per_pop), color = "white")
+      }
+    } +
+    {
+      if(type == "paliers"){
+        scale_fill_manual(drop = TRUE,
+                          limits = names(mes4couleurs), ## les limits  c'est nécessaire pour que toutes les valeurs apparaissent dans la légende même quand pas utilisée.
+                          values = alpha(mes4couleurs, 1.0)
+        )
+      }
+    } +
+    {
+      if (type == "maximum"){
+        geom_sf( aes(fill=cases_per_1M), color = "white")
+      }
+    } +
+    {
+      if(type == "maximum"){
+        scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                             values = c(0, 20, 60, 100, max(rls_last_week$cases_per_1M)) / max(rls_last_week$cases_per_1M), limits = c(0,max(rls_last_week$cases_per_1M)),
+                             name = "Cas par million")
+      }
+    }+
+
+    {
+      if (type == "maximum500"){
+        geom_sf(aes(fill=cases_per_1M), color = "white")
+      }
+    } +
+    {
+      if(type == "maximum500"){
+        scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+                             values = c(0, 20, 60, 100, pmax(500,max(rls_last_week$cases_per_1M))) / pmax(500,max(rls_last_week$cases_per_1M)), limits = c(0,pmax(500,max(rls_last_week$cases_per_1M))),
+                             name = "Cas par million")
+      }
+    }+
+    {
+      if (type == "maximum500rouge"){
+        geom_sf(aes(fill=cases_per_1M), color = "grey50")
+      }
+    } +
+    {
+      if(type == "maximum500rouge"){
+        scale_fill_gradientn(colours = c("white", palette_OkabeIto["vermillion"]),
+                             values = c(0,1), limits = c(0,pmax(500, max(rls_last_week$cases_per_1M))),
+                             name = "Cas par million")
+      }
+    }+
     labs(title = paste0("Nouveaux cas de covid par million d'habitants par réseau local de service"),
          fill = "Cas par 1M habitants",
          subtitle = paste0("en date du " , format(max(rls_last_week$date_report), format=format_francais),". (moyenne mobile sur 7 jours)"),

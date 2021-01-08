@@ -28,6 +28,7 @@ cases_par_pop_region_quebec <- function(){
   cases2 <- cases_pl_date %>%
     left_join(populations %>% select(pr_region, pop)) %>%
     mutate(health_region = fct_reorder(health_region, total, .desc =TRUE))  %>%
+    mutate(total_per_1M = total * 1e6/pop)  %>%
     mutate(cases_per_1M = avg_cases_last7 * 1000000 / pop) %>%
     group_by( health_region ) %>%
     arrange(date_report) %>%
@@ -136,6 +137,5 @@ combined <- c(mesregions) %>% # , list(p1, p2 )
 combined
 
 }
-
 
 
