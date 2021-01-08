@@ -494,3 +494,4 @@ mapview::mapshot(
 }
 
 
+source(here::here("analysis/save_on_amazon_bucket.R"))
