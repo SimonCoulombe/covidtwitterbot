@@ -518,6 +518,6 @@ if (FALSE) {
 }
 
 
-source(here::here("analysis/save_on_amazon_bucket.R"))
-source(here::here("analysis/tweet_du_midi.R"))
+source("/home/simon/git/covidtwitterbot/analysis/save_on_amazon_bucket.R")
+source("/home/simon/git/covidtwitterbot/analysis/tweet_du_midi.R")
 tictoc::toc()
