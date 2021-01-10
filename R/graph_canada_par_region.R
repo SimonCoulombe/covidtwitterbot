@@ -25,7 +25,7 @@ simple_make_plot <- function(data, group_var, type = "maximum", reorder = TRUE) 
   mindate <- min(data$date_report)
 
   summary_labels <- data %>%
-    mutate(y_axis = 0.9 * max(cases_per_1M, na.rm = TRUE)) %>%
+    mutate(y_axis = 0.95 * max(cases_per_1M, na.rm = TRUE)) %>%
     filter(date_report == max(date_report)) %>%
     mutate(
       label = paste0(
@@ -75,7 +75,7 @@ simple_make_plot <- function(data, group_var, type = "maximum", reorder = TRUE) 
     facet_wrap(vars({{ group_var }})) +
     {
       if (type == "paliers") {
-        geom_line(aes(color = color_per_pop), size = 1, na.rm = TRUE)
+        geom_line(aes(color = color_per_pop), size = 1, na.rm = TRUE, alpha = 0.9)
       }
     } +
     {
@@ -89,7 +89,7 @@ simple_make_plot <- function(data, group_var, type = "maximum", reorder = TRUE) 
     } +
     {
       if (type %in% c("maximum", "maximum500", "maximumviridis")) {
-        geom_line(aes(color = last_cases_per_1M), size = 1, na.rm = TRUE)
+        geom_line(aes(color = last_cases_per_1M), size = 1, na.rm = TRUE, alpha = 0.9)
       }
     } +
     {
@@ -118,10 +118,10 @@ simple_make_plot <- function(data, group_var, type = "maximum", reorder = TRUE) 
     ggrepel::geom_text_repel(
       data = last_value_label_data,
       aes(label = label),
-      size = 4, # changer la taille texte geom_text
+      size = 3, # changer la taille texte geom_text
       force = 4,
       color = "black",
-      nudge_y = c(1)
+      nudge_y = c(10)
     ) +
     labs(
       title = paste0("Nouveaux cas quotidiens par million d'habitant par ", group_var_string),
@@ -133,7 +133,7 @@ simple_make_plot <- function(data, group_var, type = "maximum", reorder = TRUE) 
     geom_text(
       data = summary_labels,
       aes(label = label),
-      hjust = "left", size = 4
+      hjust = "left", vjust = "top", size = 3
     ) +
     expand_limits(y = 0) +
     theme_simon(font_size = 12) +
