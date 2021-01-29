@@ -19,6 +19,8 @@ theme_simon <- function(font_size = 14, font_family = "") {
           strip.background = element_blank(),  # enlever le gris des facets
           axis.text = element_text(color="gray50"),
           axis.title = element_text(color="gray50"),
+          legend.text=element_text(color="gray50"),
+          legend.title = element_text(color = "gray50"),
           text = element_text(size=font_size), # tous les textes... sauf geom_text
           strip.text = element_text(#size = font_size,
                                       angle = 0,
