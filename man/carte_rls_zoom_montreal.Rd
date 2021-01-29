@@ -4,7 +4,7 @@
 \alias{carte_rls_zoom_montreal}
 \title{Title}
 \usage{
-carte_rls_zoom_montreal(rls_data = NULL)
+carte_rls_zoom_montreal(rls_data = NULL, type = "maximum")
 }
 \arguments{
 \item{rls_data}{}

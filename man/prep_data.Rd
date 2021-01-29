@@ -36,5 +36,5 @@ et qui retourne 7 variables supplémentaires:
  group <-- soit la variable de groupe (genre 0-9 ans) réordonnée en fonction du total décroissant.. on a tu vraiment besoin de ça??
 }
 \examples{
-prep_data(cases_prov, province, variable = cases )
+prep_data(cases_prov, province, variable = cases)
 }

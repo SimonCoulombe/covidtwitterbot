@@ -4,7 +4,7 @@
 \alias{simple_make_plot}
 \title{Title}
 \usage{
-simple_make_plot(data, group_var, type = "maximum")
+simple_make_plot(data, group_var, type = "maximum", reorder = TRUE)
 }
 \arguments{
 \item{type}{}

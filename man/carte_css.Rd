@@ -4,7 +4,7 @@
 \alias{carte_css}
 \title{carte_css}
 \usage{
-carte_css(css_last_week = NULL)
+carte_css(css_last_week = NULL, type = "maximum")
 }
 \value{
 

@@ -18,7 +18,9 @@ type_par_pop_anything_quebec(type, variable)
 Title
 }
 \examples{
-type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_m  ) \%>\% ggplot(aes(x= date_report, y = avg_hos_quo_tot_m_last7_per_1M))+ geom_line() + facet_wrap(~groupe)
+type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_m) \%>\% ggplot(aes(x = date_report, y = avg_hos_quo_tot_m_last7_per_1M)) +
+  geom_line() +
+  facet_wrap(~groupe)
  avg_XXX_last7
  total
  worst7
