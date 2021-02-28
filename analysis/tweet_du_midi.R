@@ -66,7 +66,7 @@ post_tweet(
     "Hospit par million par région\n",
     "Décès par million par région\n",
     "Tests par million par région\n",
-    "#polqc 1/5"
+    "#polqc 1/6"
   ),
 
   media = c(
@@ -87,7 +87,7 @@ post_tweet(
   status = paste0(
     intToUtf8(0x1F4C8), intToUtf8(0x1F5FA), " Cas par habitant par centre de service scolaire (CSS)\n",
     intToUtf8(0x1F4C8), "Cas par habitant par groupe d'âge\n",
-    "covid 2/5"
+    "covid 2/6"
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/quebec_age.png",
@@ -108,7 +108,7 @@ post_tweet(
 post_tweet(
   status = paste0(
     intToUtf8(0x1F4C8), intToUtf8(0x1F5FA), " Cas par habitant par réseaux locaux de service (RLS)\n",
-    "covid 3/5"
+    "covid 3/6"
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/carte_rls_cases.png",
@@ -129,7 +129,7 @@ post_tweet(
     intToUtf8(0x1F4C8), " Pourcentage de positivité (Ensemble du Québec)\n",
     intToUtf8(0x1F4C8), " Pourcentage de positivité par région\n",
     intToUtf8(0x1F4C8), " Pourcentage de positivité par âge\n",
-    "4/5"
+    "4/6"
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png",
@@ -150,7 +150,7 @@ post_tweet(
 post_tweet(
   status = paste0(
     emoji_graph, emoji_carte, " Cas par habitant par arrondissement de la ville de Montréal\n",
-    "covid 5/5"
+    "covid 5/6"
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png",
