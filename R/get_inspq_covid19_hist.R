@@ -61,7 +61,7 @@ get_inspq_covid19_hist <- function() {
         "Région", "11 - Gaspésie-Îles-de-la-Madeleine", "region", "11 Gaspésie-Îles-de-la-Madeleine",
         "Région", "Hors Québec", "region", "Hors Québec",
         "Région", "Inconnu", "region", "Inconnue",
-        "Région", "14 - Lanaudière ", "region", "14 Lanaudière",
+        "Région", "14 - Lanaudière", "region", "14 Lanaudière",
         "Région", "15 - Laurentides", "region", "15 Laurentides",
         "Région", "13 - Laval", "region", "13 Laval",
         "Région", "04 - Mauricie et Centre-du-Québec", "region", "04 Mauricie et Centre-du-Québec",
