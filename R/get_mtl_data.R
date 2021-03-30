@@ -9,27 +9,74 @@
 #' @importFrom readr read_delim locale
 #' @examples
 get_jeanpaulrsoucy_municipal <- function() {
-  # https://stackoverflow.com/questions/25485216/how-to-get-list-files-from-a-github-repository-folder-using-r
-  req <- GET("https://api.github.com/repos/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/git/trees/master?recursive=1")
-  stop_for_status(req)
-  filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
-  liste_municipal <- grep("montreal-cases-by-area/municipal", filelist, value = TRUE, fixed = TRUE)
   plan("multisession", workers = availableCores() - 1)
 
 
+  # begin-- this old code has been deprecated because the github repo is no longer updated
+
+  # https://stackoverflow.com/questions/25485216/how-to-get-list-files-from-a-github-repository-folder-using-r
+  # req <- GET("https://api.github.com/repos/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/git/trees/master?recursive=1")
+  # stop_for_status(req)
+  # filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
+  # liste_municipal <- grep("montreal-cases-by-area/municipal", filelist, value = TRUE, fixed = TRUE)
+  # plan("multisession", workers = availableCores() - 1)
+  #
+  #
+  #
+  # suppressWarnings(
+  #   csvs <-
+  #     furrr::future_map(
+  #       liste_municipal,
+  #       ~ read_delim(
+  #         paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/master/", .x),
+  #         delim = ";",
+  #         locale = locale(encoding = "Windows-1252"),
+  #         col_types = readr::cols(.default = readr::col_character())
+  #       )
+  #     )
+  # )
+  #
+
+  # end -- this old code has been deprecated because the github repo is no longer updated
+  # begin - replacement code
+  filelist <- aws.s3::get_bucket("data.opencovid.ca" , prefix= "archive/qc/montreal-cases-by-area/", region = "us-east-2", max = Inf)
+
+  liste_municipal <-
+    map(filelist,
+        function(x){
+          x$Key
+        }
+    ) %>%
+    unlist() %>%
+    unname() %>%
+    magrittr::extract(stringr::str_detect(., "municipal")) %>%
+    magrittr::extract(. != "archive/qc/montreal-cases-by-area/municipal_2021-01-08_22-05.csv")  # this file doesnt have headers "http://data.opencovid.ca.s3-us-east-2.amazonaws.com/archive/qc/montreal-cases-by-area/municipal_2021-01-08_22-05.csv"
 
   suppressWarnings(
     csvs <-
       furrr::future_map(
         liste_municipal,
-        ~ read_delim(
-          paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/master/", .x),
-          delim = ";",
-          locale = locale(encoding = "Windows-1252"),
-          col_types = readr::cols(.default = readr::col_character())
-        )
+        function(x){
+          readr::read_delim(
+            iconv(
+              rawToChar(
+                get_object(object = x, bucket = "data.opencovid.ca", region ="us-east-2")
+              ),
+              "Windows-1252",
+              "UTF-8"
+            ),
+            delim = ";",
+            #locale = locale(encoding = "Windows-1252"),
+            #locale = locale(encoding = "C"),
+            locale= readr::locale(encoding = "UTF-8"),
+            #locale = locale(encoding  = "'ISO-8859-1'"),
+            col_types = readr::cols(.default = readr::col_character())
+          )
+        }
       )
   )
+  ## end- replacement code
+
   years <- stringr::str_sub(liste_municipal, -20, -17)
   months <- stringr::str_sub(liste_municipal, -15, -14)
   days <- stringr::str_sub(liste_municipal, -12, -11)

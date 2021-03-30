@@ -34,7 +34,7 @@ simple_make_plot(data = cases2_par_pop_age_quebec, group_var = groupe_age, type 
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_age.png")
 
 graph_quebec_cas_par_age_heatmap()
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png", width = 14, height = 6)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_age.png", width = 18, height = 6)
 
 
 # créer la carte des cas par RLS de la semaine passée
@@ -43,7 +43,7 @@ rls_data <- get_rls_data()
 readr::write_csv(rls_data, "~/git/adhoc_prive/covid19_PNG/rls_data.csv")
 
 graph_quebec_cas_par_rls_heatmap(rls_data = rls_data)
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png", width = 16, height = 22)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_rls.png", width = 18, height = 22)
 
 carte <- carte_rls(rls_data = rls_data)
 
@@ -66,7 +66,7 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png", width = 
 
 prov_data <- get_prov_data()
 heatmap_cas(prov_data, province, "province")
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_prov.png", width = 14, height = 8)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_prov.png", width = 18, height = 8)
 
 simple_make_plot(data = prov_data, group_var = province, type = "maximumviridis")
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/canada_cases_by_pop.png")
@@ -74,7 +74,7 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/canada_cases_by_pop.png")
 
 pr_region_data <- get_pr_region_data()
 heatmap_cas(pr_region_data, pr_region, " région sanitaire")
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_pr_region.png", width = 16, height = 22)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_pr_region.png", width = 18, height = 22)
 
 
 worst16 <- pr_region_data %>%
@@ -355,7 +355,7 @@ raw_mtl_data <- get_raw_mtl_data()
 mtl_data <- fill_missing_dates_and_create_daily_counts_for_mtl_data(raw_mtl_data)
 # heatmap mtl
 graph_quebec_cas_par_mtl_heatmap(mtl_data = mtl_data)
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png", width = 16, height = 22)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png", width = 18, height = 22)
 
 # carte mtl derniere journée
 mtl_graph_data <- shp_mtl %>% inner_join(mtl_data %>% filter(date_report == max(date_report)))

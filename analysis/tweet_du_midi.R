@@ -9,6 +9,9 @@ emoji_malade <- intToUtf8(0x1F912)
 emoji_cercueil <- intToUtf8(0x26B0)
 emoji_hopital <- intToUtf8(0x1F3E5)
 emoji_eprouvette <- intToUtf8(0x1F9EA)
+emoji_robot <-  intToUtf8(0x1F916)
+emoji_thread <- intToUtf8(0x1F9F5)
+
 Sys.setlocale("LC_TIME", "fr_CA.UTF8")
 
 avg_cas_quo_tot_n_last7_per_1M <- type_par_pop_anything_quebec(type = region, variable = cas_quo_tot_n) %>%
@@ -82,6 +85,8 @@ post_tweet(
   auto_populate_reply_metadata = FALSE
 )
 
+
+premier_tweet_de_la_thread <-  get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% head(1)
 
 post_tweet(
   status = paste0(
@@ -164,8 +169,6 @@ post_tweet(
 )
 
 
-
-
 post_tweet(
   status = paste0(
     emoji_graph, " nouveaux cas quotidien par province (heatmap)\n",
@@ -186,3 +189,29 @@ post_tweet(
   retweet_id = NULL,
   auto_populate_reply_metadata = FALSE
 )
+
+
+## reply to sante quebec
+
+
+last_eligible_tweet_sante_qc <- get_timeline("sante_qc") %>%
+  filter(str_detect(toupper(text), "VOICI"),
+         as.integer(Sys.time() - created_at)  <= 48
+         ) %>%  # filtre 48 heures pour pas trop s'acharner sur un vieux tweet.
+  pull(status_id) %>% .[1]
+
+if(!is.na(last_eligible_tweet_sante_qc)){
+  post_tweet(
+    status = paste0(
+      emoji_robot, " " , emoji_thread, " Fil automatique quotidien avec les données historiques par sous-régions et par âge publié tous les jours à midi.\n",
+      "Un bon complément au dashboard de @sante_qc . \n",
+      premier_tweet_de_la_thread$status_url
+    ),
+    token = NULL,
+    in_reply_to_status_id = last_eligible_tweet_sante_qc,
+    destroy_id = NULL,
+    retweet_id = NULL,
+    auto_populate_reply_metadata = FALSE
+  )
+}
+

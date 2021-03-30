@@ -3,34 +3,80 @@
 #'
 #' @return
 #' @importFrom httr GET stop_for_status content
+#' @importFrom purrr map
 #' @importFrom furrr future_map
 #' @importFrom future plan availableCores
 #' @importFrom dplyr glimpse
+#' @importFrom aws.s3 get_bucket get_object
+#' @importFrom magrittr extract
+#' @importFrom stringr str_detect
 #' @examples
 get_jeanpaulrsoucy_tableau_rls_new <- function() {
-  # https://stackoverflow.com/questions/25485216/how-to-get-list-files-from-a-github-repository-folder-using-r
-  req <- GET("https://api.github.com/repos/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/git/trees/master?recursive=1")
-  stop_for_status(req)
-  filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
-  liste_tableau_rls_new <- grep("cases-by-rss-and-rls/tableau-rls-new_", filelist, value = TRUE, fixed = TRUE)
   plan("multisession", workers = availableCores() - 1)
+
+
+  # begin-- this old code has been deprecated because the github repo is no longer updated
+  # https://stackoverflow.com/questions/25485216/how-to-get-list-files-from-a-github-repository-folder-using-r
+  # req <- GET("https://api.github.com/repos/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/git/trees/master?recursive=1")
+  # stop_for_status(req)
+  # filelist <- unlist(lapply(content(req)$tree, "[", "path"), use.names = F)
+  # liste_tableau_rls_new <- grep("cases-by-rss-and-rls/tableau-rls-new_", filelist, value = TRUE, fixed = TRUE)
+  #
+  #
+  # suppressWarnings(
+  #   csvs <-
+  #     furrr::future_map(
+  #       liste_tableau_rls_new,
+  #       ~ readr::read_csv(
+  #         paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/master/", .x),
+  #         col_types = readr::cols(
+  #           No = readr::col_character(),
+  #           RSS = readr::col_character(),
+  #           NoRLS = readr::col_character(),
+  #           RLS = readr::col_character(),
+  #           .default = readr::col_number()
+  #         )
+  #       )
+  #     )
+  # )
+  # end -- this old code has been deprecated because the github repo is no longer updated
+
+  # begin - replacement code that uses aws.s3()
+  filelist <- aws.s3::get_bucket("data.opencovid.ca" , prefix= "archive/qc/cases-by-rss-and-rls/", region = "us-east-2", max= Inf)
+
+  liste_tableau_rls_new <-
+    map(filelist,
+        function(x){
+          x$Key
+        }
+    ) %>%
+    unlist() %>%
+    unname() %>%
+    magrittr::extract(stringr::str_detect(., "tableau-rls-new"))
+
+
 
   suppressWarnings(
     csvs <-
       furrr::future_map(
         liste_tableau_rls_new,
-        ~ readr::read_csv(
-          paste0("https://raw.githubusercontent.com/jeanpaulrsoucy/covid-19-canada-gov-data-montreal/master/", .x),
-          col_types = readr::cols(
-            No = readr::col_character(),
-            RSS = readr::col_character(),
-            NoRLS = readr::col_character(),
-            RLS = readr::col_character(),
-            .default = readr::col_number()
+        function(x){
+          readr::read_csv(
+            rawToChar(get_object(object = x, bucket = "data.opencovid.ca", region ="us-east-2")),
+            col_types = readr::cols(
+              No = readr::col_character(),
+              RSS = readr::col_character(),
+              NoRLS = readr::col_character(),
+              RLS = readr::col_character(),
+              .default = readr::col_number()
+            )
           )
-        )
+        }
       )
   )
+  # end - replacement code that uses aws.s3()
+
+
   years <- stringr::str_sub(liste_tableau_rls_new, -20, -17)
   months <- stringr::str_sub(liste_tableau_rls_new, -15, -14)
   days <- stringr::str_sub(liste_tableau_rls_new, -12, -11)

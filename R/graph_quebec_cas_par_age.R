@@ -231,8 +231,11 @@ heatmap_cas <- function(prepped_data, variable, variable_title, type = "maximum"
 
 
   zz <- cases2 %>%
-    mutate(week = lubridate::isoweek(date_report)) %>%
-    group_by(week) %>%
+    mutate(week = lubridate::isoweek(date_report),
+           year = lubridate::isoyear(date_report)
+
+           ) %>%
+    group_by(year, week) %>%
     mutate(
       pouet = paste0(
         str_pad(month(min(date_report)), 2, pad = "0"), "-", str_pad(day(min(date_report)), 2, pad = "0"),
@@ -241,7 +244,7 @@ heatmap_cas <- function(prepped_data, variable, variable_title, type = "maximum"
       )
     ) %>%
     ungroup() %>%
-    group_by({{ variable }}, week) %>%
+    group_by({{ variable }}, year,  week) %>%
     mutate(cases_per_1M_week = mean(cases * 1000000 / pop, na.rm = TRUE)) %>%
     filter(date_report == max(date_report)) %>% # dernière journée de la semaine
     ungroup()
@@ -258,7 +261,7 @@ heatmap_cas <- function(prepped_data, variable, variable_title, type = "maximum"
     summarise(date_report = min(date_report)) %>%
     ungroup() %>%
     arrange(date_report)
-  zz <- zz %>% mutate(pouet = factor(pouet, levels = mylevels$pouet))
+  zz <- zz %>% mutate(pouet = factor(pouet, levels = mylevels$pouet)) # on ordonne les labels de semaine selon la bonne chronologie
 
 
   mygraph <- zz %>%
