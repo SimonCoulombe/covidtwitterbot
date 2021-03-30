@@ -68,7 +68,8 @@ cases_par_pop_age_quebec <- function() {
 #' type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_m) %>% ggplot(aes(x = date_report, y = avg_hos_quo_tot_m_last7_per_1M)) +
 #'   geom_line() +
 #'   facet_wrap(~groupe)
-type_par_pop_anything_quebec <- function(type, variable) {
+type_par_pop_anything_quebec <- function(type, variable, hist_data = NULL) {
+  if(is.null(hist_data)) hist_data <- get_inspq_covid19_hist()
   variable_column <- enquo(variable) ## this has to be !!
   variable_name <- quo_name(variable_column) ## its a string, dont !!
 
@@ -83,7 +84,7 @@ type_par_pop_anything_quebec <- function(type, variable) {
   #'  winning.
   #'  group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas.... TODO: on ditche tu ça?
   data_avec_moy7jours <-
-    get_inspq_covid19_hist() %>%
+    hist_data %>%
     select(date_report = date, {{ variable }}, groupe, type, pop) %>%
     filter(type == type_name, !is.na(date_report), !is.na(pop), !is.na({{ variable }})) %>%
     prep_data(

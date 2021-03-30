@@ -69,14 +69,14 @@ post_tweet(
     "Hospit par million par région\n",
     "Décès par million par région\n",
     "Tests par million par région\n",
-    "#polqc 1/6"
+    "#polqc 1/7"
   ),
 
   media = c(
     "~/git/adhoc_prive/covid19_PNG/quebec_cases_by_pop.png",
-    "~/git/adhoc_prive/covid19_PNG/quebec_hospit_by_pop.png",
-    "~/git/adhoc_prive/covid19_PNG/quebec_deces_by_pop.png",
-    "~/git/adhoc_prive/covid19_PNG/quebec_tests_by_pop.png"
+    "~/git/adhoc_prive/covid19_PNG/quebec_new_hospit_par_region.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_deces_par_region.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_tests_par_region.png"
   ),
   token = NULL,
   in_reply_to_status_id = NULL,
@@ -88,14 +88,39 @@ post_tweet(
 
 premier_tweet_de_la_thread <-  get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% head(1)
 
+
+post_tweet(
+  status = paste0(
+    intToUtf8(0x1F4C8), "covidc \n",
+    "Cas par million par groupe d'âge\n",
+    "Hospit par million par groupe d'âge\n",
+    "Décès par million par groupe d'âge\n",
+    "Tests par million par groupe d'âge\n",
+    "#polqc 2/7"
+  ),
+
+  media = c(
+    "~/git/adhoc_prive/covid19_PNG/quebec_age.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_new_hospit_par_age.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_deces_par_age.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_tests_par_age.png"
+  ),
+  token = NULL,
+  in_reply_to_status_id = get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% pull(status_id) %>% .[1],
+  destroy_id = NULL,
+  retweet_id = NULL,
+  auto_populate_reply_metadata = FALSE
+)
+
+
+
 post_tweet(
   status = paste0(
     intToUtf8(0x1F4C8), intToUtf8(0x1F5FA), " Cas par habitant par centre de service scolaire (CSS)\n",
-    intToUtf8(0x1F4C8), "Cas par habitant par groupe d'âge\n",
-    "covid 2/6"
+    intToUtf8(0x1F4C8), "Heatmap Cas par habitant par groupe d'âge\n",
+    "covid 3/7"
   ),
   media = c(
-    "~/git/adhoc_prive/covid19_PNG/quebec_age.png",
     "~/git/adhoc_prive/covid19_PNG/carte_css_cases.png",
     "~/git/adhoc_prive/covid19_PNG/css_cases_bars.png",
     "~/git/adhoc_prive/covid19_PNG/heatmap_age.png"
@@ -113,7 +138,7 @@ post_tweet(
 post_tweet(
   status = paste0(
     intToUtf8(0x1F4C8), intToUtf8(0x1F5FA), " Cas par habitant par réseaux locaux de service (RLS)\n",
-    "covid 3/6"
+    "covid 4/7"
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/carte_rls_cases.png",
@@ -131,14 +156,12 @@ post_tweet(
 post_tweet(
   status = paste0(
     intToUtf8(0x1F4C8), " Tests, hospitalisations, soins intensifs et décès de #covid\n",
-    intToUtf8(0x1F4C8), " Pourcentage de positivité (Ensemble du Québec)\n",
     intToUtf8(0x1F4C8), " Pourcentage de positivité par région\n",
     intToUtf8(0x1F4C8), " Pourcentage de positivité par âge\n",
-    "4/6"
+    "5/7"
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png",
-    "~/git/adhoc_prive/covid19_PNG/quebec_positivite.png",
     "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.png",
     "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png"
   ),
@@ -155,7 +178,7 @@ post_tweet(
 post_tweet(
   status = paste0(
     emoji_graph, emoji_carte, " Cas par habitant par arrondissement de la ville de Montréal\n",
-    "covid 5/6"
+    "covid 6/7"
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/heatmap_mtl.png",
@@ -175,7 +198,7 @@ post_tweet(
     emoji_graph, " nouveaux cas quotidien par province (line)\n",
     emoji_graph, " nouveaux cas quotidiens par régions sanitaire (heatmap)\n",
     emoji_graph, " nouveaux cas quotidiens pour 16 régions sanitaires les plus touchées (ligne)\n",
-    "covid 6/6"
+    "covid 7/7"
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/heatmap_prov.png",

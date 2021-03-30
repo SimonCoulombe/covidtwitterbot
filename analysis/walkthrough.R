@@ -86,262 +86,144 @@ worst16 <- pr_region_data %>%
 simple_make_plot(data = pr_region_data %>% inner_join(worst16), group_var = pr_region)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/canada_cases_by_worst16.png", height = 11)
 
-### un paquet de graphs à convertir en fonction un jour.. genre utiliser make_plot() ?----
+### un paquet de graphs laids convertis en fonction----
 
-message("type_pop_anything_quebec")
-temp <- type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_n) %>%
-  filter(date_report >= lubridate::ymd("2020-03-15"))
-
-
-last_value_label_data <-
-  temp %>%
-  filter(!is.na(avg_hos_quo_tot_n_last7_per_1M)) %>%
-  group_by(groupe) %>%
-  filter(date_report == max(date_report)) %>%
-  ungroup() %>%
-  select(date_report, avg_hos_quo_tot_n_last7_per_1M, groupe) %>%
-  mutate(label = sprintf("%.1f", round(avg_hos_quo_tot_n_last7_per_1M, 1)))
+graph_rough_par_pop <- function(type, variable, titre = NULL,  y_lab = NULL,hist_data = NULL){
+  if(is.null(hist_data)) hist_data <- get_inspq_covid19_hist()
 
 
+  type_column = enquo(type)
+  type_column_name = quo_name(type_column)
+  variable_column = enquo(variable)
+  variable_column_name = quo_name(variable_column)
+  avg_column_name = paste0("avg_", variable_column_name, "_last7_per_1M")
+  avg_column = rlang::sym(avg_column_name)
 
-p1 <- ggplot() +
-  geom_line(data = temp, aes(x = date_report, y = avg_hos_quo_tot_n_last7_per_1M), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
-  facet_wrap(~groupe) +
-  theme_simon() +
-  labs(
-    title = "Nouvelles hospitalisations par million d'habitant par région ",
-    subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
-    caption = "gossé par @coulsim",
-    y = "Hospitalisations",
-    x = "Date"
-  ) +
-  scale_y_continuous(expand = c(0, 0))
+  temp <- type_par_pop_anything_quebec(type = {{type_column}}, variable = {{variable_column}}, hist_data = hist_data) %>%
+    filter(date_report >= lubridate::ymd("2020-03-15"))
+
+  last_value_label_data <-
+    temp %>%
+    filter(!is.na({{avg_column  }})) %>%
+    group_by(groupe) %>%
+    filter(date_report == max(date_report)) %>%
+    ungroup() %>%
+    select(date_report, {{avg_column}}, groupe) %>%
+    mutate(label = sprintf("%.1f", round( {{avg_column}}, 1)))
 
 
 
-ggp <- ggplot_build(p1)
-my.ggp.yrange <- ggp$layout$panel_scales_y[[1]]$range$range # data range!
-my.ggp.xrange <- ggp$layout$panel_scales_x[[1]]$range$range # data range!
+  p1 <- ggplot() +
+    geom_line(data = temp, aes(x = date_report, y = {{avg_column}}), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
+    facet_wrap(~groupe) +
+    theme_simon() +
+    labs(
+      subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
+      caption = "gossé par @coulsim",
+      x = "Date"
+    ) +
+     {if(!is.null(titre)){  labs(title = titre)}}+
+   {if(!is.null(y_lab)){  labs(y = y_lab)}} +
+    scale_y_continuous(expand = c(0, 0))
+
+  ggp <- ggplot_build(p1)
+  my.ggp.yrange <- ggp$layout$panel_scales_y[[1]]$range$range # data range!
+  my.ggp.xrange <- ggp$layout$panel_scales_x[[1]]$range$range # data range!
 
 
-p1 +
-  geom_col(
-    data = temp %>% mutate(hos_per_1M = hos_quo_tot_n / pop * 1000000),
-    aes(x = date_report, y = hos_per_1M),
-    color = "gray50",
-    width = 1,
-    alpha = 0.7
-  ) +
-  ylim(my.ggp.yrange[1], my.ggp.yrange[2]) +
-  ggrepel::geom_text_repel(
-    data = last_value_label_data,
-    aes(x = date_report, y = avg_hos_quo_tot_n_last7_per_1M, label = label),
-    size = 4, # changer la taille texte geom_text
-    force = 4,
-    color = "black",
-    nudge_y = c(0.5)
-  ) +
-  geom_line(data = temp, aes(x = date_report, y = avg_hos_quo_tot_n_last7_per_1M), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8)
-#
-# The returned values are atomic, numeric vectors. I assume the [[1]] index is for multiple panels (facets).
-#
-# UPDATE: I noticed the above are for the untrained, unextended ranges.
-# From the link at the top, we have:
-#
-#   ggp$layout$panel_params[[1]]$x.range
-# ggp$layout$panel_params[[1]]$y.range
-
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_hospit_by_pop.png")
+  p1 +
+    geom_col(
+      data = temp %>% mutate(daily_per_1M = {{variable_column}} / pop * 1000000),
+      aes(x = date_report, y = daily_per_1M),
+      color = "gray60",
+      width = 1,
+      alpha = 0.3
+    ) +
+    ylim(my.ggp.yrange[1], my.ggp.yrange[2]) +
+    ggrepel::geom_text_repel(
+      data = last_value_label_data,
+      aes(x = date_report, y = {{avg_column}}, label = label),
+      size = 4, # changer la taille texte geom_text
+      force = 10,
+      color = "black",
+      nudge_y = c(0.5)
+    ) +
+    geom_line(data = temp, aes(x = date_report, y = {{avg_column}}), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8)+
+    theme(axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=1))
+}
 
 
-message("type_pop_anything_quebec2")
-temp <- type_par_pop_anything_quebec(type = region, variable = dec_quo_tot_n) %>%
-  filter(date_report >= lubridate::ymd("2020-03-15"))
+graph_rough_identity <- function(type, variable, titre = NULL,  y_lab = NULL, hist_data = NULL){
+  if(is.null(hist_data)) hist_data <- get_inspq_covid19_hist()
+  type_column = enquo(type)
+  type_column_name = quo_name(type_column)
+  variable_column = enquo(variable)
+  variable_column_name = quo_name(variable_column)
 
+  temp <- type_par_pop_anything_quebec(type = {{type_column}}, variable = {{variable_column}}, hist_data = hist_data) %>%
+    filter(date_report >= lubridate::ymd("2020-03-15"))
 
-
-last_value_label_data <-
-  temp %>%
-  filter(!is.na(avg_dec_quo_tot_n_last7_per_1M)) %>%
-  group_by(groupe) %>%
-  filter(date_report == max(date_report)) %>%
-  ungroup() %>%
-  select(date_report, avg_dec_quo_tot_n_last7_per_1M, groupe) %>%
-  mutate(label = sprintf("%.1f", round(avg_dec_quo_tot_n_last7_per_1M, 1)))
-
-
-ggplot() +
-  geom_line(data = temp, aes(x = date_report, y = avg_dec_quo_tot_n_last7_per_1M), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
-  facet_wrap(~groupe) +
-  theme_simon() +
-  labs(
-    title = "Décès par million d'habitant par région ",
-    subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
-    caption = "gossé par @coulsim",
-    y = "Décès",
-    x = "Date"
-  ) +
-  scale_y_continuous(expand = c(0, 0)) +
-  ggrepel::geom_text_repel(
-    data = last_value_label_data,
-    aes(x = date_report, y = avg_dec_quo_tot_n_last7_per_1M, label = label),
-    size = 4, # changer la taille texte geom_text
-    force = 4,
-    color = "black",
-    nudge_y = c(0.5)
-  )
-
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_by_pop.png")
-
-
-message("type_pop_anything_quebec3")
-
-temp <- type_par_pop_anything_quebec(type = region, variable = psi_quo_tes_n) %>%
-  filter(date_report >= lubridate::ymd("2020-03-15"))
-
-
-last_value_label_data <-
-  temp %>%
-  filter(!is.na(avg_psi_quo_tes_n_last7_per_1M)) %>%
-  group_by(groupe) %>%
-  filter(date_report == max(date_report)) %>%
-  ungroup() %>%
-  select(date_report, avg_psi_quo_tes_n_last7_per_1M, groupe) %>%
-  mutate(label = sprintf("%.0f", round(avg_psi_quo_tes_n_last7_per_1M, 1)))
+  last_value_label_data <-
+    temp %>%
+    filter(!is.na({{variable_column  }})) %>%
+    group_by(groupe) %>%
+    filter(date_report == max(date_report)) %>%
+    ungroup() %>%
+    select(date_report, {{variable_column}}, groupe) %>%
+    mutate(label = sprintf("%.1f", round( {{variable_column}}, 1)))
 
 
 
-ggplot() +
-  geom_line(data = temp, aes(x = date_report, y = avg_psi_quo_tes_n_last7_per_1M), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
-  facet_wrap(~groupe) +
-  theme_simon() +
-  labs(
-    title = "Tests par million d'habitant par région ",
-    subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
-    caption = "gossé par @coulsim",
-    y = "Tests",
-    x = "Date"
-  ) +
-  scale_y_continuous(expand = c(0, 0)) +
-  ggrepel::geom_text_repel(
-    data = last_value_label_data,
-    aes(x = date_report, y = avg_psi_quo_tes_n_last7_per_1M, label = label),
-    size = 4, # changer la taille texte geom_text
-    force = 4,
-    color = "black",
-    nudge_y = c(0.5)
-  )
+  p1 <- ggplot() +
+    geom_line(data = temp, aes(x = date_report, y = {{variable_column}}), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
+    facet_wrap(~groupe) +
+    theme_simon() +
+    labs(
+      subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
+      caption = "gossé par @coulsim",
+      x = "Date"
+    ) +
+    {if(!is.null(titre)){  labs(title = titre)}}+
+    {if(!is.null(y_lab)){  labs(y = y_lab)}} +
+    scale_y_continuous(expand = c(0, 0))+
+    ggrepel::geom_text_repel(
+      data = last_value_label_data,
+      aes(x = date_report, y = {{variable_column}}, label = label),
+      size = 4, # changer la taille texte geom_text
+      force = 10,
+      color = "black",
+      nudge_y = c(0.5)
+    ) +
+    theme(axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=1))
+  p1
+}
 
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_by_pop.png")
+graph_rough_par_pop(region,  hos_quo_tot_n, "Nouvelles hospitalisations par million d'habitant par région", "Nouvelles hospitalisations par million", hist_data = hist)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_new_hospit_par_region.png")
 
-
-# Pourcentage de positivité québec
-
-message("pourcentage de positivité québec")
-
-temp <- type_par_pop_anything_quebec(type = region, variable = psi_quo_pos_t) %>%
-  filter(date_report >= lubridate::ymd("2020-03-15"))
-
-last_value_label_data <-
-  temp %>%
-  filter(!is.na(psi_quo_pos_t)) %>%
-  group_by(groupe) %>%
-  filter(date_report == max(date_report)) %>%
-  ungroup() %>%
-  select(date_report, psi_quo_pos_t, groupe) %>%
-  mutate(label = sprintf("%.1f", round(psi_quo_pos_t, 1)))
-
-temp %>%
-  filter(groupe == "Ensemble du Québec") %>%
-  ggplot() +
-  geom_line(aes(x = date_report, y = psi_quo_pos_t), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
-  theme_simon() +
-  labs(
-    title = "Pourcentage de positivité (Ensemble du Québec",
-    subtitle = paste0("dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
-    x = "Date de résultat du test",
-    y = "Pourcentage de positivité",
-    caption = "gossé par @coulsim"
-  ) +
-  scale_y_continuous(expand = c(0, 0)) +
-  ggrepel::geom_text_repel(
-    data = last_value_label_data %>% filter(groupe == "Ensemble du Québec"),
-    aes(x = date_report, y = psi_quo_pos_t, label = label),
-    size = 4, # changer la taille texte geom_text
-    force = 4,
-    color = "black",
-    nudge_y = c(0.5)
-  )
-
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite.png")
-message("pourcentage de positivité québec par région")
+graph_rough_par_pop(groupe_age,  hos_quo_tot_n, "Nouvelles hospitalisations par million d'habitant par groupe d'âge", "Nouvelles hospitalisations par million", hist_data = hist)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_new_hospit_par_age.png")
 
 
-temp %>%
-  ggplot() +
-  geom_line(aes(x = date_report, y = psi_quo_pos_t), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
-  theme_simon() +
-  labs(
-    title = "Pourcentage de positivité par région",
-    subtitle = paste0("dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
-    x = "Date de résultat du test",
-    y = "Pourcentage de positivité",
-    caption = "gossé par @coulsim"
-  ) +
-  facet_wrap(~groupe) +
-  scale_y_continuous(expand = c(0, 0)) +
-  ggrepel::geom_text_repel(
-    data = last_value_label_data,
-    aes(x = date_report, y = psi_quo_pos_t, label = label),
-    size = 4, # changer la taille texte geom_text
-    force = 4,
-    color = "black",
-    nudge_y = c(0.5)
-  )
+graph_rough_par_pop(region,  dec_quo_tot_n, "Décès par million d'habitant par région", "Décès par million", hist_data = hist)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_par_region.png")
+
+graph_rough_par_pop(groupe_age,  dec_quo_tot_n, "Décès par million d'habitant par groupe d'âge", "Décès par million", hist_data = hist)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_par_age.png")
 
 
+graph_rough_par_pop(region,  psi_quo_tes_n, "Tests par million d'habitant par région", "Tests par million", hist_data = hist)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_par_region.png")
+
+graph_rough_par_pop(groupe_age,  psi_quo_tes_n, "Tests par million d'habitant par groupe d'âge", "Tests par million", hist_data = hist)
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_par_age.png")
+
+
+graph_rough_identity(region,  psi_quo_pos_t, "Taux de positivité par région", "Taux de positivité", hist_data = hist)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.png")
 
 
-message("pourcentage de positivité québec par âge")
-temp <- type_par_pop_anything_quebec(type = groupe_age, variable = psi_quo_pos_t) %>%
-  filter(date_report >= lubridate::ymd("2020-03-15"))
-
-last_value_label_data <-
-  temp %>%
-  filter(!is.na(psi_quo_pos_t)) %>%
-  group_by(groupe) %>%
-  filter(date_report == max(date_report)) %>%
-  ungroup() %>%
-  select(date_report, psi_quo_pos_t, groupe) %>%
-  mutate(label = sprintf("%.1f", round(psi_quo_pos_t, 1)))
-
-
-
-temp %>%
-  ggplot() +
-  geom_line(aes(x = date_report, y = psi_quo_pos_t), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
-  theme_simon() +
-  labs(
-    title = "Pourcentage de positivité par groupe d'âge",
-    subtitle = paste0("dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
-    x = "Date de résultat du test",
-    y = "Pourcentage de positivité",
-    caption = "gossé par @coulsim"
-  ) +
-  facet_wrap(~groupe) +
-  scale_y_continuous(expand = c(0, 0)) +
-  ggrepel::geom_text_repel(
-    data = last_value_label_data,
-    aes(x = date_report, y = psi_quo_pos_t, label = label),
-    size = 4, # changer la taille texte geom_text
-    force = 4,
-    color = "black",
-    nudge_y = c(0.5)
-  )
-
-
-
+graph_rough_identity(groupe_age,  psi_quo_pos_t, "Taux de positivité par groupe d'âge", "Taux de positivité", hist_data = hist)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png")
 
 
@@ -394,18 +276,18 @@ g <- ggplot() +
   #                        values = c(0, 20, 60, 100, max(mtl_graph_data$cases_per_1M)) / max(mtl_graph_data$cases_per_1M), limits = c(0,max(mtl_graph_data$cases_per_1M)),
   #                        name = "Cas par million") +
   #
-  # scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
-  #                      values = c(0, 20, 60, 100, 1000) / 1000, limits = c(0,1000),
-  #                      name = "Cas par million") +
-  # scale_fill_gradientn(colours = c("white", palette_OkabeIto["vermillion"]),
-  #                      values = c(0,1), limits = c(0,1000),
-  #                      name = "Cas par million") +
-  labs(
-    title = paste0("Nouveaux cas de covid par million d'habitants par arrondissement de Montréal"),
-    fill = "Cas par 1M habitants",
-    subtitle = paste0("en date du ", format(max(mtl_graph_data$date_report), format = format_francais), ". (moyenne mobile sur 7 jours)"),
-    caption = paste0("gossé par @coulsim")
-  ) +
+# scale_fill_gradientn(colours = c(palette_OkabeIto["bluishgreen"] , palette_OkabeIto["yellow"], palette_OkabeIto["orange"], palette_OkabeIto["vermillion"], "black"),
+#                      values = c(0, 20, 60, 100, 1000) / 1000, limits = c(0,1000),
+#                      name = "Cas par million") +
+# scale_fill_gradientn(colours = c("white", palette_OkabeIto["vermillion"]),
+#                      values = c(0,1), limits = c(0,1000),
+#                      name = "Cas par million") +
+labs(
+  title = paste0("Nouveaux cas de covid par million d'habitants par arrondissement de Montréal"),
+  fill = "Cas par 1M habitants",
+  subtitle = paste0("en date du ", format(max(mtl_graph_data$date_report), format = format_francais), ". (moyenne mobile sur 7 jours)"),
+  caption = paste0("gossé par @coulsim")
+) +
   cowplot::theme_map() +
   theme(
     text = element_text(size = 12), # tous les textes... sauf geom_text
@@ -498,14 +380,14 @@ if (FALSE) {
     left_join(rls_data %>% filter(date_report == max(date_report))) %>%
     filter(!is.na(cases_per_1M))
   mymap <- mapview::mapview(rls_last_week,
-    zcol = "cases_per_1M",
-    layer.name = paste0("Nombre moyen quotidien de cas de covid19 <br>par million d'habitant <br> pour la semaine se terminant le ", max(rls_last_week$date_report, na.rm = TRUE)),
-    col.regions = brewer.pal(3, "YlOrRd"),
-    popup = leafpop::popupTable(rls_last_week,
-      zcol = c("RLS_nom", "cumulative_cases", "cases", "cases_per_1M", "Population")
-    ) # ,
-    # label = makeLabels(rls_last_week,
-    #                  zcol = c("RLS_nom","cumulative_cases", "cases", "cases_per_1M", "Population" ))
+                            zcol = "cases_per_1M",
+                            layer.name = paste0("Nombre moyen quotidien de cas de covid19 <br>par million d'habitant <br> pour la semaine se terminant le ", max(rls_last_week$date_report, na.rm = TRUE)),
+                            col.regions = brewer.pal(3, "YlOrRd"),
+                            popup = leafpop::popupTable(rls_last_week,
+                                                        zcol = c("RLS_nom", "cumulative_cases", "cases", "cases_per_1M", "Population")
+                            ) # ,
+                            # label = makeLabels(rls_last_week,
+                            #                  zcol = c("RLS_nom","cumulative_cases", "cases", "cases_per_1M", "Population" ))
   )
 
 
