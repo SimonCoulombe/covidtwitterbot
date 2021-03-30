@@ -4,7 +4,7 @@
 \alias{type_par_pop_anything_quebec}
 \title{Title}
 \usage{
-type_par_pop_anything_quebec(type, variable)
+type_par_pop_anything_quebec(type, variable, hist_data = NULL)
 }
 \arguments{
 \item{variable}{genre "cas_totaux_quotidien" ou}

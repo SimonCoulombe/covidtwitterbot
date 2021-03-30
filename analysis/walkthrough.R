@@ -88,10 +88,9 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/canada_cases_by_worst16.png",
 
 ### un paquet de graphs laids convertis en fonction----
 
+# graph rouph par pop retourne la moyenne moibile par 1M d'habitant
 graph_rough_par_pop <- function(type, variable, titre = NULL,  y_lab = NULL,hist_data = NULL){
   if(is.null(hist_data)) hist_data <- get_inspq_covid19_hist()
-
-
   type_column = enquo(type)
   type_column_name = quo_name(type_column)
   variable_column = enquo(variable)
@@ -110,6 +109,7 @@ graph_rough_par_pop <- function(type, variable, titre = NULL,  y_lab = NULL,hist
     ungroup() %>%
     select(date_report, {{avg_column}}, groupe) %>%
     mutate(label = sprintf("%.1f", round( {{avg_column}}, 1)))
+
 
 
 
@@ -152,8 +152,76 @@ graph_rough_par_pop <- function(type, variable, titre = NULL,  y_lab = NULL,hist
     theme(axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=1))
 }
 
+# graph rough absolu retourne la moyenne mobile 7 jours
+graph_rough_absolu <- function(type, variable, titre = NULL,  y_lab = NULL,hist_data = NULL,  drop_total = FALSE, total_value = NULL){
+  if(is.null(hist_data)) hist_data <- get_inspq_covid19_hist()
+  type_column = enquo(type)
+  type_column_name = quo_name(type_column)
+  variable_column = enquo(variable)
+  variable_column_name = quo_name(variable_column)
+  avg_column_name = paste0("avg_", variable_column_name, "_last7")
+  avg_column = rlang::sym(avg_column_name)
 
-graph_rough_identity <- function(type, variable, titre = NULL,  y_lab = NULL, hist_data = NULL){
+  temp <- type_par_pop_anything_quebec(type = {{type_column}}, variable = {{variable_column}}, hist_data = hist_data) %>%
+    filter(date_report >= lubridate::ymd("2020-03-15")) %>%
+    {if(drop_total & !is.null(total_value)) {
+
+      filter(., groupe  != total_value)
+    } else {identity(.)}
+    }
+
+  last_value_label_data <-
+    temp %>%
+    filter(!is.na({{avg_column  }})) %>%
+    group_by(groupe) %>%
+    filter(date_report == max(date_report)) %>%
+    ungroup() %>%
+    select(date_report, {{avg_column}}, groupe) %>%
+    mutate(label = sprintf("%.1f", round( {{avg_column}}, 1)))
+
+  p1 <- ggplot() +
+    geom_line(data = temp, aes(x = date_report, y = {{avg_column}}), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8) +
+    facet_wrap(~groupe) +
+    theme_simon() +
+    labs(
+      subtitle = paste0("Moyenne mobile 7 jours, dernière mise à jour le ", format(max(temp$date_report, na.rm = TRUE), format = format_francais)),
+      caption = "gossé par @coulsim",
+      x = "Date"
+    ) +
+    {if(!is.null(titre)){  labs(title = titre)}}+
+    {if(!is.null(y_lab)){  labs(y = y_lab)}} +
+    scale_y_continuous(expand = c(0, 0))
+
+  ggp <- ggplot_build(p1)
+  my.ggp.yrange <- ggp$layout$panel_scales_y[[1]]$range$range # data range!
+  my.ggp.xrange <- ggp$layout$panel_scales_x[[1]]$range$range # data range!
+
+
+  p1 +
+    geom_col(
+      data = temp,
+      aes(x = date_report, y = {{variable_column}} ),
+      color = "gray60",
+      width = 1,
+      alpha = 0.3
+    ) +
+    ylim(my.ggp.yrange[1], my.ggp.yrange[2]) +
+    ggrepel::geom_text_repel(
+      data = last_value_label_data,
+      aes(x = date_report, y = {{avg_column}}, label = label),
+      size = 4, # changer la taille texte geom_text
+      force = 10,
+      color = "black",
+      nudge_y = c(0.5)
+    ) +
+    geom_line(data = temp, aes(x = date_report, y = {{avg_column}}), color = palette_OkabeIto["blue"], size = 1, alpha = 0.8)+
+    theme(axis.text.x = element_text(angle = 30, vjust = 0.5, hjust=1))
+}
+
+
+
+# graph rough identity retourne la valeur absolue sans faire de moyenne ni diviser par la pop
+graph_rough_identity <- function(type, variable, titre = NULL,  y_lab = NULL, hist_data = NULL, drop_total = FALSE, total_value = NULL){
   if(is.null(hist_data)) hist_data <- get_inspq_covid19_hist()
   type_column = enquo(type)
   type_column_name = quo_name(type_column)
@@ -161,17 +229,21 @@ graph_rough_identity <- function(type, variable, titre = NULL,  y_lab = NULL, hi
   variable_column_name = quo_name(variable_column)
 
   temp <- type_par_pop_anything_quebec(type = {{type_column}}, variable = {{variable_column}}, hist_data = hist_data) %>%
-    filter(date_report >= lubridate::ymd("2020-03-15"))
+    filter(date_report >= lubridate::ymd("2020-03-15")) %>%
+    {if(drop_total & !is.null(total_value)) {
+     filter(., groupe  != total_value)
+        } else {identity(.)}
+    }
 
-  last_value_label_data <-
-    temp %>%
-    filter(!is.na({{variable_column  }})) %>%
-    group_by(groupe) %>%
-    filter(date_report == max(date_report)) %>%
-    ungroup() %>%
-    select(date_report, {{variable_column}}, groupe) %>%
-    mutate(label = sprintf("%.1f", round( {{variable_column}}, 1)))
-
+last_value_label_data <-
+  temp %>%
+  filter(!is.na({{variable_column  }})) %>%
+  group_by(groupe) %>%
+  filter(date_report == max(date_report)) %>%
+  ungroup() %>%
+  select(date_report, {{variable_column}}, groupe) %>%
+  #mutate(label = sprintf("%.1f", round( {{variable_column}}, 1)))
+  mutate(label = format_chiffre({{variable_column}}, accuracy =0.1))
 
 
   p1 <- ggplot() +
@@ -198,6 +270,9 @@ graph_rough_identity <- function(type, variable, titre = NULL,  y_lab = NULL, hi
   p1
 }
 
+
+
+
 graph_rough_par_pop(region,  hos_quo_tot_n, "Nouvelles hospitalisations par million d'habitant par région", "Nouvelles hospitalisations par million", hist_data = hist)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_new_hospit_par_region.png")
 
@@ -217,14 +292,28 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_par_region.png")
 
 graph_rough_par_pop(groupe_age,  psi_quo_tes_n, "Tests par million d'habitant par groupe d'âge", "Tests par million", hist_data = hist)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_par_age.png")
-
-
+# graph rough identity
 graph_rough_identity(region,  psi_quo_pos_t, "Taux de positivité par région", "Taux de positivité", hist_data = hist)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.png")
 
-
 graph_rough_identity(groupe_age,  psi_quo_pos_t, "Taux de positivité par groupe d'âge", "Taux de positivité", hist_data = hist)
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png")
+
+
+graph_rough_absolu(groupe_age,  dec_quo_tot_n, "Décès par âge (nombre absolu)", "Décès", hist_data = hist, drop_total = TRUE, total_value = "Total")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_par_age_absolu.png")
+
+graph_rough_absolu(groupe_age,  hos_quo_tot_n, "Nouvelles hospitalisations par âge (nombre absolu)", "Nouvelles hospitalisations", hist_data = hist, drop_total = TRUE, total_value = "Total")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_new_hospit_par_age_absolu.png")
+
+
+
+graph_rough_absolu(groupe_age,  psi_quo_tes_n, "Tests par âge (nombre absolu)", "Tests", hist_data = hist, drop_total = TRUE, total_value = "Total")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_tests_par_age_absolu.png")
+
+graph_rough_absolu(groupe_age,  cas_totaux_quotidien, "Cas par âge (nombre absolu)", "Tests", hist_data = hist, drop_total = TRUE, total_value = "Total")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_cas_par_age_absolu.png")
+
 
 
 

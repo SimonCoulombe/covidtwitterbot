@@ -91,12 +91,12 @@ premier_tweet_de_la_thread <-  get_timeline("covid_coulsim") %>% filter(str_dete
 
 post_tweet(
   status = paste0(
-    intToUtf8(0x1F4C8), "covidc \n",
+    intToUtf8(0x1F4C8), "covid \n",
     "Cas par million par groupe d'âge\n",
     "Hospit par million par groupe d'âge\n",
     "Décès par million par groupe d'âge\n",
     "Tests par million par groupe d'âge\n",
-    "#polqc 2/7"
+    "#polqc 2A/7"
   ),
 
   media = c(
@@ -111,6 +111,30 @@ post_tweet(
   retweet_id = NULL,
   auto_populate_reply_metadata = FALSE
 )
+
+post_tweet(
+  status = paste0(
+    intToUtf8(0x1F4C8), "Nombre absolus: \n",
+    "Cas par groupe d'âge\n",
+    "Hospit par groupe d'âge\n",
+    "Décès  par groupe d'âge\n",
+    "Tests par groupe d'âge\n",
+    "#polqc 2B/7 covid"
+  ),
+
+  media = c(
+    "~/git/adhoc_prive/covid19_PNG/quebec_cas_par_age_absolu.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_new_hospit_par_age_absolu.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_deces_par_age_absolu.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_tests_par_age_absolu.png"
+  ),
+  token = NULL,
+  in_reply_to_status_id = get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% pull(status_id) %>% .[1],
+  destroy_id = NULL,
+  retweet_id = NULL,
+  auto_populate_reply_metadata = FALSE
+)
+
 
 
 
