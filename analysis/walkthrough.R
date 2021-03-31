@@ -154,6 +154,7 @@ graph_rough_par_pop <- function(type, variable, titre = NULL,  y_lab = NULL,hist
 
 # graph rough absolu retourne la moyenne mobile 7 jours
 graph_rough_absolu <- function(type, variable, titre = NULL,  y_lab = NULL,hist_data = NULL,  drop_total = FALSE, total_value = NULL){
+  browser()
   if(is.null(hist_data)) hist_data <- get_inspq_covid19_hist()
   type_column = enquo(type)
   type_column_name = quo_name(type_column)
@@ -316,6 +317,51 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_cas_par_age_absolu.png
 
 
 
+## graphiques vaccins ----
+
+ggplot(data = raw_vaccin %>% filter(regroupement == "Région"),
+       aes(x= date_report, y = vac_quo_tot_n))+
+  geom_col(width = 1) +
+  facet_wrap(~ nom)+
+  theme_bw() +
+  labs(title= "Nombre quotidien de doses de vaccins administrées selon la région")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_region_absolu.png")
+
+ggplot(data = raw_vaccin %>% filter(regroupement == "Groupe d'âge 1"),
+       aes(x= date_report, y = vac_quo_tot_n))+
+  geom_col(width = 1) +
+  facet_wrap(~ nom) +
+  theme_bw() +
+  labs(title= "Nombre quotidien de doses de vaccins administrées selon le groupe d'âge")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_age_absolu.png")
+
+ggplot(data = raw_vaccin %>% filter(regroupement == "Groupe prioritaire"),
+       aes(x= date_report, y = vac_quo_tot_n))+
+  geom_col(width = 1) +
+  facet_wrap(~ nom)+
+  theme_bw() +
+  labs(title= "Nombre quotidien de doses de vaccins administrées selon le groupe prioritaire")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_groupe_prioritaire_absolu.png")
+
+ggplot(data = raw_vaccin %>% filter(regroupement == "Sexe"),
+       aes(x= date_report, y = vac_quo_tot_n))+
+  geom_col(width = 1) +
+  facet_wrap(~ nom)+
+  theme_bw() +
+  labs(title= "Nombre quotidien de doses de vaccins administrées selon le sexe")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_sexe_absolu.png")
+
+# graphique variants ----
+
+variants <- get_variant_data()
+
+ggplot(data = variants %>% filter(!(region %in% c("Hors Québec", "Inconnu") )),
+       aes(x = date_report, y = criblage))+
+  geom_col(width = 1) +
+  facet_wrap(~ region)+
+  theme_bw()+
+  labs(title = "Nombre cumulatifs de cas de variants confirmés par criblage par région sociosanitaire")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_variants_region_absolu.png")
 
 # mtl ----
 
