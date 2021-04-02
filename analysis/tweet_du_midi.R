@@ -240,17 +240,17 @@ post_tweet(
 
 post_tweet(
   status = paste0(
-    emoji_graph, " vaccins par région\n",
-    emoji_graph, " vaccins par âge \n",
-    emoji_graph, " vaccins par groupe prioritaire\n",
-    emoji_graph, " vaccins par sexe\n",
+    emoji_graph, " vaccins par région pourcent cumulatif\n",
+    emoji_graph, " vaccins par âge pourcent cumulatif\n",
+    emoji_graph, " vaccins par groupe prioritaire nombre cumulatif\n",
+    emoji_graph, " vaccins par sexe  nombre cumulatif\n",
     "covid 8/9"
   ),
   media = c(
-    "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_region_absolu.png",
-  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_age_absolu.png",
-  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_groupe_prioritaire_absolu.png",
-  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_sexe_absolu.png"
+    "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_region_pourcent_cumulatif.png",
+  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_age_pourcent_cumulatif.png",
+  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_groupe_prioritaire_cumulatif_absolu.png",
+  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_sexe_cumulatif_absolu.png"
   ),
   token = NULL,
   in_reply_to_status_id = get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% pull(status_id) %>% .[1],
@@ -262,11 +262,14 @@ post_tweet(
 
 post_tweet(
   status = paste0(
-    emoji_graph, " variants par région\n",
+    emoji_graph, " variants par région nombre quotidien par million \n",
+    emoji_graph, " variants par région nombre quotidien absolu \n",
+
     "covid 9/9"
   ),
   media = c(
-    "~/git/adhoc_prive/covid19_PNG/quebec_variants_region_absolu.png"
+    "~/git/adhoc_prive/covid19_PNG/quebec_variants_region_quotidien_pop.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_variants_region_quotidien_absolu.png"
   ),
   token = NULL,
   in_reply_to_status_id = get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% pull(status_id) %>% .[1],

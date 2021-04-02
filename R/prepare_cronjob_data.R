@@ -47,6 +47,15 @@ import_unique_csvs_from_cronjob <- function(mypath = "~/cronjob/tableau-rls/",
   return(list(datetimes = datetimes[keep], csvs = csvs[keep]))
 }
 
+#' Title
+#'
+#' @param datetimes
+#' @param csvs
+#'
+#' @return
+#' @export
+#'
+#' @examples
 create_date_report_from_datetimes <- function(datetimes, csvs) {
   dates_fixed <- tibble::tibble(download_datetime = datetimes) %>%
     mutate(

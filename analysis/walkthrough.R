@@ -154,7 +154,6 @@ graph_rough_par_pop <- function(type, variable, titre = NULL,  y_lab = NULL,hist
 
 # graph rough absolu retourne la moyenne mobile 7 jours
 graph_rough_absolu <- function(type, variable, titre = NULL,  y_lab = NULL,hist_data = NULL,  drop_total = FALSE, total_value = NULL){
-  browser()
   if(is.null(hist_data)) hist_data <- get_inspq_covid19_hist()
   type_column = enquo(type)
   type_column_name = quo_name(type_column)
@@ -318,51 +317,73 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_cas_par_age_absolu.png
 
 
 ## graphiques vaccins ----
+raw_vaccin <- get_raw_vaccination_data()
 
-ggplot(data = raw_vaccin %>% filter(regroupement == "Région"),
-       aes(x= date_report, y = vac_quo_tot_n))+
+# https://community.rstudio.com/t/how-to-filter-programmatically/54185/11
+
+
+ggplot(data = raw_vaccin %>% filter(regroupement == "Région", !(nom %in% c("Hors Québec", "Inconnue"))),
+       aes(x= date_report, y = cvac_cum_tot_1_p/100))+
   geom_col(width = 1) +
   facet_wrap(~ nom)+
   theme_bw() +
-  labs(title= "Nombre quotidien de doses de vaccins administrées selon la région")
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_region_absolu.png")
+  labs(title= "Pourcentage  cumulatif de personnes vaccinées  selon la région") +
+  theme_simon() +
+scale_y_continuous(labels = scales::label_percent())
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_region_pourcent_cumulatif.png")
 
-ggplot(data = raw_vaccin %>% filter(regroupement == "Groupe d'âge 1"),
-       aes(x= date_report, y = vac_quo_tot_n))+
+
+
+ggplot(data = raw_vaccin %>% filter(regroupement == "Groupe d'âge 1") %>%
+         mutate(nom = factor(nom, levels = c("Moins de 16 ans", "16 à 59 ans", "60 à 69 ans", "70 à 79 ans", "80 ans et plus", "Total"))),
+       aes(x= date_report, y = cvac_cum_tot_1_p / 100))+
   geom_col(width = 1) +
   facet_wrap(~ nom) +
   theme_bw() +
-  labs(title= "Nombre quotidien de doses de vaccins administrées selon le groupe d'âge")
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_age_absolu.png")
+  labs(title= "Pourcentage  cumulatif de personnes vaccinées  selon le groupe d'âge") +
+  scale_y_continuous(labels = scales::label_percent())+
+  theme_simon()
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_age_pourcent_cumulatif.png")
 
-ggplot(data = raw_vaccin %>% filter(regroupement == "Groupe prioritaire"),
-       aes(x= date_report, y = vac_quo_tot_n))+
+ggplot(data = raw_vaccin %>% filter(regroupement == "Groupe prioritaire", !(nom %in% c("Total"))),
+       aes(x= date_report, y = vac_cum_tot_n))+
   geom_col(width = 1) +
   facet_wrap(~ nom)+
   theme_bw() +
-  labs(title= "Nombre quotidien de doses de vaccins administrées selon le groupe prioritaire")
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_groupe_prioritaire_absolu.png")
+  labs(title= "Nombre  cumulatif de personnes vaccinées  selon le groupe priotaire") +
+  scale_y_continuous(labels = scales::label_number())+
+  theme_simon()
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_groupe_prioritaire_cumulatif_absolu.png")
 
-ggplot(data = raw_vaccin %>% filter(regroupement == "Sexe"),
-       aes(x= date_report, y = vac_quo_tot_n))+
+ggplot(data = raw_vaccin %>% filter(regroupement == "Sexe", !(nom %in% c("Total", "Inconnu"))),
+       aes(x= date_report, y = vac_cum_tot_n))+
   geom_col(width = 1) +
   facet_wrap(~ nom)+
   theme_bw() +
-  labs(title= "Nombre quotidien de doses de vaccins administrées selon le sexe")
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_sexe_absolu.png")
+  labs(title= "Nombre  cumulatif de personnes vaccinées  selon le sexe") +
+  scale_y_continuous(labels = scales::label_number())+
+  theme_simon()
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_sexe_cumulatif_absolu.png")
 
 # graphique variants ----
 
 variants <- get_variant_data()
 
-ggplot(data = variants %>% filter(!(region %in% c("Hors Québec", "Inconnu") )),
-       aes(x = date_report, y = criblage))+
+ggplot(data = variants %>% filter(!(region_sociosanitaire %in% c("Hors Québec", "Inconnu") )),
+       aes(x = date_report, y = quotidien_criblage_par_1M))+
   geom_col(width = 1) +
-  facet_wrap(~ region)+
-  theme_bw()+
-  labs(title = "Nombre cumulatifs de cas de variants confirmés par criblage par région sociosanitaire")
-myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_variants_region_absolu.png")
+  facet_wrap(~ region_sociosanitaire)+
+  theme_simon() +
+  labs(title = "Nombre quotidients de cas de variants confirmés par criblage par région sociosanitaire par million d'habitant")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_variants_region_quotidien_pop.png")
 
+ggplot(data = variants %>% filter(!(region_sociosanitaire %in% c("Hors Québec", "Inconnu") )),
+       aes(x = date_report, y = quotidien_criblage))+
+  geom_col(width = 1) +
+  facet_wrap(~ region_sociosanitaire)+
+  theme_simon() +
+  labs(title = "Nombre quotidients de cas de variants confirmés par criblage par région sociosanitaire")
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_variants_region_quotidien_absolu.png")
 # mtl ----
 
 
