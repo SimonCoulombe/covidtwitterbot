@@ -293,7 +293,13 @@ last_eligible_tweet_sante_qc <- get_timeline("sante_qc") %>%
 if(!is.na(last_eligible_tweet_sante_qc)){
   post_tweet(
     status = paste0(
-      emoji_robot, " " , emoji_thread, " Fil automatique quotidien avec les données historiques par sous-régions et par âge publié tous les jours à midi.\n",
+      emoji_thread, " Fil avec graphiques et carte des cas, hospitalisationss, décès et tests:\n",
+      "-par sous-région (RLS) et commission scolaire\n",
+      "-par âge\n",
+      "-pour Montréal\n\n",
+      "Aussi:\n",
+      "-vaccination par régions et âge\n",
+      "-variants par régions\n\n",
       "Un bon complément au dashboard de @sante_qc . \n",
       premier_tweet_de_la_thread$status_url
     ),
