@@ -1,7 +1,14 @@
 library(tidyverse)
 library(rtweet)
 library(covidtwitterbot)
-token <- rtweet::get_tokens()
+#token <- rtweet::get_tokens()
+auth_as( auth =   rtweet_bot(
+    api_key = Sys.getenv("covid_coulsim_api_key"),
+    api_secret =   Sys.getenv("covid_coulsim_api_secret_key"),
+    access_token = Sys.getenv("covid_coulsim_access_token"),
+    access_secret = Sys.getenv("covid_coulsim_access_token_secret")
+  )
+)
 
 emoji_carte <- intToUtf8(0x1F5FA)
 emoji_graph <- intToUtf8(0x1F4C8)
@@ -179,13 +186,13 @@ post_tweet(
 
 post_tweet(
   status = paste0(
-    intToUtf8(0x1F4C8), " Tests, hospitalisations, soins intensifs et décès de #covid\n",
+    #intToUtf8(0x1F4C8), " Tests, hospitalisations, soins intensifs et décès de #covid\n",
     intToUtf8(0x1F4C8), " Pourcentage de positivité par région\n",
     intToUtf8(0x1F4C8), " Pourcentage de positivité par âge\n",
-    "5/9"
+    "#covid 5/9"
   ),
   media = c(
-    "~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png",
+    #"~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png",
     "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.png",
     "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png"
   ),
@@ -248,9 +255,9 @@ post_tweet(
   ),
   media = c(
     "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_region_pourcent_cumulatif.png",
-  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_age_pourcent_cumulatif.png",
-  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_groupe_prioritaire_cumulatif_absolu.png",
-  "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_sexe_cumulatif_absolu.png"
+    "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_age_pourcent_cumulatif.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_groupe_prioritaire_cumulatif_absolu.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_sexe_cumulatif_absolu.png"
   ),
   token = NULL,
   in_reply_to_status_id = get_timeline("covid_coulsim") %>% filter(str_detect(text, "covid")) %>% pull(status_id) %>% .[1],
@@ -287,7 +294,7 @@ post_tweet(
 last_eligible_tweet_sante_qc <- get_timeline("sante_qc") %>%
   filter(str_detect(toupper(text), "VOICI"),
          as.integer(Sys.time() - created_at)  <= 48
-         ) %>%  # filtre 48 heures pour pas trop s'acharner sur un vieux tweet.
+  ) %>%  # filtre 48 heures pour pas trop s'acharner sur un vieux tweet.
   pull(status_id) %>% .[1]
 
 if(!is.na(last_eligible_tweet_sante_qc)){
