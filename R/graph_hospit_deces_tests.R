@@ -13,16 +13,14 @@
 graph_deces_hospit_tests <- function() {
   rr <- get_inspq_manual_data_hospits() %>%
     dplyr::filter(date >= lubridate::ymd("20200315")) %>%
-    dplyr::select(date, soins_intensifs = si, volumetrie, hospits, hospits_ancien) %>%
-    dplyr::mutate(hospitalisations = dplyr::coalesce(hospits, hospits_ancien)) %>%
-    dplyr::select(-hospits, -hospits_ancien) %>%
-    tidyr::gather(key = type, value = nombre, soins_intensifs, hospitalisations, volumetrie) %>%
-    dplyr::bind_rows(get_inspq_covid19_hist() %>% dplyr::filter(!is.na(date), groupe == "Ensemble du Québec") %>%
-      dplyr::select(date, nombre = deces_totaux_quotidien) %>%
-      dplyr::mutate(type = "deces")) %>%
-    dplyr::bind_rows(get_inspq_covid19_hist() %>% dplyr::filter(!is.na(date), groupe == "Ensemble du Québec") %>%
-      dplyr::select(date, nombre = cas_quo_tot_n) %>%
-      dplyr::mutate(type = "cas")) %>%
+    dplyr::select(date,volumetrie, ) %>%
+    tidyr::gather(key = type, value = nombre, volumetrie) %>%
+    dplyr::bind_rows(get_inspq_covid19_hist() %>%
+                       dplyr::filter(!is.na(date), groupe == "Ensemble du Québec") %>% # ajouter deces
+                       dplyr::select(date, deces = deces_totaux_quotidien, cas = cas_quo_tot_n, soins_intensifs = hos_act_si_n,hospitalisations = hos_act_tot_n ) %>%
+                       tidyr::gather(key= type, value = nombre, deces, cas, soins_intensifs, hospitalisations)
+    ) %>%
+
     dplyr::group_by(type) %>%
     dplyr::arrange(date) %>%
     dplyr::mutate(moyenne7 = (nombre + dplyr::lag(nombre, 1) + dplyr::lag(nombre, 2) + dplyr::lag(nombre, 3) + dplyr::lead(nombre, 1) + dplyr::lead(nombre, 2) + dplyr::lead(nombre, 3)) / 7) %>%

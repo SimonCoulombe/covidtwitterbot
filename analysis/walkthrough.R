@@ -18,8 +18,8 @@ message("Get INSPQ data")
 hist <- get_inspq_covid19_hist()
 
 message("graph hosts, test")
-#graph_deces_hospit_tests()
-#myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png")
+graph_deces_hospit_tests()
+myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png")
 
 
 message("graph quebec cases by pop, test")

@@ -27,5 +27,5 @@ type_par_pop_anything_quebec(type = region, variable = hos_quo_tot_m) \%>\% ggpl
  last7
  ratio
  winning.
- group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas.... TODO: on ditche tu ça?
+ group <--- qui est la mÃªme que le type (genre health_region ou groupe_age, mais rÃ©ordonnÃ© en fonction du total de cas.... TODO: on ditche tu Ã§a?
 }

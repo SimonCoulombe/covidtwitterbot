@@ -29,5 +29,5 @@ cases_par_pop_age_quebec
  last7
  ratio
  winning.
- group <--- qui est la même que le type (genre health_region ou groupe_age, mais réordonné en fonction du total de cas..)
+ group <--- qui est la mÃªme que le type (genre health_region ou groupe_age, mais rÃ©ordonnÃ© en fonction du total de cas..)
 }

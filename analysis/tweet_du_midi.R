@@ -169,6 +169,7 @@ post_tweet(
 post_tweet(
   status = paste0(
     intToUtf8(0x1F4C8), intToUtf8(0x1F5FA), " Cas par habitant par réseaux locaux de service (RLS)\n",
+    "Données sauvées par @jpsoucy \n",
     "covid 4/9"
   ),
   media = c(
@@ -186,13 +187,13 @@ post_tweet(
 
 post_tweet(
   status = paste0(
-    #intToUtf8(0x1F4C8), " Tests, hospitalisations, soins intensifs et décès de #covid\n",
+    intToUtf8(0x1F4C8), " Tests, hospitalisations, soins intensifs et décès de #covid\n",
     intToUtf8(0x1F4C8), " Pourcentage de positivité par région\n",
     intToUtf8(0x1F4C8), " Pourcentage de positivité par âge\n",
-    "#covid 5/9"
+    "5/9"
   ),
   media = c(
-    #"~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png",
+    "~/git/adhoc_prive/covid19_PNG/quebec_deces_si.png",
     "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_region.png",
     "~/git/adhoc_prive/covid19_PNG/quebec_positivite_par_age.png"
   ),
@@ -271,7 +272,7 @@ post_tweet(
   status = paste0(
     emoji_graph, " variants par région nombre quotidien par million \n",
     emoji_graph, " variants par région nombre quotidien absolu \n",
-
+    "Données sauvées par @jpsoucy \n",
     "covid 9/9"
   ),
   media = c(
