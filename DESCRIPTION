@@ -36,7 +36,8 @@ Imports:
     httr,
     future,
     tidyselect,
-    patchwork
+    patchwork,
+    aws.s3
 Remotes: github::clauswilke/colorblindr
 URL: https://github.com/SimonCoulombe/covidtwitterbot
 BugReports: https://github.com/SimonCoulombe/covidtwitterbot/issues
