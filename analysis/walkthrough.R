@@ -2,6 +2,7 @@
 tictoc::tic()
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 library(covidtwitterbot)
 library(rmapzen)
 library(sf)
@@ -320,29 +321,39 @@ myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_cas_par_age_absolu.png
 raw_vaccin <- get_raw_vaccination_data()
 
 # https://community.rstudio.com/t/how-to-filter-programmatically/54185/11
+vaccin_gathered <- raw_vaccin %>%
+  select(nom, regroupement, date_report, cvac_cum_tot_1_p, cvac_cum_tot_2_p ) %>%
+  gather(key=key , value=value, cvac_cum_tot_1_p, cvac_cum_tot_2_p)
 
+cols_vaccin <- c("cvac_cum_tot_1_p" = "skyblue", "cvac_cum_tot_2_p" = "orange")
 
-ggplot(data = raw_vaccin %>% filter(regroupement == "Région", !(nom %in% c("Hors Québec", "Inconnue"))),
-       aes(x= date_report, y = cvac_cum_tot_1_p/100))+
-  geom_col(width = 1) +
+ggplot(data = vaccin_gathered %>% filter(regroupement == "Région", !(nom %in% c("Hors Québec", "Inconnue"))),
+       aes(x= date_report, y = value/100))+
+  geom_line(aes(color = key), size = 1 ) +
   facet_wrap(~ nom)+
   theme_bw() +
-  labs(title= "Pourcentage  cumulatif de personnes vaccinées  selon la région") +
+  labs(title= "Pourcentage  cumulatif de personnes vaccinées  selon la région",
+       color = "Doses") +
   theme_simon() +
-scale_y_continuous(labels = scales::label_percent())
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_color_manual(values = cols_vaccin, labels = c("Une", "Deux")) +
+  theme(legend.position = c(0.85,0.1))
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_region_pourcent_cumulatif.png")
 
 
 
-ggplot(data = raw_vaccin %>% filter(regroupement == "Groupe d'âge 1") %>%
+ggplot(data = vaccin_gathered %>% filter(regroupement == "Groupe d'âge 1") %>%
          mutate(nom = factor(nom, levels = c("Moins de 16 ans", "16 à 59 ans", "60 à 69 ans", "70 à 79 ans", "80 ans et plus", "Total"))),
-       aes(x= date_report, y = cvac_cum_tot_1_p / 100))+
-  geom_col(width = 1) +
+       aes(x= date_report, y = value / 100))+
+  geom_line(size = 1, aes(color = key)) +
   facet_wrap(~ nom) +
   theme_bw() +
-  labs(title= "Pourcentage  cumulatif de personnes vaccinées  selon le groupe d'âge") +
+  labs(title= "Pourcentage  cumulatif de personnes vaccinées  selon le groupe d'âge",
+       color = "Doses") +
   scale_y_continuous(labels = scales::label_percent())+
-  theme_simon()
+  scale_color_manual(values = cols_vaccin, labels = c("Une", "Deux")) +
+  theme_simon()+
+  theme(legend.position = "bottom")
 myggsave(filename = "~/git/adhoc_prive/covid19_PNG/quebec_vaccin_age_pourcent_cumulatif.png")
 
 ggplot(data = raw_vaccin %>% filter(regroupement == "Groupe prioritaire", !(nom %in% c("Total"))),
